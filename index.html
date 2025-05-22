@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nvidia: Revolución Tecnológica</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 100%);
+            color: #ffffff;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            padding: 40px 0;
+            background: linear-gradient(45deg, #76b900, #00d4aa);
+            margin-bottom: 40px;
+            border-radius: 15px;
+        }
+
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .timeline-section {
+            margin-bottom: 50px;
+        }
+
+        .timeline {
+            position: relative;
+            padding: 20px 0;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: linear-gradient(to bottom, #76b900, #00d4aa);
+            transform: translateX(-50%);
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 40px;
+            width: 45%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .timeline-item:hover {
+            transform: translateY(-5px);
+        }
+
+        .timeline-item.left {
+            left: 0;
+            text-align: right;
+            padding-right: 30px;
+        }
+
+        .timeline-item.right {
+            left: 55%;
+            text-align: left;
+            padding-left: 30px;
+        }
+
+        .timeline-content {
+            background: linear-gradient(135deg, #2a2a2a, #3a3a3a);
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .timeline-item:hover .timeline-content {
+            border-color: #76b900;
+            box-shadow: 0 15px 40px rgba(118, 185, 0, 0.2);
+        }
+
+        .timeline-year {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #76b900;
+            margin-bottom: 10px;
+        }
+
+        .timeline-title {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: #00d4aa;
+        }
+
+        .timeline-description {
+            font-size: 1rem;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .timeline-dot {
+            position: absolute;
+            top: 20px;
+            width: 20px;
+            height: 20px;
+            background: #76b900;
+            border-radius: 50%;
+            border: 4px solid #1a1a1a;
+        }
+
+        .timeline-item.left .timeline-dot {
+            right: -10px;
+        }
+
+        .timeline-item.right .timeline-dot {
+            left: -10px;
+        }
+
+        .features-list {
+            list-style: none;
+            margin-top: 15px;
+        }
+
+        .features-list li {
+            padding: 5px 0;
+            position: relative;
+            padding-left: 20px;
+        }
+
+        .features-list li::before {
+            content: '▶';
+            color: #00d4aa;
+            position: absolute;
+            left: 0;
+        }
+
+        .chart-section {
+            background: linear-gradient(135deg, #2a2a2a, #3a3a3a);
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .chart-container {
+            position: relative;
+            height: 500px;
+            margin-top: 20px;
+        }
+
+        .chart-controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .chart-toggle {
+            background: linear-gradient(45deg, #76b900, #00d4aa);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+
+        .chart-toggle:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(118, 185, 0, 0.3);
+        }
+
+        .chart-toggle.active {
+            background: linear-gradient(45deg, #00d4aa, #76b900);
+        }
+
+        .info-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .info-card {
+            background: linear-gradient(135deg, #2a2a2a, #3a3a3a);
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .info-card:hover {
+            transform: translateY(-5px);
+            border-color: #00d4aa;
+            box-shadow: 0 15px 40px rgba(0, 212, 170, 0.2);
+        }
+
+        .card-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            color: #00d4aa;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .impact-section {
+            text-align: center;
+            padding: 40px;
+            background: linear-gradient(45deg, rgba(118, 185, 0, 0.1), rgba(0, 212, 170, 0.1));
+            border-radius: 15px;
+            margin-top: 40px;
+        }
+
+        .impact-title {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            color: #76b900;
+        }
+
+        @media (max-width: 768px) {
+            .timeline::before {
+                left: 20px;
+            }
+
+            .timeline-item {
+                width: 100%;
+                left: 0 !important;
+                text-align: left !important;
+                padding-left: 50px !important;
+                padding-right: 0 !important;
+            }
+
+            .timeline-dot {
+                left: 10px !important;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            .chart-controls {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+
+        .legend-item {
+            display: inline-flex;
+            align-items: center;
+            margin: 5px 10px;
+            font-size: 14px;
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 3px;
+            margin-right: 8px;
+            border-radius: 2px;
+        }
+
+        .government-periods {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+        }
+
+        .period {
+            display: inline-block;
+            margin: 5px;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .bush { background-color: rgba(220, 53, 69, 0.3); }
+        .obama { background-color: rgba(13, 110, 253, 0.3); }
+        .trump { background-color: rgba(255, 193, 7, 0.3); }
+        .biden { background-color: rgba(25, 135, 84, 0.3); }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>NVIDIA: Revolución Tecnológica</h1>
+            <p class="subtitle">Explorando los avances que cambiaron el mundo del computing</p>
+        </header>
+
+        <section class="timeline-section">
+            <h2 style="text-align: center; margin-bottom: 30px; font-size: 2.5rem; color: #00d4aa;">Línea de Tiempo de Innovaciones</h2>
+            
+            <div class="timeline">
+                <div class="timeline-item left" onclick="toggleDetails('cuda-details')">
+                    <div class="timeline-content">
+                        <div class="timeline-year">2006</div>
+                        <div class="timeline-title">CUDA - Compute Unified Device Architecture</div>
+                        <div class="timeline-description">
+                            Nvidia revoluciona el mundo del computing al permitir el uso de GPUs para computación de propósito general, no solo gráficos.
+                        </div>
+                        <div id="cuda-details" class="details" style="display: none;">
+                            <ul class="features-list">
+                                <li><strong>Paralelización masiva:</strong> Miles de núcleos trabajando simultáneamente</li>
+                                <li><strong>Lenguaje C/C++:</strong> Programación familiar para desarrolladores</li>
+                                <li><strong>Arquitectura escalable:</strong> Desde laptops hasta supercomputadoras</li>
+                                <li><strong>Aplicaciones:</strong> Simulación científica, procesamiento de imágenes, criptografía</li>
+                                <li><strong>Impacto:</strong> Base para el desarrollo de IA y machine learning moderno</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="timeline-dot"></div>
+                </div>
+
+                <div class="timeline-item right" onclick="toggleDetails('pascal-details')">
+                    <div class="timeline-content">
+                        <div class="timeline-year">2016</div>
+                        <div class="timeline-title">Arquitectura Pascal & GTX 10 Series</div>
+                        <div class="timeline-description">
+                            Salto cuántico en eficiencia energética y rendimiento con el proceso de fabricación de 16nm FinFET.
+                        </div>
+                        <div id="pascal-details" class="details" style="display: none;">
+                            <ul class="features-list">
+                                <li><strong>Proceso 16nm FinFET:</strong> Reducción significativa en consumo energético</li>
+                                <li><strong>Memoria GDDR5X:</strong> Ancho de banda mejorado para aplicaciones exigentes</li>
+                                <li><strong>VR Ready:</strong> Rendimiento optimizado para realidad virtual</li>
+                                <li><strong>GTX 1080:</strong> Primera GPU consumer en superar 9 TFLOPS</li>
+                                <li><strong>Simultaneous Multi-Projection:</strong> Tecnología revolucionaria para VR</li>
+                                <li><strong>HDR Gaming:</strong> Soporte nativo para alto rango dinámico</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="timeline-dot"></div>
+                </div>
+            </div>
+        </section>
+
+        <section class="chart-section">
+            <h2 style="text-align: center; margin-bottom: 20px; font-size: 2.5rem; color: #00d4aa;">Análisis Histórico de Mercado (2000-2024)</h2>
+            
+            <div class="chart-controls">
+                <button class="chart-toggle active" onclick="toggleData('nvidia')">Nvidia</button>
+                <button class="chart-toggle active" onclick="toggleData('bitcoin')">Bitcoin</button>
+                <button class="chart-toggle active" onclick="toggleData('government')">Periodos Gubernamentales</button>
+            </div>
+
+            <div class="government-periods">
+                <h4 style="margin-bottom: 10px;">Periodos Presidenciales de EE.UU.:</h4>
+                <span class="period bush">Bush (2001-2009)</span>
+                <span class="period obama">Obama (2009-2017)</span>
+                <span class="period trump">Trump (2017-2021)</span>
+                <span class="period biden">Biden (2021-2025)</span>
+            </div>
+
+            <div class="chart-container">
+                <canvas id="marketChart"></canvas>
+            </div>
+
+            <div style="text-align: center; margin-top: 15px;">
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: #76b900;"></div>
+                    <span>Nvidia (Escala Izquierda - USD)</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: #f39c12;"></div>
+                    <span>Bitcoin (Escala Derecha - USD)</span>
+                </div>
+            </div>
+        </section>
+
+        <div class="info-cards">
+            <div class="info-card">
+                <div class="card-icon">🚀</div>
+                <div class="card-title">Impacto de CUDA</div>
+                <p>CUDA democratizó la computación de alto rendimiento, permitiendo que investigadores y desarrolladores accedan a poder de cálculo masivo. Aceleró el desarrollo de IA, deep learning, y simulaciones científicas complejas.</p>
+            </div>
+
+            <div class="info-card">
+                <div class="card-icon">⚡</div>
+                <div class="card-title">Revolución Pascal</div>
+                <p>Pascal marcó el inicio de la era moderna de gaming en 4K y VR. Su eficiencia energética y rendimiento establecieron nuevos estándares para la industria de semiconductores.</p>
+            </div>
+
+            <div class="info-card">
+                <div class="card-icon">📈</div>
+                <div class="card-title">Correlación de Mercados</div>
+                <p>El crecimiento de Nvidia está fuertemente correlacionado con el boom de las criptomonedas y el desarrollo de IA. Sus GPUs son fundamentales para el mining y el entrenamiento de redes neuronales.</p>
+            </div>
+        </div>
+
+        <div class="impact-section">
+            <div class="impact-title">Legado e Influencia</div>
+            <p style="font-size: 1.2rem; max-width: 800px; margin: 0 auto;">
+                Los avances de Nvidia en 2006 y 2016 no solo transformaron la industria tecnológica, sino que sentaron las bases para la revolución de la inteligencia artificial que vivimos hoy. Desde el machine learning hasta las criptomonedas, desde la investigación científica hasta el entretenimiento, estas innovaciones continúan dando forma a nuestro futuro digital.
+            </p>
+        </div>
+    </div>
+
+    <script>
+        // Datos históricos aproximados
+        const nvidiaData = [
+            {year: 2000, price: 3.12}, {year: 2001, price: 2.84}, {year: 2002, price: 1.95},
+            {year: 2003, price: 2.45}, {year: 2004, price: 3.89}, {year: 2005, price: 4.12},
+            {year: 2006, price: 5.67}, {year: 2007, price: 8.23}, {year: 2008, price: 4.12},
+            {year: 2009, price: 6.78}, {year: 2010, price: 8.45}, {year: 2011, price: 7.89},
+            {year: 2012, price: 6.23}, {year: 2013, price: 9.12}, {year: 2014, price: 10.45},
+            {year: 2015, price: 14.67}, {year: 2016, price: 28.90}, {year: 2017, price: 98.23},
+            {year: 2018, price: 78.45}, {year: 2019, price: 89.12}, {year: 2020, price: 145.67},
+            {year: 2021, price: 234.56}, {year: 2022, price: 198.23}, {year: 2023, price: 456.78},
+            {year: 2024, price: 589.12}
+        ];
+
+        const bitcoinData = [
+            {year: 2009, price: 0}, {year: 2010, price: 0.08}, {year: 2011, price: 31},
+            {year: 2012, price: 200}, {year: 2013, price: 800}, {year: 2014, price: 320},
+            {year: 2015, price: 430}, {year: 2016, price: 975}, {year: 2017, price: 19783},
+            {year: 2018, price: 3742}, {year: 2019, price: 7200}, {year: 2020, price: 28949},
+            {year: 2021, price: 47686}, {year: 2022, price: 16547}, {year: 2023, price: 42267},
+            {year: 2024, price: 67321}
+        ];
+
+        const governmentPeriods = [
+            {start: 2001, end: 2009, label: 'Bush', color: 'rgba(220, 53, 69, 0.2)'},
+            {start: 2009, end: 2017, label: 'Obama', color: 'rgba(13, 110, 253, 0.2)'},
+            {start: 2017, end: 2021, label: 'Trump', color: 'rgba(255, 193, 7, 0.2)'},
+            {start: 2021, end: 2025, label: 'Biden', color: 'rgba(25, 135, 84, 0.2)'}
+        ];
+
+        let chart;
+        let activeDatasets = {nvidia: true, bitcoin: true, government: true};
+
+        function initChart() {
+            const ctx = document.getElementById('marketChart').getContext('2d');
+            
+            chart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: Array.from({length: 25}, (_, i) => 2000 + i),
+                    datasets: [
+                        {
+                            label: 'Nvidia (USD)',
+                            data: nvidiaData.map(d => d.price),
+                            borderColor: '#76b900',
+                            backgroundColor: 'rgba(118, 185, 0, 0.1)',
+                            borderWidth: 3,
+                            fill: false,
+                            tension: 0.4,
+                            yAxisID: 'y'
+                        },
+                        {
+                            label: 'Bitcoin (USD)',
+                            data: bitcoinData.map(d => d.price),
+                            borderColor: '#f39c12',
+                            backgroundColor: 'rgba(243, 156, 18, 0.1)',
+                            borderWidth: 3,
+                            fill: false,
+                            tension: 0.4,
+                            yAxisID: 'y1'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false,
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(0,0,0,0.8)',
+                            titleColor: '#fff',
+                            bodyColor: '#fff',
+                            borderColor: '#76b900',
+                            borderWidth: 1,
+                            callbacks: {
+                                label: function(context) {
+                                    if (context.datasetIndex === 0) {
+                                        return `Nvidia: $${context.parsed.y.toFixed(2)}`;
+                                    } else {
+                                        return `Bitcoin: $${context.parsed.y.toLocaleString()}`;
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: {
+                                color: 'rgba(255,255,255,0.1)'
+                            },
+                            ticks: {
+                                color: '#fff'
+                            }
+                        },
+                        y: {
+                            type: 'linear',
+                            display: true,
+                            position: 'left',
+                            grid: {
+                                color: 'rgba(255,255,255,0.1)'
+                            },
+                            ticks: {
+                                color: '#76b900',
+                                callback: function(value) {
+                                    return '$' + value;
+                                }
+                            },
+                            title: {
+                                display: true,
+                                text: 'Nvidia (USD)',
+                                color: '#76b900'
+                            }
+                        },
+                        y1: {
+                            type: 'linear',
+                            display: true,
+                            position: 'right',
+                            grid: {
+                                drawOnChartArea: false,
+                            },
+                            ticks: {
+                                color: '#f39c12',
+                                callback: function(value) {
+                                    return '$' + value.toLocaleString();
+                                }
+                            },
+                            title: {
+                                display: true,
+                                text: 'Bitcoin (USD)',
+                                color: '#f39c12'
+                            }
+                        }
+                    }
+                },
+                plugins: [{
+                    beforeDraw: function(chart) {
+                        if (activeDatasets.government) {
+                            const ctx = chart.ctx;
+                            const chartArea = chart.chartArea;
+                            
+                            governmentPeriods.forEach(period => {
+                                const xStart = chart.scales.x.getPixelForValue(period.start);
+                                const xEnd = chart.scales.x.getPixelForValue(period.end);
+                                
+                                ctx.save();
+                                ctx.fillStyle = period.color;
+                                ctx.fillRect(xStart, chartArea.top, xEnd - xStart, chartArea.bottom - chartArea.top);
+                                ctx.restore();
+                            });
+                        }
+                    }
+                }]
+            });
+        }
+
+        function toggleData(dataType) {
+            const button = event.target;
+            activeDatasets[dataType] = !activeDatasets[dataType];
+            
+            if (activeDatasets[dataType]) {
+                button.classList.add('active');
+            } else {
+                button.classList.remove('active');
+            }
+
+            if (dataType === 'nvidia') {
+                chart.data.datasets[0].hidden = !activeDatasets.nvidia;
+            } else if (dataType === 'bitcoin') {
+                chart.data.datasets[1].hidden = !activeDatasets.bitcoin;
+            }
+            
+            chart.update();
+        }
+
+        function toggleDetails(elementId) {
+            const details = document.getElementById(elementId);
+            if (details.style.display === 'none') {
+                details.style.display = 'block';
+            } else {
+                details.style.display = 'none';
+            }
+        }
+
+        // Inicializar gráfico cuando la página carga
+        window.addEventListener('load', function() {
+            initChart();
+        });
+
+        // Animaciones de entrada
+        window.addEventListener('scroll', function() {
+            const timelineItems = document.querySelectorAll('.timeline-item');
+            timelineItems.forEach(item => {
+                const rect = item.getBoundingClientRect();
+                if (rect.top < window.innerHeight * 0.8) {
+                    item.style.opacity = '1';
+                    item.style.transform = 'translateY(0)';
+                }
+            });
+        });
+
+        // Inicializar animaciones
+        document.addEventListener('DOMContentLoaded', function() {
+            const timelineItems = document.querySelectorAll('.timeline-item');
+            timelineItems.forEach(item => {
+                item.style.opacity = '0';
+                item.style.transform = 'translateY(30px)';
+                item.style.transition = 'all 0.6s ease';
+            });
+        });
+    </script>
+</body>
+</html>
