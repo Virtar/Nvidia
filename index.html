@@ -441,6 +441,9 @@
         ];
 
         const bitcoinData = [
+            {year: 2000, price: null}, {year: 2001, price: null}, {year: 2002, price: null},
+            {year: 2003, price: null}, {year: 2004, price: null}, {year: 2005, price: null},
+            {year: 2006, price: null}, {year: 2007, price: null}, {year: 2008, price: null},
             {year: 2009, price: 0}, {year: 2010, price: 0.08}, {year: 2011, price: 31},
             {year: 2012, price: 200}, {year: 2013, price: 800}, {year: 2014, price: 320},
             {year: 2015, price: 430}, {year: 2016, price: 975}, {year: 2017, price: 19783},
@@ -485,7 +488,8 @@
                             borderWidth: 3,
                             fill: false,
                             tension: 0.4,
-                            yAxisID: 'y1'
+                            yAxisID: 'y1',
+                            spanGaps: false
                         }
                     ]
                 },
@@ -510,9 +514,10 @@
                                 label: function(context) {
                                     if (context.datasetIndex === 0) {
                                         return `Nvidia: $${context.parsed.y.toFixed(2)}`;
-                                    } else {
+                                    } else if (context.datasetIndex === 1 && context.parsed.y !== null) {
                                         return `Bitcoin: $${context.parsed.y.toLocaleString()}`;
                                     }
+                                    return null;
                                 }
                             }
                         }
