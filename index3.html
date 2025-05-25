@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Ciberseguridad - Día 1</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid #667eea;
+        }
+
+        .header h1 {
+            color: #333;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .progress-container {
+            background: #f0f0f0;
+            border-radius: 25px;
+            height: 20px;
+            margin: 20px 0;
+            overflow: hidden;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #4CAF50, #45a049);
+            border-radius: 25px;
+            transition: width 0.5s ease;
+            width: 0%;
+        }
+
+        .question-container {
+            background: #f9f9f9;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 20px 0;
+            border-left: 5px solid #667eea;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .question {
+            font-size: 1.2em;
+            color: #333;
+            margin-bottom: 20px;
+            font-weight: 600;
+            line-height: 1.4;
+        }
+
+        .options {
+            display: grid;
+            gap: 12px;
+        }
+
+        .option {
+            background: #fff;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1em;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .option:hover {
+            border-color: #667eea;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.2);
+        }
+
+        .option.selected {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border-color: #667eea;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .option.correct {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+            border-color: #4CAF50;
+        }
+
+        .option.incorrect {
+            background: linear-gradient(135deg, #f44336, #d32f2f);
+            color: white;
+            border-color: #f44336;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 30px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .score-display {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 25px;
+            font-weight: bold;
+            font-size: 1.1em;
+            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+        }
+
+        .results {
+            text-align: center;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-top: 20px;
+        }
+
+        .results h2 {
+            font-size: 2em;
+            margin-bottom: 15px;
+        }
+
+        .results p {
+            font-size: 1.2em;
+            margin: 10px 0;
+        }
+
+        .question-number {
+            background: #667eea;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: bold;
+            display: inline-block;
+            margin-bottom: 15px;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+                margin: 10px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🛡️ Quiz de Ciberseguridad</h1>
+            <p>Día 1: Introducción a la Ciberseguridad</p>
+        </div>
+
+        <div class="progress-container">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+
+        <div id="quizContainer">
+            <div class="question-container">
+                <div class="question-number" id="questionNumber">Pregunta 1 de 30</div>
+                <div class="question" id="questionText"></div>
+                <div class="options" id="optionsContainer"></div>
+            </div>
+
+            <div class="controls">
+                <button class="btn" id="prevBtn" onclick="previousQuestion()">⬅️ Anterior</button>
+                <div class="score-display" id="scoreDisplay">Puntuación: 0/30</div>
+                <button class="btn" id="nextBtn" onclick="nextQuestion()">Siguiente ➡️</button>
+            </div>
+        </div>
+
+        <div id="resultsContainer" style="display: none;">
+            <div class="results">
+                <h2>🎉 ¡Quiz Completado!</h2>
+                <p id="finalScore"></p>
+                <p id="percentage"></p>
+                <p id="feedback"></p>
+                <button class="btn" onclick="restartQuiz()" style="margin-top: 20px;">🔄 Reintentar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            {
+                question: "¿Qué significa el término 'Ciberseguridad'?",
+                options: [
+                    "Protección de sistemas informáticos contra amenazas digitales",
+                    "Creación de software antivirus",
+                    "Desarrollo de páginas web seguras",
+                    "Instalación de hardware de red"
+                ],
+                correct: 0
+            },
+            {
+                question: "¿Cuál es el objetivo principal de la ciberseguridad?",
+                options: [
+                    "Aumentar la velocidad de internet",
+                    "Proteger la confidencialidad, integridad y disponibilidad de la información",
+                    "Crear más computadoras",
+                    "Reducir el costo de la tecnología"
+                ],
+                correct: 1
+            },
+            {
+                question: "¿Qué representa la 'C' en la tríada CIA de seguridad?",
+                options: [
+                    "Complejidad",
+                    "Control",
+                    "Confidencialidad",
+                    "Compatibilidad"
+                ],
+                correct: 2
+            },
+            {
+                question: "¿Qué es un 'activo' en el contexto de ciberseguridad?",
+                options: [
+                    "Un programa malicioso",
+                    "Cualquier recurso de valor para una organización que debe protegerse",
+                    "Un tipo de firewall",
+                    "Una contraseña segura"
+                ],
+                correct: 1
+            },
+            {
+                question: "¿Cuál es la diferencia entre una amenaza y una vulnerabilidad?",
+                options: [
+                    "No hay diferencia, son sinónimos",
+                    "Una amenaza es un peligro potencial, una vulnerabilidad es una debilidad",
+                    "Una vulnerabilidad es más peligrosa que una amenaza",
+                    "Las amenazas son internas, las vulnerabilidades son externas"
+                ],
+                correct: 1
+            },
+            {
+                question: "¿Qué es el 'riesgo' en ciberseguridad?",
+                options: [
+                    "La probabilidad de que una amenaza explote una vulnerabilidad",
+                    "El costo de comprar software de seguridad",
+                    "La velocidad de procesamiento de un sistema",
+                    "El número de usuarios en una red"
+                ],
+                correct: 0
+            },
+            {
+                question: "¿Cuál de estos NO es un tipo común de ciberataque?",
+                options: [
+                    "Phishing",
+                    "DDoS",
+                    "Ransomware",
+                    "Debugging"
+                ],
+                correct: 3
+            },
+            {
+                question: "¿Qué significa 'autenticación' en seguridad informática?",
+                options: [
+                    "Crear copias de respaldo",
+                    "Verificar la identidad de un usuario o sistema",
+                    "Cifrar información",
+                    "Detectar virus"
+                ],
+                correct: 1
+            },
+            {
+                question: "¿Cuál es el propósito de un firewall?",
+                options: [
+                    "Acelerar la conexión a internet",
+                    "Crear documentos seguros",
+                    "Controlar el tráfico de red entrante y saliente",
+                    "Almacenar contraseñas"
+                ],
+                correct: 2
+            },
+            {
+                question: "¿Qué es la 'ingeniería social' en ciberseguridad?",
+                options: [
+                    "Diseño de redes sociales",
+                    "Manipulación psicológica para obtener información confidencial",
+                    "Desarrollo de software social",
+                    "Construcción de sistemas seguros"
+                ],
+                correct: 1
+            },
+            {
+                question: "¿Cuál es una característica de una contraseña segura?",
+                options: [
+                    "Ser fácil de recordar y compartir",
+                    "Contener solo números",
+                    "Ser larga, compleja y única",
+                    "Ser igual para todas las cuentas"
+                ],
+                correct: 2
+            },
+            {
+                question: "¿Qué es el cifrado?",
+                options: [
+                    "Un método para comprimir archivos",
+                    "Una técnica para convertir información en código secreto",
+                    "Un tipo de virus informático",
+                    "Una forma de acelerar el procesamiento"
+                ],
+                correct: 1
+            },
+            {
+                question: "¿Cuál es el principio de 'menor privilegio'?",
+                options: [
+                    "Dar acceso mínimo necesario para realizar tareas",
+                    "Usar las contraseñas más cortas posibles",
+                    "Instalar solo software gratuito",
+                    "Conectarse solo a redes públicas"
+                ],
+                correct: 0
+            },
+            {
+                question: "¿Qué es un 'exploit'?",
+                options: [
+                    "Un tipo de antivirus",
+                    "Un código que aprovecha vulnerabilidades",
+                    "Una herramienta de cifrado",
+                    "Un protocolo de red"
+                ],
+                correct: 1
+            },
+            {
+                question: "¿Cuál es la importancia de las actualizaciones de software?",
+                options: [
+                    "Solo mejoran la apariencia",
+                    "Corrigen vulnerabilidades de seguridad",
+                    "Aumentan el costo del software",
+                    "Reducen la funcionalidad"
+                ],
+                correct: 1
+            },
+            {
+                question: "¿Qué es un 'honeypot' en ciberseguridad?",
+                options: [
+                    "Un tipo de dulce digital",
+                    "Una trampa para atraer y detectar atacantes",
+                    "Un programa de edición de fotos",
+                    "Una red social segura"
+                ],
+                correct: 1
+            },
+            {
+                question: "¿Cuál es el objetivo de un plan de respuesta a incidentes?",
+                options: [
+                    "Prevenir todos los ataques",
+                    "Responder de manera organizada cuando ocurre un incidente de seguridad",
+                    "Aumentar las ventas de la empresa",
+                    "Capacitar empleados en programación"
+                ],
+                correct: 1
+            },
+            {
+                question: "¿Qué es la 'disponibilidad' en la tríada CIA?",
+                options: [
+                    "La facilidad de usar un sistema",
+                    "El acceso autorizado a información cuando se necesita",
+                    "La velocidad de procesamiento",
+                    "El costo del sistema"
+                ],
+                correct: 1
+            },
+            {
+                question: "¿Cuál de estos es un ejemplo de autenticación de dos factores?",
+                options: [
+                    "Usar dos contraseñas diferentes",
+                    "Contraseña + código SMS",
+                    "Tener dos computadoras",
+                    "Usar dos navegadores"
+                ],
+                correct: 1
+            },
+            {
+                question: "¿Qué es un 'backdoor'?",
+                options: [
+                    "La puerta trasera de un edificio",
+                    "Un acceso secreto no autorizado a un sistema",
+                    "Un tipo de antivirus",
+                    "Una copia de seguridad"
+                ],
+                correct: 1
+            },
+            {
+                question: "¿Cuál es la importancia de la concienciación en ciberseguridad?",
+                options: [
+                    "No es importante",
+                    "Solo afecta a los técnicos",
+                    "Los usuarios son la primera línea de defensa",
+                    "Solo es relevante para gerentes"
+                ],
+                correct: 2
+            },
+            {
+                question: "¿Qué es la 'integridad' de los datos?",
+                options: [
+                    "La velocidad de acceso a los datos",
+                    "La garantía de que los datos no han sido alterados",
+                    "El tamaño de los archivos",
+                    "La ubicación de almacenamiento"
+                ],
+                correct: 1
+            },
+            {
+                question: "¿Cuál es una buena práctica para el uso de Wi-Fi público?",
+                options: [
+                    "Compartir contraseñas con otros usuarios",
+                    "Usar VPN y evitar transacciones sensibles",
+                    "Conectarse a cualquier red disponible",
+                    "Desactivar todas las medidas de seguridad"
+                ],
+                correct: 1
+            },
+            {
+                question: "¿Qué es un 'IDS'?",
+                options: [
+                    "Internet Download System",
+                    "Sistema de Detección de Intrusos",
+                    "Integrated Data Storage",
+                    "Internal Development Software"
+                ],
+                correct: 1
+            },
+            {
+                question: "¿Cuál es el propósito de realizar copias de seguridad?",
+                options: [
+                    "Aumentar la velocidad del sistema",
+                    "Recuperar datos en caso de pérdida o ataque",
+                    "Reducir el uso de memoria",
+                    "Mejorar la interfaz de usuario"
+                ],
+                correct: 1
+            },
+            {
+                question: "¿Qué es el 'social engineering'?",
+                options: [
+                    "Desarrollo de redes sociales",
+                    "Técnicas de manipulación para obtener información",
+                    "Ingeniería de software social",
+                    "Construcción de comunidades online"
+                ],
+                correct: 1
+            },
+            {
+                question: "¿Cuál es la diferencia entre HTTP y HTTPS?",
+                options: [
+                    "No hay diferencia",
+                    "HTTPS es una versión más nueva de HTTP",
+                    "HTTPS incluye cifrado para mayor seguridad",
+                    "HTTP es más rápido que HTTPS"
+                ],
+                correct: 2
+            },
+            {
+                question: "¿Qué es un 'zero-day'?",
+                options: [
+                    "Un día sin trabajo",
+                    "Una vulnerabilidad desconocida para los desarrolladores",
+                    "Un tipo de calendario",
+                    "Una herramienta de productividad"
+                ],
+                correct: 1
+            },
+            {
+                question: "¿Por qué es importante la gestión de parches?",
+                options: [
+                    "Para cambiar la apariencia del software",
+                    "Para corregir vulnerabilidades conocidas",
+                    "Para aumentar el precio del software",
+                    "Para reducir la funcionalidad"
+                ],
+                correct: 1
+            },
+            {
+                question: "¿Cuál es el primer paso en cualquier programa de ciberseguridad?",
+                options: [
+                    "Comprar el software más caro",
+                    "Contratar más personal técnico",
+                    "Evaluar y conocer los activos a proteger",
+                    "Instalar múltiples antivirus"
+                ],
+                correct: 2
+            }
+        ];
+
+        let currentQuestion = 0;
+        let score = 0;
+        let answers = new Array(questions.length).fill(null);
+
+        function displayQuestion() {
+            const question = questions[currentQuestion];
+            document.getElementById('questionNumber').textContent = `Pregunta ${currentQuestion + 1} de ${questions.length}`;
+            document.getElementById('questionText').textContent = question.question;
+            
+            const optionsContainer = document.getElementById('optionsContainer');
+            optionsContainer.innerHTML = '';
+            
+            question.options.forEach((option, index) => {
+                const optionDiv = document.createElement('div');
+                optionDiv.className = 'option';
+                optionDiv.textContent = option;
+                optionDiv.onclick = () => selectOption(index);
+                
+                if (answers[currentQuestion] === index) {
+                    optionDiv.classList.add('selected');
+                }
+                
+                optionsContainer.appendChild(optionDiv);
+            });
+            
+            updateProgress();
+            updateControls();
+        }
+
+        function selectOption(selectedIndex) {
+            answers[currentQuestion] = selectedIndex;
+            
+            const options = document.querySelectorAll('.option');
+            options.forEach((option, index) => {
+                option.classList.remove('selected');
+                if (index === selectedIndex) {
+                    option.classList.add('selected');
+                }
+            });
+        }
+
+        function nextQuestion() {
+            if (currentQuestion < questions.length - 1) {
+                currentQuestion++;
+                displayQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        function previousQuestion() {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                displayQuestion();
+            }
+        }
+
+        function updateProgress() {
+            const progress = ((currentQuestion + 1) / questions.length) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+        }
+
+        function updateControls() {
+            document.getElementById('prevBtn').disabled = currentQuestion === 0;
+            document.getElementById('nextBtn').textContent = 
+                currentQuestion === questions.length - 1 ? 'Finalizar 🏁' : 'Siguiente ➡️';
+        }
+
+        function calculateScore() {
+            score = 0;
+            for (let i = 0; i < questions.length; i++) {
+                if (answers[i] === questions[i].correct) {
+                    score++;
+                }
+            }
+            document.getElementById('scoreDisplay').textContent = `Puntuación: ${score}/${questions.length}`;
+        }
+
+        function showResults() {
+            calculateScore();
+            const percentage = Math.round((score / questions.length) * 100);
+            
+            document.getElementById('quizContainer').style.display = 'none';
+            document.getElementById('resultsContainer').style.display = 'block';
+            
+            document.getElementById('finalScore').textContent = `Puntuación Final: ${score}/${questions.length}`;
+            document.getElementById('percentage').textContent = `Porcentaje: ${percentage}%`;
+            
+            let feedback = '';
+            if (percentage >= 90) {
+                feedback = '🌟 ¡Excelente! Tienes una comprensión sólida de los fundamentos de ciberseguridad.';
+            } else if (percentage >= 70) {
+                feedback = '👍 ¡Buen trabajo! Tienes una base sólida, pero puedes mejorar algunos conceptos.';
+            } else if (percentage >= 50) {
+                feedback = '📚 Necesitas repasar algunos conceptos. ¡Sigue estudiando!';
+            } else {
+                feedback = '🔄 Te recomiendo revisar el material del día 1 antes de continuar.';
+            }
+            
+            document.getElementById('feedback').textContent = feedback;
+        }
+
+        function restartQuiz() {
+            currentQuestion = 0;
+            score = 0;
+            answers = new Array(questions.length).fill(null);
+            
+            document.getElementById('quizContainer').style.display = 'block';
+            document.getElementById('resultsContainer').style.display = 'none';
+            
+            displayQuestion();
+        }
+
+        // Inicializar el quiz
+        displayQuestion();
+
+        // Actualizar puntuación en tiempo real
+        setInterval(() => {
+            calculateScore();
+        }, 500);
+    </script>
+</body>
+</html>
