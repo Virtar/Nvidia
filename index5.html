@@ -1,460 +1,563 @@
-import React, { useState } from 'react';
-import { CheckCircle, XCircle, RefreshCw, BookOpen, Award } from 'lucide-react';
-
-const SecurityPlusQuiz = () => {
-  const questions = [
-    {
-      id: 1,
-      question: "¿Cuál de los siguientes NO es un principio de la tríada CIA en seguridad de la información?",
-      options: [
-        "Confidencialidad",
-        "Integridad", 
-        "Disponibilidad",
-        "Autenticación"
-      ],
-      correct: 3,
-      explanation: "La tríada CIA incluye Confidencialidad, Integridad y Disponibilidad. La Autenticación es importante pero no forma parte de esta tríada fundamental."
-    },
-    {
-      id: 2,
-      question: "¿Qué tipo de ataque utiliza múltiples sistemas comprometidos para atacar un objetivo?",
-      options: [
-        "Phishing",
-        "DDoS",
-        "Man-in-the-Middle",
-        "SQL Injection"
-      ],
-      correct: 1,
-      explanation: "Un ataque DDoS (Distributed Denial of Service) utiliza múltiples sistemas comprometidos (botnet) para atacar simultáneamente un objetivo."
-    },
-    {
-      id: 3,
-      question: "¿Cuál es el puerto estándar para HTTPS?",
-      options: [
-        "80",
-        "443",
-        "22",
-        "25"
-      ],
-      correct: 1,
-      explanation: "HTTPS utiliza el puerto 443 por defecto. HTTP usa el puerto 80, SSH el 22, y SMTP el 25."
-    },
-    {
-      id: 4,
-      question: "¿Qué algoritmo de hash es considerado obsoleto y vulnerable?",
-      options: [
-        "SHA-256",
-        "SHA-3",
-        "MD5",
-        "BLAKE2"
-      ],
-      correct: 2,
-      explanation: "MD5 es considerado obsoleto debido a vulnerabilidades de colisión descubiertas. SHA-256 y SHA-3 son algoritmos seguros actuales."
-    },
-    {
-      id: 5,
-      question: "¿Cuál de los siguientes describe mejor un honeypot?",
-      options: [
-        "Un sistema de backup",
-        "Un sistema señuelo para atraer atacantes",
-        "Un tipo de firewall",
-        "Un protocolo de encriptación"
-      ],
-      correct: 1,
-      explanation: "Un honeypot es un sistema señuelo diseñado para atraer atacantes y estudiar sus métodos, desviándolos de sistemas reales."
-    },
-    {
-      id: 6,
-      question: "¿Qué significa el principio de 'menor privilegio'?",
-      options: [
-        "Dar acceso mínimo necesario para realizar tareas",
-        "Restringir acceso solo a administradores",
-        "Permitir acceso completo a usuarios confiables",
-        "Rotar contraseñas frecuentemente"
-      ],
-      correct: 0,
-      explanation: "El principio de menor privilegio establece que los usuarios deben tener solo los permisos mínimos necesarios para realizar sus tareas."
-    },
-    {
-      id: 7,
-      question: "¿Cuál es la diferencia principal entre IDS e IPS?",
-      options: [
-        "IDS es más rápido que IPS",
-        "IPS puede bloquear ataques, IDS solo detecta",
-        "IDS trabaja en red, IPS en host",
-        "No hay diferencia significativa"
-      ],
-      correct: 1,
-      explanation: "IDS (Intrusion Detection System) solo detecta y alerta sobre ataques, mientras que IPS (Intrusion Prevention System) puede bloquearlos activamente."
-    },
-    {
-      id: 8,
-      question: "¿Qué protocolo proporciona autenticación y autorización centralizada?",
-      options: [
-        "LDAP",
-        "RADIUS",
-        "SNMP",
-        "DHCP"
-      ],
-      correct: 1,
-      explanation: "RADIUS (Remote Authentication Dial-In User Service) proporciona autenticación, autorización y contabilidad (AAA) centralizadas."
-    },
-    {
-      id: 9,
-      question: "¿Cuál de los siguientes es un ejemplo de autenticación multifactor?",
-      options: [
-        "Contraseña + PIN",
-        "Contraseña + token SMS",
-        "Huella dactilar + iris",
-        "Nombre de usuario + contraseña"
-      ],
-      correct: 1,
-      explanation: "MFA requiere factores de diferentes categorías: algo que sabes (contraseña) + algo que tienes (token SMS) constituye autenticación multifactor."
-    },
-    {
-      id: 10,
-      question: "¿Qué es un certificado digital?",
-      options: [
-        "Un archivo de backup encriptado",
-        "Un documento que vincula una clave pública con una identidad",
-        "Un tipo de firewall",
-        "Una contraseña compleja"
-      ],
-      correct: 1,
-      explanation: "Un certificado digital es un documento electrónico que vincula una clave pública con la identidad de su propietario, validado por una CA."
-    },
-    {
-      id: 11,
-      question: "¿Cuál es el propósito principal de la segmentación de red?",
-      options: [
-        "Aumentar la velocidad de red",
-        "Reducir costos",
-        "Limitar el alcance de brechas de seguridad",
-        "Simplificar la administración"
-      ],
-      correct: 2,
-      explanation: "La segmentación de red divide la red en segmentos para limitar el movimiento lateral de atacantes y contener brechas de seguridad."
-    },
-    {
-      id: 12,
-      question: "¿Qué tipo de malware se propaga automáticamente sin intervención del usuario?",
-      options: [
-        "Virus",
-        "Troyano",
-        "Gusano",
-        "Adware"
-      ],
-      correct: 2,
-      explanation: "Los gusanos se propagan automáticamente a través de redes sin requerir intervención del usuario, a diferencia de los virus que necesitan un host."
-    },
-    {
-      id: 13,
-      question: "¿Cuál es la función principal de un WAF?",
-      options: [
-        "Filtrar spam en email",
-        "Proteger aplicaciones web de ataques",
-        "Acelerar conexiones web",
-        "Comprimir archivos web"
-      ],
-      correct: 1,
-      explanation: "Un WAF (Web Application Firewall) protege aplicaciones web filtrando, monitoreando y bloqueando tráfico HTTP malicioso."
-    },
-    {
-      id: 14,
-      question: "¿Qué significa 'zero-day' en el contexto de vulnerabilidades?",
-      options: [
-        "Una vulnerabilidad sin impacto",
-        "Una vulnerabilidad conocida pero sin parche",
-        "Una vulnerabilidad que existe desde hace cero días",
-        "Una vulnerabilidad que se explota inmediatamente tras su descubrimiento"
-      ],
-      correct: 1,
-      explanation: "Una vulnerabilidad zero-day es una que es conocida pero para la cual no existe aún un parche o solución disponible."
-    },
-    {
-      id: 15,
-      question: "¿Cuál es el estándar más común para autenticación inalámbrica empresarial?",
-      options: [
-        "WEP",
-        "WPA",
-        "WPA2-Enterprise",
-        "WPS"
-      ],
-      correct: 2,
-      explanation: "WPA2-Enterprise (usando 802.1X/EAP) es el estándar más robusto para autenticación inalámbrica en entornos empresariales."
-    },
-    {
-      id: 16,
-      question: "¿Qué protocolo se usa comúnmente para transferencia segura de archivos?",
-      options: [
-        "FTP",
-        "HTTP",
-        "SFTP",
-        "SMTP"
-      ],
-      correct: 2,
-      explanation: "SFTP (SSH File Transfer Protocol) proporciona transferencia segura de archivos con encriptación, a diferencia del FTP tradicional."
-    },
-    {
-      id: 17,
-      question: "¿Cuál es el propósito de un plan de recuperación ante desastres (DRP)?",
-      options: [
-        "Prevenir todos los desastres",
-        "Restaurar operaciones críticas después de un incidente",
-        "Hacer backup de datos",
-        "Monitorear la red"
-      ],
-      correct: 1,
-      explanation: "Un DRP define los procedimientos para restaurar sistemas y operaciones críticas del negocio después de un desastre o incidente mayor."
-    },
-    {
-      id: 18,
-      question: "¿Qué es el 'social engineering'?",
-      options: [
-        "Programación de redes sociales",
-        "Manipulación psicológica para obtener información confidencial",
-        "Configuración de firewalls",
-        "Análisis de tráfico de red"
-      ],
-      correct: 1,
-      explanation: "La ingeniería social es la manipulación psicológica de personas para que divulguen información confidencial o realicen acciones que comprometan la seguridad."
-    },
-    {
-      id: 19,
-      question: "¿Cuál es la diferencia entre cifrado simétrico y asimétrico?",
-      options: [
-        "El simétrico es más rápido",
-        "El simétrico usa una clave, el asimétrico usa dos",
-        "El asimétrico es más seguro",
-        "No hay diferencia práctica"
-      ],
-      correct: 1,
-      explanation: "El cifrado simétrico usa una sola clave para cifrar y descifrar, mientras que el asimétrico usa un par de claves (pública y privada)."
-    },
-    {
-      id: 20,
-      question: "¿Qué es un SIEM?",
-      options: [
-        "Un tipo de antivirus",
-        "Sistema de gestión de eventos e información de seguridad",
-        "Un protocolo de red",
-        "Un método de encriptación"
-      ],
-      correct: 1,
-      explanation: "SIEM (Security Information and Event Management) es un sistema que agrega, analiza y correlaciona logs y eventos de seguridad en tiempo real."
-    }
-  ];
-
-  const [currentQuestion, setCurrentQuestion] = useState(0);
-  const [selectedAnswer, setSelectedAnswer] = useState(null);
-  const [showResult, setShowResult] = useState(false);
-  const [score, setScore] = useState(0);
-  const [answers, setAnswers] = useState([]);
-  const [quizCompleted, setQuizCompleted] = useState(false);
-
-  const handleAnswerSelect = (answerIndex) => {
-    setSelectedAnswer(answerIndex);
-  };
-
-  const handleNextQuestion = () => {
-    const isCorrect = selectedAnswer === questions[currentQuestion].correct;
-    const newAnswers = [...answers, {
-      questionId: questions[currentQuestion].id,
-      selected: selectedAnswer,
-      correct: questions[currentQuestion].correct,
-      isCorrect
-    }];
-    
-    setAnswers(newAnswers);
-    if (isCorrect) setScore(score + 1);
-    setShowResult(true);
-  };
-
-  const handleContinue = () => {
-    if (currentQuestion < questions.length - 1) {
-      setCurrentQuestion(currentQuestion + 1);
-      setSelectedAnswer(null);
-      setShowResult(false);
-    } else {
-      setQuizCompleted(true);
-    }
-  };
-
-  const resetQuiz = () => {
-    setCurrentQuestion(0);
-    setSelectedAnswer(null);
-    setShowResult(false);
-    setScore(0);
-    setAnswers([]);
-    setQuizCompleted(false);
-  };
-
-  const getScoreColor = (percentage) => {
-    if (percentage >= 80) return 'text-green-600';
-    if (percentage >= 60) return 'text-yellow-600';
-    return 'text-red-600';
-  };
-
-  const getScoreMessage = (percentage) => {
-    if (percentage >= 80) return '¡Excelente! Estás bien preparado para el examen.';
-    if (percentage >= 60) return 'Buen trabajo, pero sigue estudiando para mejorar.';
-    return 'Necesitas más preparación. Revisa los temas fundamentales.';
-  };
-
-  if (quizCompleted) {
-    const percentage = Math.round((score / questions.length) * 100);
-    return (
-      <div className="max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-lg">
-        <div className="text-center mb-8">
-          <Award className="w-16 h-16 mx-auto mb-4 text-blue-600" />
-          <h1 className="text-3xl font-bold text-gray-800 mb-2">¡Quiz Completado!</h1>
-          <div className={`text-4xl font-bold mb-2 ${getScoreColor(percentage)}`}>
-            {score}/{questions.length} ({percentage}%)
-          </div>
-          <p className="text-lg text-gray-600">{getScoreMessage(percentage)}</p>
-        </div>
-
-        <div className="mb-8">
-          <h2 className="text-xl font-semibold mb-4">Resumen de Respuestas:</h2>
-          <div className="space-y-3 max-h-96 overflow-y-auto">
-            {answers.map((answer, index) => (
-              <div key={index} className={`p-3 rounded-lg border-l-4 ${answer.isCorrect ? 'border-green-500 bg-green-50' : 'border-red-500 bg-red-50'}`}>
-                <div className="flex items-center mb-2">
-                  {answer.isCorrect ? (
-                    <CheckCircle className="w-5 h-5 text-green-600 mr-2" />
-                  ) : (
-                    <XCircle className="w-5 h-5 text-red-600 mr-2" />
-                  )}
-                  <span className="font-medium">Pregunta {index + 1}</span>
-                </div>
-                <p className="text-sm text-gray-700 mb-2">{questions[index].question}</p>
-                <div className="text-sm">
-                  <p className="text-gray-600">Tu respuesta: <span className={answer.isCorrect ? 'text-green-600' : 'text-red-600'}>{questions[index].options[answer.selected]}</span></p>
-                  {!answer.isCorrect && (
-                    <p className="text-gray-600">Respuesta correcta: <span className="text-green-600">{questions[index].options[answer.correct]}</span></p>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="text-center">
-          <button
-            onClick={resetQuiz}
-            className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200 inline-flex items-center"
-          >
-            <RefreshCw className="w-5 h-5 mr-2" />
-            Intentar de Nuevo
-          </button>
-        </div>
-      </div>
-    );
-  }
-
-  const question = questions[currentQuestion];
-
-  return (
-    <div className="max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-lg">
-      <div className="mb-6">
-        <div className="flex justify-between items-center mb-4">
-          <h1 className="text-2xl font-bold text-gray-800">CompTIA Security+ - Práctica</h1>
-          <div className="flex items-center text-gray-600">
-            <BookOpen className="w-5 h-5 mr-2" />
-            <span>{currentQuestion + 1} de {questions.length}</span>
-          </div>
-        </div>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CompTIA Security+ - Simulador de Práctica</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lucide/0.263.1/umd/lucide.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
         
-        <div className="w-full bg-gray-200 rounded-full h-2">
-          <div
-            className="bg-blue-600 h-2 rounded-full transition-all duration-300"
-            style={{ width: `${((currentQuestion + 1) / questions.length) * 100}%` }}
-          ></div>
-        </div>
-      </div>
-
-      {!showResult ? (
-        <div>
-          <div className="mb-8">
-            <h2 className="text-xl font-semibold text-gray-800 mb-6">
-              {question.question}
-            </h2>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            padding: 30px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            color: #2d3748;
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+        
+        .progress-container {
+            margin-bottom: 30px;
+        }
+        
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e2e8f0;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4f46e5, #7c3aed);
+            transition: width 0.3s ease;
+        }
+        
+        .question-container {
+            margin-bottom: 30px;
+        }
+        
+        .question {
+            font-size: 1.2rem;
+            color: #2d3748;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+        
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .option {
+            padding: 15px 20px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 1rem;
+        }
+        
+        .option:hover {
+            border-color: #cbd5e0;
+            background: #f7fafc;
+        }
+        
+        .option.selected {
+            border-color: #4f46e5;
+            background: #eef2ff;
+        }
+        
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .btn-primary {
+            background: #4f46e5;
+            color: white;
+        }
+        
+        .btn-primary:hover:not(:disabled) {
+            background: #3730a3;
+        }
+        
+        .btn:disabled {
+            background: #cbd5e0;
+            color: #a0aec0;
+            cursor: not-allowed;
+        }
+        
+        .result-container {
+            text-align: center;
+        }
+        
+        .result-icon {
+            width: 64px;
+            height: 64px;
+            margin: 0 auto 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .result-icon.correct {
+            background: #d1fae5;
+            color: #059669;
+        }
+        
+        .result-icon.incorrect {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+        
+        .result-title {
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+        }
+        
+        .result-title.correct { color: #059669; }
+        .result-title.incorrect { color: #dc2626; }
+        
+        .explanation {
+            background: #eff6ff;
+            border-left: 4px solid #3b82f6;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .explanation h4 {
+            color: #1e40af;
+            margin-bottom: 10px;
+        }
+        
+        .final-results {
+            text-align: center;
+        }
+        
+        .score-display {
+            font-size: 3rem;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+        
+        .score-excellent { color: #059669; }
+        .score-good { color: #d97706; }
+        .score-needs-work { color: #dc2626; }
+        
+        .summary {
+            max-height: 400px;
+            overflow-y: auto;
+            margin: 20px 0;
+        }
+        
+        .summary-item {
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            border-left: 4px solid;
+            text-align: left;
+        }
+        
+        .summary-item.correct {
+            background: #d1fae5;
+            border-color: #059669;
+        }
+        
+        .summary-item.incorrect {
+            background: #fee2e2;
+            border-color: #dc2626;
+        }
+        
+        .current-score {
+            text-align: center;
+            margin-top: 20px;
+            color: #6b7280;
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
             
-            <div className="space-y-3">
-              {question.options.map((option, index) => (
-                <button
-                  key={index}
-                  onClick={() => handleAnswerSelect(index)}
-                  className={`w-full p-4 text-left rounded-lg border-2 transition-all duration-200 ${
-                    selectedAnswer === index
-                      ? 'border-blue-500 bg-blue-50 text-blue-800'
-                      : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
-                  }`}
-                >
-                  <span className="font-medium mr-3">{String.fromCharCode(65 + index)}.</span>
-                  {option}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div className="text-center">
-            <button
-              onClick={handleNextQuestion}
-              disabled={selectedAnswer === null}
-              className={`py-3 px-8 rounded-lg font-semibold transition-colors duration-200 ${
-                selectedAnswer !== null
-                  ? 'bg-blue-600 hover:bg-blue-700 text-white'
-                  : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-              }`}
-            >
-              Confirmar Respuesta
-            </button>
-          </div>
+            .header h1 {
+                font-size: 1.5rem;
+            }
+            
+            .question {
+                font-size: 1.1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="app">
+            <!-- El contenido se generará con JavaScript -->
         </div>
-      ) : (
-        <div className="text-center">
-          <div className={`inline-flex items-center justify-center w-16 h-16 rounded-full mb-4 ${
-            selectedAnswer === question.correct ? 'bg-green-100' : 'bg-red-100'
-          }`}>
-            {selectedAnswer === question.correct ? (
-              <CheckCircle className="w-8 h-8 text-green-600" />
-            ) : (
-              <XCircle className="w-8 h-8 text-red-600" />
-            )}
-          </div>
-          
-          <h3 className={`text-2xl font-bold mb-4 ${
-            selectedAnswer === question.correct ? 'text-green-600' : 'text-red-600'
-          }`}>
-            {selectedAnswer === question.correct ? '¡Correcto!' : 'Incorrecto'}
-          </h3>
-          
-          {selectedAnswer !== question.correct && (
-            <p className="text-lg mb-4">
-              La respuesta correcta es: <strong>{question.options[question.correct]}</strong>
-            </p>
-          )}
-          
-          <div className="bg-blue-50 border-l-4 border-blue-500 p-4 mb-6 text-left">
-            <h4 className="font-semibold text-blue-800 mb-2">Explicación:</h4>
-            <p className="text-blue-700">{question.explanation}</p>
-          </div>
-          
-          <button
-            onClick={handleContinue}
-            className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-8 rounded-lg transition-colors duration-200"
-          >
-            {currentQuestion < questions.length - 1 ? 'Siguiente Pregunta' : 'Ver Resultados'}
-          </button>
-        </div>
-      )}
-      
-      <div className="mt-8 text-center text-gray-500 text-sm">
-        Puntuación actual: {score}/{currentQuestion + (showResult ? 1 : 0)} preguntas respondidas
-      </div>
     </div>
-  );
-};
 
-export default SecurityPlusQuiz;
+    <script>
+        const questions = [
+            {
+                id: 1,
+                question: "¿Cuál de los siguientes NO es un principio de la tríada CIA en seguridad de la información?",
+                options: ["Confidencialidad", "Integridad", "Disponibilidad", "Autenticación"],
+                correct: 3,
+                explanation: "La tríada CIA incluye Confidencialidad, Integridad y Disponibilidad. La Autenticación es importante pero no forma parte de esta tríada fundamental."
+            },
+            {
+                id: 2,
+                question: "¿Qué tipo de ataque utiliza múltiples sistemas comprometidos para atacar un objetivo?",
+                options: ["Phishing", "DDoS", "Man-in-the-Middle", "SQL Injection"],
+                correct: 1,
+                explanation: "Un ataque DDoS (Distributed Denial of Service) utiliza múltiples sistemas comprometidos (botnet) para atacar simultáneamente un objetivo."
+            },
+            {
+                id: 3,
+                question: "¿Cuál es el puerto estándar para HTTPS?",
+                options: ["80", "443", "22", "25"],
+                correct: 1,
+                explanation: "HTTPS utiliza el puerto 443 por defecto. HTTP usa el puerto 80, SSH el 22, y SMTP el 25."
+            },
+            {
+                id: 4,
+                question: "¿Qué algoritmo de hash es considerado obsoleto y vulnerable?",
+                options: ["SHA-256", "SHA-3", "MD5", "BLAKE2"],
+                correct: 2,
+                explanation: "MD5 es considerado obsoleto debido a vulnerabilidades de colisión descubiertas. SHA-256 y SHA-3 son algoritmos seguros actuales."
+            },
+            {
+                id: 5,
+                question: "¿Cuál de los siguientes describe mejor un honeypot?",
+                options: ["Un sistema de backup", "Un sistema señuelo para atraer atacantes", "Un tipo de firewall", "Un protocolo de encriptación"],
+                correct: 1,
+                explanation: "Un honeypot es un sistema señuelo diseñado para atraer atacantes y estudiar sus métodos, desviándolos de sistemas reales."
+            },
+            {
+                id: 6,
+                question: "¿Qué significa el principio de 'menor privilegio'?",
+                options: ["Dar acceso mínimo necesario para realizar tareas", "Restringir acceso solo a administradores", "Permitir acceso completo a usuarios confiables", "Rotar contraseñas frecuentemente"],
+                correct: 0,
+                explanation: "El principio de menor privilegio establece que los usuarios deben tener solo los permisos mínimos necesarios para realizar sus tareas."
+            },
+            {
+                id: 7,
+                question: "¿Cuál es la diferencia principal entre IDS e IPS?",
+                options: ["IDS es más rápido que IPS", "IPS puede bloquear ataques, IDS solo detecta", "IDS trabaja en red, IPS en host", "No hay diferencia significativa"],
+                correct: 1,
+                explanation: "IDS (Intrusion Detection System) solo detecta y alerta sobre ataques, mientras que IPS (Intrusion Prevention System) puede bloquearlos activamente."
+            },
+            {
+                id: 8,
+                question: "¿Qué protocolo proporciona autenticación y autorización centralizada?",
+                options: ["LDAP", "RADIUS", "SNMP", "DHCP"],
+                correct: 1,
+                explanation: "RADIUS (Remote Authentication Dial-In User Service) proporciona autenticación, autorización y contabilidad (AAA) centralizadas."
+            },
+            {
+                id: 9,
+                question: "¿Cuál de los siguientes es un ejemplo de autenticación multifactor?",
+                options: ["Contraseña + PIN", "Contraseña + token SMS", "Huella dactilar + iris", "Nombre de usuario + contraseña"],
+                correct: 1,
+                explanation: "MFA requiere factores de diferentes categorías: algo que sabes (contraseña) + algo que tienes (token SMS) constituye autenticación multifactor."
+            },
+            {
+                id: 10,
+                question: "¿Qué es un certificado digital?",
+                options: ["Un archivo de backup encriptado", "Un documento que vincula una clave pública con una identidad", "Un tipo de firewall", "Una contraseña compleja"],
+                correct: 1,
+                explanation: "Un certificado digital es un documento electrónico que vincula una clave pública con la identidad de su propietario, validado por una CA."
+            },
+            {
+                id: 11,
+                question: "¿Cuál es el propósito principal de la segmentación de red?",
+                options: ["Aumentar la velocidad de red", "Reducir costos", "Limitar el alcance de brechas de seguridad", "Simplificar la administración"],
+                correct: 2,
+                explanation: "La segmentación de red divide la red en segmentos para limitar el movimiento lateral de atacantes y contener brechas de seguridad."
+            },
+            {
+                id: 12,
+                question: "¿Qué tipo de malware se propaga automáticamente sin intervención del usuario?",
+                options: ["Virus", "Troyano", "Gusano", "Adware"],
+                correct: 2,
+                explanation: "Los gusanos se propagan automáticamente a través de redes sin requerir intervención del usuario, a diferencia de los virus que necesitan un host."
+            },
+            {
+                id: 13,
+                question: "¿Cuál es la función principal de un WAF?",
+                options: ["Filtrar spam en email", "Proteger aplicaciones web de ataques", "Acelerar conexiones web", "Comprimir archivos web"],
+                correct: 1,
+                explanation: "Un WAF (Web Application Firewall) protege aplicaciones web filtrando, monitoreando y bloqueando tráfico HTTP malicioso."
+            },
+            {
+                id: 14,
+                question: "¿Qué significa 'zero-day' en el contexto de vulnerabilidades?",
+                options: ["Una vulnerabilidad sin impacto", "Una vulnerabilidad conocida pero sin parche", "Una vulnerabilidad que existe desde hace cero días", "Una vulnerabilidad que se explota inmediatamente tras su descubrimiento"],
+                correct: 1,
+                explanation: "Una vulnerabilidad zero-day es una que es conocida pero para la cual no existe aún un parche o solución disponible."
+            },
+            {
+                id: 15,
+                question: "¿Cuál es el estándar más común para autenticación inalámbrica empresarial?",
+                options: ["WEP", "WPA", "WPA2-Enterprise", "WPS"],
+                correct: 2,
+                explanation: "WPA2-Enterprise (usando 802.1X/EAP) es el estándar más robusto para autenticación inalámbrica en entornos empresariales."
+            },
+            {
+                id: 16,
+                question: "¿Qué protocolo se usa comúnmente para transferencia segura de archivos?",
+                options: ["FTP", "HTTP", "SFTP", "SMTP"],
+                correct: 2,
+                explanation: "SFTP (SSH File Transfer Protocol) proporciona transferencia segura de archivos con encriptación, a diferencia del FTP tradicional."
+            },
+            {
+                id: 17,
+                question: "¿Cuál es el propósito de un plan de recuperación ante desastres (DRP)?",
+                options: ["Prevenir todos los desastres", "Restaurar operaciones críticas después de un incidente", "Hacer backup de datos", "Monitorear la red"],
+                correct: 1,
+                explanation: "Un DRP define los procedimientos para restaurar sistemas y operaciones críticas del negocio después de un desastre o incidente mayor."
+            },
+            {
+                id: 18,
+                question: "¿Qué es el 'social engineering'?",
+                options: ["Programación de redes sociales", "Manipulación psicológica para obtener información confidencial", "Configuración de firewalls", "Análisis de tráfico de red"],
+                correct: 1,
+                explanation: "La ingeniería social es la manipulación psicológica de personas para que divulguen información confidencial o realicen acciones que comprometan la seguridad."
+            },
+            {
+                id: 19,
+                question: "¿Cuál es la diferencia entre cifrado simétrico y asimétrico?",
+                options: ["El simétrico es más rápido", "El simétrico usa una clave, el asimétrico usa dos", "El asimétrico es más seguro", "No hay diferencia práctica"],
+                correct: 1,
+                explanation: "El cifrado simétrico usa una sola clave para cifrar y descifrar, mientras que el asimétrico usa un par de claves (pública y privada)."
+            },
+            {
+                id: 20,
+                question: "¿Qué es un SIEM?",
+                options: ["Un tipo de antivirus", "Sistema de gestión de eventos e información de seguridad", "Un protocolo de red", "Un método de encriptación"],
+                correct: 1,
+                explanation: "SIEM (Security Information and Event Management) es un sistema que agrega, analiza y correlaciona logs y eventos de seguridad en tiempo real."
+            }
+        ];
+
+        let currentQuestion = 0;
+        let selectedAnswer = null;
+        let showResult = false;
+        let score = 0;
+        let answers = [];
+        let quizCompleted = false;
+
+        function render() {
+            const app = document.getElementById('app');
+            
+            if (quizCompleted) {
+                const percentage = Math.round((score / questions.length) * 100);
+                const scoreClass = percentage >= 80 ? 'score-excellent' : 
+                                 percentage >= 60 ? 'score-good' : 'score-needs-work';
+                const message = percentage >= 80 ? '¡Excelente! Estás bien preparado para el examen.' :
+                               percentage >= 60 ? 'Buen trabajo, pero sigue estudiando para mejorar.' :
+                               'Necesitas más preparación. Revisa los temas fundamentales.';
+                
+                app.innerHTML = `
+                    <div class="final-results">
+                        <div class="header">
+                            <h1>¡Quiz Completado!</h1>
+                            <div class="score-display ${scoreClass}">
+                                ${score}/${questions.length} (${percentage}%)
+                            </div>
+                            <p style="font-size: 1.1rem; color: #6b7280;">${message}</p>
+                        </div>
+                        
+                        <h2 style="margin-bottom: 20px;">Resumen de Respuestas:</h2>
+                        <div class="summary">
+                            ${answers.map((answer, index) => `
+                                <div class="summary-item ${answer.isCorrect ? 'correct' : 'incorrect'}">
+                                    <div style="font-weight: 600; margin-bottom: 8px;">
+                                        ${answer.isCorrect ? '✓' : '✗'} Pregunta ${index + 1}
+                                    </div>
+                                    <p style="margin-bottom: 8px; font-size: 0.9rem;">${questions[index].question}</p>
+                                    <p style="font-size: 0.85rem; color: #6b7280;">
+                                        Tu respuesta: <span style="color: ${answer.isCorrect ? '#059669' : '#dc2626'}">${questions[index].options[answer.selected]}</span>
+                                    </p>
+                                    ${!answer.isCorrect ? `
+                                        <p style="font-size: 0.85rem; color: #6b7280;">
+                                            Respuesta correcta: <span style="color: #059669">${questions[index].options[answer.correct]}</span>
+                                        </p>
+                                    ` : ''}
+                                </div>
+                            `).join('')}
+                        </div>
+                        
+                        <button class="btn btn-primary" onclick="resetQuiz()">
+                            🔄 Intentar de Nuevo
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+
+            const question = questions[currentQuestion];
+            const progress = ((currentQuestion + 1) / questions.length) * 100;
+
+            if (!showResult) {
+                app.innerHTML = `
+                    <div class="header">
+                        <h1>CompTIA Security+ - Práctica</h1>
+                    </div>
+                    
+                    <div class="progress-container">
+                        <div class="progress-info">
+                            <span>📚 Pregunta ${currentQuestion + 1} de ${questions.length}</span>
+                            <span>${Math.round(progress)}%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: ${progress}%"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="question-container">
+                        <h2 class="question">${question.question}</h2>
+                        
+                        <div class="options">
+                            ${question.options.map((option, index) => `
+                                <div class="option ${selectedAnswer === index ? 'selected' : ''}" 
+                                     onclick="selectAnswer(${index})">
+                                    <strong>${String.fromCharCode(65 + index)}.</strong> ${option}
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                    
+                    <div style="text-align: center;">
+                        <button class="btn btn-primary" 
+                                ${selectedAnswer === null ? 'disabled' : ''} 
+                                onclick="submitAnswer()">
+                            Confirmar Respuesta
+                        </button>
+                    </div>
+                    
+                    <div class="current-score">
+                        Puntuación actual: ${score}/${currentQuestion} preguntas respondidas
+                    </div>
+                `;
+            } else {
+                const isCorrect = selectedAnswer === question.correct;
+                app.innerHTML = `
+                    <div class="result-container">
+                        <div class="result-icon ${isCorrect ? 'correct' : 'incorrect'}">
+                            ${isCorrect ? '✓' : '✗'}
+                        </div>
+                        
+                        <h3 class="result-title ${isCorrect ? 'correct' : 'incorrect'}">
+                            ${isCorrect ? '¡Correcto!' : 'Incorrecto'}
+                        </h3>
+                        
+                        ${!isCorrect ? `
+                            <p style="font-size: 1.1rem; margin-bottom: 20px;">
+                                La respuesta correcta es: <strong>${question.options[question.correct]}</strong>
+                            </p>
+                        ` : ''}
+                        
+                        <div class="explanation">
+                            <h4>Explicación:</h4>
+                            <p>${question.explanation}</p>
+                        </div>
+                        
+                        <button class="btn btn-primary" onclick="nextQuestion()">
+                            ${currentQuestion < questions.length - 1 ? 'Siguiente Pregunta' : 'Ver Resultados'}
+                        </button>
+                    </div>
+                `;
+            }
+        }
+
+        function selectAnswer(index) {
+            selectedAnswer = index;
+            render();
+        }
+
+        function submitAnswer() {
+            if (selectedAnswer === null) return;
+            
+            const isCorrect = selectedAnswer === questions[currentQuestion].correct;
+            answers.push({
+                questionId: questions[currentQuestion].id,
+                selected: selectedAnswer,
+                correct: questions[currentQuestion].correct,
+                isCorrect: isCorrect
+            });
+            
+            if (isCorrect) score++;
+            showResult = true;
+            render();
+        }
+
+        function nextQuestion() {
+            if (currentQuestion < questions.length - 1) {
+                currentQuestion++;
+                selectedAnswer = null;
+                showResult = false;
+                render();
+            } else {
+                quizCompleted = true;
+                render();
+            }
+        }
+
+        function resetQuiz() {
+            currentQuestion = 0;
+            selectedAnswer = null;
+            showResult = false;
+            score = 0;
+            answers = [];
+            quizCompleted = false;
+            render();
+        }
+
+        // Inicializar la aplicación
+        render();
+    </script>
+</body>
+</html>
