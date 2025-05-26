@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comparativo de Costos de IA</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #2d3748;
+            margin-bottom: 10px;
+            font-size: 2.2em;
+        }
+        .subtitle {
+            text-align: center;
+            color: #718096;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+        .calculation-info {
+            background: #f7fafc;
+            border-left: 4px solid #4299e1;
+            padding: 20px;
+            margin-bottom: 30px;
+            border-radius: 8px;
+        }
+        .calculation-info h3 {
+            margin-top: 0;
+            color: #2d3748;
+        }
+        .calc-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        .calc-item {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+        }
+        .calc-item strong {
+            color: #4299e1;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+        th {
+            background: linear-gradient(135deg, #4299e1, #3182ce);
+            color: white;
+            padding: 18px 12px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.95em;
+        }
+        td {
+            padding: 16px 12px;
+            border-bottom: 1px solid #e2e8f0;
+            vertical-align: middle;
+        }
+        tr:hover {
+            background-color: #f8fafc;
+            transform: scale(1.01);
+            transition: all 0.2s ease;
+        }
+        .provider {
+            font-weight: 600;
+            color: #2d3748;
+        }
+        .model {
+            color: #4a5568;
+            font-size: 0.9em;
+        }
+        .price {
+            font-weight: 700;
+            font-size: 1.1em;
+        }
+        .tier-free { color: #38a169; }
+        .tier-cheap { color: #3182ce; }
+        .tier-mid { color: #d69e2e; }
+        .tier-expensive { color: #e53e3e; }
+        
+        .highlight-box {
+            background: linear-gradient(135deg, #f0fff4, #c6f6d5);
+            border: 2px solid #38a169;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        .highlight-box h3 {
+            color: #22543d;
+            margin-bottom: 10px;
+        }
+        
+        .notes {
+            background: #fffaf0;
+            border: 1px solid #feb2b2;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        .notes h3 {
+            color: #c53030;
+            margin-top: 0;
+        }
+        .notes ul {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+        .notes li {
+            margin: 8px 0;
+            color: #744210;
+        }
+
+        @media (max-width: 768px) {
+            body { padding: 10px; }
+            .container { padding: 20px; }
+            table { font-size: 0.9em; }
+            th, td { padding: 12px 8px; }
+            h1 { font-size: 1.8em; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🤖 Comparativo de Costos de IA</h1>
+        <p class="subtitle">Procesamiento de 500 líneas de texto (Arial 12, A4)</p>
+        
+        <div class="calculation-info">
+            <h3>📊 Cálculo Base del Texto</h3>
+            <div class="calc-details">
+                <div class="calc-item">
+                    <strong>Líneas:</strong> 500
+                </div>
+                <div class="calc-item">
+                    <strong>Palabras aprox:</strong> 5,000
+                </div>
+                <div class="calc-item">
+                    <strong>Caracteres aprox:</strong> 30,000
+                </div>
+                <div class="calc-item">
+                    <strong>Tokens estimados:</strong> 6,500
+                </div>
+            </div>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Proveedor</th>
+                    <th>Modelo</th>
+                    <th>Precio Entrada</th>
+                    <th>Precio Salida</th>
+                    <th>Costo Solo Entrada</th>
+                    <th>Costo Conversación*</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="provider">🆓 Hugging Face</td>
+                    <td class="model">Modelos Open Source</td>
+                    <td class="tier-free">GRATIS</td>
+                    <td class="tier-free">GRATIS</td>
+                    <td class="price tier-free">$0.000</td>
+                    <td class="price tier-free">$0.000</td>
+                </tr>
+                <tr>
+                    <td class="provider">🤗 HF Inference API</td>
+                    <td class="model">Límite: 30K chars/mes</td>
+                    <td class="tier-free">GRATIS</td>
+                    <td class="tier-free">GRATIS</td>
+                    <td class="price tier-free">$0.000</td>
+                    <td class="price tier-free">$0.000</td>
+                </tr>
+                <tr>
+                    <td class="provider">🔥 Together AI</td>
+                    <td class="model">Llama-3.1-70B</td>
+                    <td class="tier-cheap">$0.88/1M</td>
+                    <td class="tier-cheap">$0.88/1M</td>
+                    <td class="price tier-cheap">$0.006</td>
+                    <td class="price tier-cheap">$0.017</td>
+                </tr>
+                <tr>
+                    <td class="provider">🤖 Google</td>
+                    <td class="model">Gemini 1.5 Flash</td>
+                    <td class="tier-cheap">$0.075/1M</td>
+                    <td class="tier-cheap">$0.30/1M</td>
+                    <td class="price tier-cheap">$0.0005</td>
+                    <td class="price tier-cheap">$0.003</td>
+                </tr>
+                <tr>
+                    <td class="provider">🔀 Replicate</td>
+                    <td class="model">Llama-3.1-8B</td>
+                    <td class="tier-cheap">~$0.05/1M</td>
+                    <td class="tier-cheap">~$0.25/1M</td>
+                    <td class="price tier-cheap">$0.0003</td>
+                    <td class="price tier-cheap">$0.002</td>
+                </tr>
+                <tr>
+                    <td class="provider">🟡 OpenAI</td>
+                    <td class="model">GPT-4o mini</td>
+                    <td class="tier-cheap">$0.15/1M</td>
+                    <td class="tier-cheap">$0.60/1M</td>
+                    <td class="price tier-cheap">$0.001</td>
+                    <td class="price tier-cheap">$0.005</td>
+                </tr>
+                <tr>
+                    <td class="provider">🧠 Anthropic</td>
+                    <td class="model">Claude 3 Haiku</td>
+                    <td class="tier-cheap">$0.25/1M</td>
+                    <td class="tier-cheap">$1.25/1M</td>
+                    <td class="price tier-cheap">$0.002</td>
+                    <td class="price tier-cheap">$0.012</td>
+                </tr>
+                <tr>
+                    <td class="provider">🤖 Google</td>
+                    <td class="model">Gemini 1.5 Pro</td>
+                    <td class="tier-mid">$3.50/1M</td>
+                    <td class="tier-mid">$10.50/1M</td>
+                    <td class="price tier-mid">$0.023</td>
+                    <td class="price tier-mid">$0.091</td>
+                </tr>
+                <tr>
+                    <td class="provider">🧠 Anthropic</td>
+                    <td class="model">Claude 3.5 Sonnet</td>
+                    <td class="tier-mid">$3.00/1M</td>
+                    <td class="tier-mid">$15.00/1M</td>
+                    <td class="price tier-mid">$0.020</td>
+                    <td class="price tier-mid">$0.117</td>
+                </tr>
+                <tr>
+                    <td class="provider">🟡 OpenAI</td>
+                    <td class="model">GPT-4o</td>
+                    <td class="tier-mid">$5.00/1M</td>
+                    <td class="tier-mid">$15.00/1M</td>
+                    <td class="price tier-mid">$0.033</td>
+                    <td class="price tier-mid">$0.130</td>
+                </tr>
+                <tr>
+                    <td class="provider">🧠 Anthropic</td>
+                    <td class="model">Claude 3 Opus</td>
+                    <td class="tier-expensive">$15.00/1M</td>
+                    <td class="tier-expensive">$75.00/1M</td>
+                    <td class="price tier-expensive">$0.098</td>
+                    <td class="price tier-expensive">$0.585</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="highlight-box">
+            <h3>🏆 Mejor Opción para tu Caso</h3>
+            <p><strong>Hugging Face (modelos locales)</strong> - Completamente GRATIS si tienes el hardware</p>
+            <p><strong>Together AI o Gemini Flash</strong> - Mejor relación calidad-precio para uso en la nube</p>
+        </div>
+
+        <div class="notes">
+            <h3>⚠️ Notas Importantes</h3>
+            <ul>
+                <li><strong>Costo Conversación*:</strong> Incluye respuesta típica de 1,500 tokens del modelo</li>
+                <li><strong>Precios actualizados:</strong> Enero 2025 - pueden haber cambiado</li>
+                <li><strong>Tokens estimados:</strong> Basado en texto en español promedio</li>
+                <li><strong>Hugging Face gratis:</strong> Requiere tu propio hardware (GPU recomendada)</li>
+                <li><strong>APIs gratuitas:</strong> Tienen límites mensuales y de velocidad</li>
+                <li><strong>Calidad variable:</strong> Modelos más baratos pueden dar respuestas menos precisas</li>
+                <li><strong>Contexto:</strong> Algunos modelos manejan mejor textos largos que otros</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>
