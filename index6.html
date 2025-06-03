@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checklist Machine Learning - Evaluación Profesional</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(45deg, #2196F3, #21CBF3);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="20" cy="20" r="2" fill="rgba(255,255,255,0.1)"/><circle cx="80" cy="80" r="2" fill="rgba(255,255,255,0.1)"/><circle cx="60" cy="30" r="1" fill="rgba(255,255,255,0.1)"/></svg>');
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+            position: relative;
+            z-index: 1;
+        }
+
+        .progress-bar {
+            background: rgba(255, 255, 255, 0.2);
+            height: 6px;
+            border-radius: 3px;
+            margin-top: 20px;
+            overflow: hidden;
+            position: relative;
+            z-index: 1;
+        }
+
+        .progress-fill {
+            background: #4CAF50;
+            height: 100%;
+            width: 0%;
+            border-radius: 3px;
+            transition: width 0.3s ease;
+        }
+
+        .main-content {
+            padding: 40px;
+        }
+
+        .section {
+            margin-bottom: 40px;
+            border-radius: 15px;
+            background: white;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+
+        .section:hover {
+            transform: translateY(-2px);
+        }
+
+        .section-header {
+            background: linear-gradient(45deg, #FF6B6B, #FF8E8E);
+            color: white;
+            padding: 20px;
+            font-size: 1.4em;
+            font-weight: bold;
+        }
+
+        .section-content {
+            padding: 25px;
+        }
+
+        .checklist-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            margin: 8px 0;
+            border-radius: 10px;
+            border: 2px solid #f0f0f0;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .checklist-item::before {
+            content: '';
+            position: absolute;
+            left: -100%;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(33, 150, 243, 0.1), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .checklist-item:hover::before {
+            left: 100%;
+        }
+
+        .checklist-item:hover {
+            border-color: #2196F3;
+            background-color: #f8f9ff;
+            transform: translateX(5px);
+        }
+
+        .checklist-item.completed {
+            background-color: #e8f5e8;
+            border-color: #4CAF50;
+        }
+
+        .checklist-item input[type="checkbox"] {
+            margin-right: 15px;
+            transform: scale(1.2);
+            cursor: pointer;
+        }
+
+        .checklist-item label {
+            cursor: pointer;
+            font-size: 1.1em;
+            line-height: 1.4;
+            flex: 1;
+        }
+
+        .interview-section {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            margin-top: 40px;
+            border-radius: 15px;
+            padding: 30px;
+        }
+
+        .interview-question {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .interview-question h4 {
+            color: #FFD700;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .stats {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .main-content {
+                padding: 20px;
+            }
+            
+            .stats {
+                position: static;
+                margin-bottom: 20px;
+            }
+        }
+
+        .celebration {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            z-index: 2000;
+            text-align: center;
+        }
+
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1500;
+        }
+    </style>
+</head>
+<body>
+    <div class="overlay" id="overlay"></div>
+    
+    <div class="stats" id="stats">
+        <strong>Progreso:</strong><br>
+        <span id="completed">0</span> / <span id="total">0</span> completados<br>
+        <span id="percentage">0%</span>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h1>🤖 Machine Learning Checklist</h1>
+            <p>Evaluación de Conocimientos Profesionales</p>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="section">
+                <div class="section-header">📊 Fundamentos Matemáticos</div>
+                <div class="section-content">
+                    <div class="checklist-item">
+                        <input type="checkbox" id="algebra">
+                        <label for="algebra">Álgebra Lineal (vectores, matrices, eigenvalores)</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="calculus">
+                        <label for="calculus">Cálculo Diferencial (derivadas, gradientes)</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="statistics">
+                        <label for="statistics">Estadística y Probabilidad</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="optimization">
+                        <label for="optimization">Optimización Matemática</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-header">💻 Programación y Herramientas</div>
+                <div class="section-content">
+                    <div class="checklist-item">
+                        <input type="checkbox" id="python">
+                        <label for="python">Python (Numpy, Pandas, Matplotlib)</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="sklearn">
+                        <label for="sklearn">Scikit-learn</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="tensorflow">
+                        <label for="tensorflow">TensorFlow/Keras o PyTorch</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="sql">
+                        <label for="sql">SQL y manejo de bases de datos</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="git">
+                        <label for="git">Git y control de versiones</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-header">🧠 Algoritmos de Machine Learning</div>
+                <div class="section-content">
+                    <div class="checklist-item">
+                        <input type="checkbox" id="supervised">
+                        <label for="supervised">Aprendizaje Supervisado (regresión, clasificación)</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="unsupervised">
+                        <label for="unsupervised">Aprendizaje No Supervisado (clustering, PCA)</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="neural">
+                        <label for="neural">Redes Neuronales y Deep Learning</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="ensemble">
+                        <label for="ensemble">Métodos de Ensemble (Random Forest, XGBoost)</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="validation">
+                        <label for="validation">Validación Cruzada y Métricas de Evaluación</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-header">🔄 MLOps y Producción</div>
+                <div class="section-content">
+                    <div class="checklist-item">
+                        <input type="checkbox" id="preprocessing">
+                        <label for="preprocessing">Preprocesamiento y Feature Engineering</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="deployment">
+                        <label for="deployment">Despliegue de modelos (API, Docker)</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="monitoring">
+                        <label for="monitoring">Monitoreo y mantenimiento de modelos</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="cloud">
+                        <label for="cloud">Plataformas en la nube (AWS, GCP, Azure)</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="interview-section">
+                <h3>🎯 Preguntas de Entrevista - Evaluación Profesional</h3>
+                
+                <div class="interview-question">
+                    <h4>Pregunta 1: Fundamentos Técnicos</h4>
+                    <p><strong>Explica la diferencia entre bias y variance en machine learning. ¿Cómo afectan al rendimiento del modelo y qué estrategias usarías para balancearlos?</strong></p>
+                    <p><em>Esta pregunta evalúa: Comprensión teórica fundamental, capacidad de análisis y conocimiento de trade-offs en ML.</em></p>
+                </div>
+
+                <div class="interview-question">
+                    <h4>Pregunta 2: Aplicación Práctica</h4>
+                    <p><strong>Tienes un dataset con 100,000 registros donde solo el 2% pertenece a la clase positiva. ¿Qué técnicas aplicarías para manejar este desbalance de clases y cómo evaluarías el rendimiento del modelo?</strong></p>
+                    <p><em>Esta pregunta evalúa: Experiencia práctica, conocimiento de técnicas específicas y criterio para seleccionar métricas apropiadas.</em></p>
+                </div>
+
+                <div class="interview-question">
+                    <h4>Pregunta 3: Pensamiento Crítico</h4>
+                    <p><strong>Un modelo que desarrollaste muestra excelente performance en validación (95% accuracy) pero solo 70% en producción. ¿Cuáles serían las posibles causas y cómo investigarías y solucionarías este problema?</strong></p>
+                    <p><em>Esta pregunta evalúa: Capacidad de debugging, conocimiento de MLOps, experiencia en producción y pensamiento sistemático para resolver problemas.</em></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="celebration" id="celebration">
+        <h2>🎉 ¡Felicitaciones!</h2>
+        <p>Has completado todos los conocimientos de Machine Learning</p>
+        <button onclick="hideCelebration()" style="margin-top: 15px; padding: 10px 20px; background: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer;">Continuar</button>
+    </div>
+
+    <script>
+        // Variables globales
+        let totalItems = 0;
+        let completedItems = 0;
+
+        // Inicializar la aplicación
+        function init() {
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            totalItems = checkboxes.length;
+            
+            // Agregar event listeners
+            checkboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', updateProgress);
+                
+                // Agregar funcionalidad de click en toda la fila
+                const item = checkbox.closest('.checklist-item');
+                item.addEventListener('click', function(e) {
+                    if (e.target !== checkbox) {
+                        checkbox.checked = !checkbox.checked;
+                        updateProgress();
+                    }
+                });
+            });
+
+            updateProgress();
+        }
+
+        // Actualizar progreso
+        function updateProgress() {
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            completedItems = 0;
+
+            checkboxes.forEach(checkbox => {
+                const item = checkbox.closest('.checklist-item');
+                
+                if (checkbox.checked) {
+                    completedItems++;
+                    item.classList.add('completed');
+                } else {
+                    item.classList.remove('completed');
+                }
+            });
+
+            const percentage = Math.round((completedItems / totalItems) * 100);
+            
+            // Actualizar UI
+            document.getElementById('completed').textContent = completedItems;
+            document.getElementById('total').textContent = totalItems;
+            document.getElementById('percentage').textContent = percentage + '%';
+            document.getElementById('progressFill').style.width = percentage + '%';
+
+            // Mostrar celebración si está completo
+            if (completedItems === totalItems && totalItems > 0) {
+                showCelebration();
+            }
+
+            // Animación de progreso
+            animateProgress();
+        }
+
+        // Animación del progreso
+        function animateProgress() {
+            const progressFill = document.getElementById('progressFill');
+            progressFill.style.transition = 'width 0.5s ease-in-out';
+        }
+
+        // Mostrar celebración
+        function showCelebration() {
+            document.getElementById('overlay').style.display = 'block';
+            document.getElementById('celebration').style.display = 'block';
+            
+            // Efecto de confetti (simulado con CSS)
+            createConfetti();
+        }
+
+        // Ocultar celebración
+        function hideCelebration() {
+            document.getElementById('overlay').style.display = 'none';
+            document.getElementById('celebration').style.display = 'none';
+        }
+
+        // Crear efecto confetti
+        function createConfetti() {
+            const colors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#f9ca24', '#6c5ce7'];
+            
+            for (let i = 0; i < 50; i++) {
+                setTimeout(() => {
+                    const confetti = document.createElement('div');
+                    confetti.style.position = 'fixed';
+                    confetti.style.width = '10px';
+                    confetti.style.height = '10px';
+                    confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                    confetti.style.left = Math.random() * window.innerWidth + 'px';
+                    confetti.style.top = '-10px';
+                    confetti.style.zIndex = '2001';
+                    confetti.style.borderRadius = '50%';
+                    confetti.style.pointerEvents = 'none';
+                    
+                    document.body.appendChild(confetti);
+                    
+                    // Animación de caída
+                    let pos = -10;
+                    let rotation = 0;
+                    const fall = setInterval(() => {
+                        pos += 5;
+                        rotation += 10;
+                        confetti.style.top = pos + 'px';
+                        confetti.style.transform = `rotate(${rotation}deg)`;
+                        
+                        if (pos > window.innerHeight) {
+                            clearInterval(fall);
+                            confetti.remove();
+                        }
+                    }, 50);
+                }, i * 100);
+            }
+        }
+
+        // Inicializar cuando se carga la página
+        document.addEventListener('DOMContentLoaded', init);
+
+        // Funcionalidad adicional: guardar progreso en memoria
+        function saveProgress() {
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            const progress = {};
+            
+            checkboxes.forEach(checkbox => {
+                progress[checkbox.id] = checkbox.checked;
+            });
+            
+            // En un entorno real, aquí se guardaría en una base de datos
+            console.log('Progreso guardado:', progress);
+        }
+
+        // Auto-guardar cada 30 segundos
+        setInterval(saveProgress, 30000);
+    </script>
+</body>
+</html>
