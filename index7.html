@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checklist Machine Learning - Evaluación Profesional</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(45deg, #2196F3, #21CBF3);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="20" cy="20" r="2" fill="rgba(255,255,255,0.1)"/><circle cx="80" cy="80" r="2" fill="rgba(255,255,255,0.1)"/><circle cx="60" cy="30" r="1" fill="rgba(255,255,255,0.1)"/></svg>');
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+            position: relative;
+            z-index: 1;
+        }
+
+        .progress-bar {
+            background: rgba(255, 255, 255, 0.2);
+            height: 6px;
+            border-radius: 3px;
+            margin-top: 20px;
+            overflow: hidden;
+            position: relative;
+            z-index: 1;
+        }
+
+        .progress-fill {
+            background: #4CAF50;
+            height: 100%;
+            width: 0%;
+            border-radius: 3px;
+            transition: width 0.3s ease;
+        }
+
+        .nav-tabs {
+            display: flex;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            margin-top: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .nav-tab {
+            flex: 1;
+            padding: 12px 20px;
+            text-align: center;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .nav-tab.active {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(5px);
+        }
+
+        .nav-tab:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .main-content {
+            padding: 40px;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .section {
+            margin-bottom: 40px;
+            border-radius: 15px;
+            background: white;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+
+        .section:hover {
+            transform: translateY(-2px);
+        }
+
+        .section-header {
+            background: linear-gradient(45deg, #FF6B6B, #FF8E8E);
+            color: white;
+            padding: 20px;
+            font-size: 1.4em;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .section-content {
+            padding: 25px;
+        }
+
+        .checklist-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            margin: 8px 0;
+            border-radius: 10px;
+            border: 2px solid #f0f0f0;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .checklist-item::before {
+            content: '';
+            position: absolute;
+            left: -100%;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(33, 150, 243, 0.1), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .checklist-item:hover::before {
+            left: 100%;
+        }
+
+        .checklist-item:hover {
+            border-color: #2196F3;
+            background-color: #f8f9ff;
+            transform: translateX(5px);
+        }
+
+        .checklist-item.completed {
+            background-color: #e8f5e8;
+            border-color: #4CAF50;
+        }
+
+        .checklist-item input[type="checkbox"] {
+            margin-right: 15px;
+            transform: scale(1.2);
+            cursor: pointer;
+        }
+
+        .checklist-item label {
+            cursor: pointer;
+            font-size: 1.1em;
+            line-height: 1.4;
+            flex: 1;
+        }
+
+        .quiz-question {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+            border-left: 4px solid #2196F3;
+        }
+
+        .quiz-question h4 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+        }
+
+        .quiz-options {
+            display: grid;
+            gap: 10px;
+        }
+
+        .quiz-option {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border-radius: 8px;
+            border: 2px solid #e0e0e0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .quiz-option:hover {
+            border-color: #2196F3;
+            background-color: #f0f8ff;
+        }
+
+        .quiz-option.selected {
+            border-color: #2196F3;
+            background-color: #e3f2fd;
+        }
+
+        .quiz-option.correct {
+            border-color: #4CAF50;
+            background-color: #e8f5e8;
+        }
+
+        .quiz-option.incorrect {
+            border-color: #f44336;
+            background-color: #ffebee;
+        }
+
+        .quiz-option input[type="radio"] {
+            margin-right: 10px;
+        }
+
+        .quiz-controls {
+            text-align: center;
+            margin: 30px 0;
+        }
+
+        .btn {
+            background: linear-gradient(45deg, #2196F3, #21CBF3);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: bold;
+            margin: 0 10px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(33, 150, 243, 0.3);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(33, 150, 243, 0.4);
+        }
+
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .btn-secondary {
+            background: linear-gradient(45deg, #FF9800, #FF6B6B);
+        }
+
+        .quiz-results {
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .interview-section {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            margin-top: 40px;
+            border-radius: 15px;
+            padding: 30px;
+        }
+
+        .interview-question {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .interview-question h4 {
+            color: #FFD700;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .solution {
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+            border-left: 4px solid #FFD700;
+        }
+
+        .solution h5 {
+            color: #FFD700;
+            margin-bottom: 8px;
+            font-size: 1em;
+        }
+
+        .solution-content {
+            line-height: 1.6;
+            font-size: 0.95em;
+        }
+
+        .solution-hidden {
+            display: none;
+        }
+
+        .show-solution-btn {
+            background: rgba(255, 215, 0, 0.2);
+            border: 1px solid #FFD700;
+            color: #FFD700;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9em;
+            margin-top: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .show-solution-btn:hover {
+            background: rgba(255, 215, 0, 0.3);
+        }
+
+        .stats {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+        }
+
+        .stats-item {
+            margin: 5px 0;
+            font-size: 0.9em;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .main-content {
+                padding: 20px;
+            }
+            
+            .stats {
+                position: static;
+                margin-bottom: 20px;
+            }
+
+            .nav-tabs {
+                flex-direction: column;
+            }
+        }
+
+        .celebration {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            z-index: 2000;
+            text-align: center;
+        }
+
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1500;
+        }
+
+        .section-score {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+
+        .refresh-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9em;
+        }
+
+        .refresh-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .difficulty-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 0.8em;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+
+        .difficulty-beginner { background: #4CAF50; color: white; }
+        .difficulty-intermediate { background: #FF9800; color: white; }
+        .difficulty-advanced { background: #f44336; color: white; }
+    </style>
+</head>
+<body>
+    <div class="overlay" id="overlay"></div>
+    
+    <div class="stats" id="stats">
+        <div class="stats-item"><strong>Checklist:</strong> <span id="completed">0</span>/<span id="total">0</span> (<span id="percentage">0%</span>)</div>
+        <div class="stats-item"><strong>Quiz:</strong> <span id="quizScore">0</span>/<span id="quizTotal">0</span></div>
+        <div class="stats-item"><strong>Evaluación:</strong> <span id="currentEval">1</span>/20</div>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h1>🤖 Machine Learning Checklist</h1>
+            <p>Evaluación Completa de Conocimientos Profesionales</p>
+            
+            <div class="nav-tabs">
+                <div class="nav-tab active" onclick="switchTab('checklist')">📋 Checklist</div>
+                <div class="nav-tab" onclick="switchTab('quiz')">🧠 Quiz Conocimiento</div>
+                <div class="nav-tab" onclick="switchTab('interview')">💼 Evaluación Profesional</div>
+            </div>
+            
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <!-- CHECKLIST TAB -->
+            <div class="tab-content active" id="checklist">
+                <div class="section">
+                    <div class="section-header">📊 Fundamentos Matemáticos</div>
+                    <div class="section-content">
+                        <div class="checklist-item">
+                            <input type="checkbox" id="algebra">
+                            <label for="algebra">Álgebra Lineal (vectores, matrices, eigenvalores)</label>
+                        </div>
+                        <div class="checklist-item">
+                            <input type="checkbox" id="calculus">
+                            <label for="calculus">Cálculo Diferencial (derivadas, gradientes)</label>
+                        </div>
+                        <div class="checklist-item">
+                            <input type="checkbox" id="statistics">
+                            <label for="statistics">Estadística y Probabilidad</label>
+                        </div>
+                        <div class="checklist-item">
+                            <input type="checkbox" id="optimization">
+                            <label for="optimization">Optimización Matemática</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-header">💻 Programación y Herramientas</div>
+                    <div class="section-content">
+                        <div class="checklist-item">
+                            <input type="checkbox" id="python">
+                            <label for="python">Python (Numpy, Pandas, Matplotlib)</label>
+                        </div>
+                        <div class="checklist-item">
+                            <input type="checkbox" id="sklearn">
+                            <label for="sklearn">Scikit-learn</label>
+                        </div>
+                        <div class="checklist-item">
+                            <input type="checkbox" id="tensorflow">
+                            <label for="tensorflow">TensorFlow/Keras o PyTorch</label>
+                        </div>
+                        <div class="checklist-item">
+                            <input type="checkbox" id="sql">
+                            <label for="sql">SQL y manejo de bases de datos</label>
+                        </div>
+                        <div class="checklist-item">
+                            <input type="checkbox" id="git">
+                            <label for="git">Git y control de versiones</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-header">🧠 Algoritmos de Machine Learning</div>
+                    <div class="section-content">
+                        <div class="checklist-item">
+                            <input type="checkbox" id="supervised">
+                            <label for="supervised">Aprendizaje Supervisado (regresión, clasificación)</label>
+                        </div>
+                        <div class="checklist-item">
+                            <input type="checkbox" id="unsupervised">
+                            <label for="unsupervised">Aprendizaje No Supervisado (clustering, PCA)</label>
+                        </div>
+                        <div class="checklist-item">
+                            <input type="checkbox" id="neural">
+                            <label for="neural">Redes Neuronales y Deep Learning</label>
+                        </div>
+                        <div class="checklist-item">
+                            <input type="checkbox" id="ensemble">
+                            <label for="ensemble">Métodos de Ensemble (Random Forest, XGBoost)</label>
+                        </div>
+                        <div class="checklist-item">
+                            <input type="checkbox" id="validation">
+                            <label for="validation">Validación Cruzada y Métricas de Evaluación</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-header">🔄 MLOps y Producción</div>
+                    <div class="section-content">
+                        <div class="checklist-item">
+                            <input type="checkbox" id="preprocessing">
+                            <label for="preprocessing">Preprocesamiento y Feature Engineering</label>
+                        </div>
+                        <div class="checklist-item">
+                            <input type="checkbox" id="deployment">
+                            <label for="deployment">Despliegue de modelos (API, Docker)</label>
+                        </div>
+                        <div class="checklist-item">
+                            <input type="checkbox" id="monitoring">
+                            <label for="monitoring">Monitoreo y mantenimiento de modelos</label>
+                        </div>
+                        <div class="checklist-item">
+                            <input type="checkbox" id="cloud">
+                            <label for="cloud">Plataformas en la nube (AWS, GCP, Azure)</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- QUIZ TAB -->
+            <div class="tab-content" id="quiz">
+                <div id="quizContainer"></div>
+                <div class="quiz-controls">
+                    <button class="btn" id="checkAnswers" onclick="checkQuizAnswers()">Verificar Respuestas</button>
+                    <button class="btn btn-secondary" id="resetQuiz" onclick="resetQuiz()">Reiniciar Quiz</button>
+                </div>
+                <div id="quizResultsContainer"></div>
+            </div>
+
+            <!-- INTERVIEW TAB -->
+            <div class="tab-content" id="interview">
+                <div class="interview-section">
+                    <h3>🎯 Evaluación Profesional Random 
+                        <button class="refresh-btn" onclick="generateNewEvaluation()">🔄 Nueva Evaluación</button>
+                    </h3>
+                    <p>Evaluación <span id="evaluationNumber">1</span> de 20 versiones disponibles</p>
+                    <div id="interviewContainer"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="celebration" id="celebration">
+        <h2>🎉 ¡Felicitaciones!</h2>
+        <p>Has completado todos los conocimientos de Machine Learning</p>
+        <button onclick="hideCelebration()" style="margin-top: 15px; padding: 10px 20px; background: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer;">Continuar</button>
+    </div>
+
+    <script>
+        // Variables globales
+        let totalItems = 0;
+        let completedItems = 0;
+        let currentEvaluationIndex = 0;
+        let quizData = {};
+        let currentQuizAnswers = {};
+
+        // Datos del quiz
+        const quizQuestions = {
+            'Fundamentos Matemáticos': [
+                {
+                    question: '¿Qué es un eigenvalor en álgebra lineal?',
+                    options: ['Un vector que no cambia de dirección al aplicar una transformación', 'Un escalar que representa cuánto se escala un eigenvector', 'Una matriz diagonal', 'Un determinante'],
+                    correct: 1
+                },
+                {
+                    question: '¿Cuál es el propósito principal del gradiente en optimización?',
+                    options: ['Calcular la segunda derivada', 'Encontrar la dirección de mayor incremento de una función', 'Normalizar vectores', 'Calcular eigenvalores'],
+                    correct: 1
+                },
+                {
+                    question: '¿Qué representa la covarianza entre dos variables?',
+                    options: ['La independencia entre variables', 'La relación lineal y direccional entre variables', 'La media de las variables', 'La varianza individual'],
+                    correct: 1
+                },
+                {
+                    question: '¿Cuál es la diferencia entre probabilidad condicional P(A|B) y probabilidad conjunta P(A,B)?',
+                    options: ['No hay diferencia', 'P(A|B) = P(A,B) / P(B)', 'P(A|B) es siempre mayor', 'P(A,B) no depende de B'],
+                    correct: 1
+                },
+                {
+                    question: '¿Qué método de optimización es más eficiente para funciones convexas?',
+                    options: ['Búsqueda aleatoria', 'Gradiente descendente', 'Fuerza bruta', 'Eliminación gaussiana'],
+                    correct: 1
+                },
+                {
+                    question: '¿Cuál es el rango de valores de una matriz de correlación?',
+                    options: ['[0, 1]', '[-1, 1]', '[0, ∞]', '[-∞, ∞]'],
+                    correct: 1
+                },
+                {
+                    question: '¿Qué es la norma L2 de un vector?',
+                    options: ['La suma de elementos', 'La raíz cuadrada de la suma de cuadrados', 'El elemento máximo', 'La mediana'],
+                    correct: 1
+                },
+                {
+                    question: '¿Cuándo usar el teorema de Bayes?',
+                    options: ['Solo con variables continuas', 'Para calcular probabilidades posteriores', 'Solo en regresión lineal', 'Para normalizar datos'],
+                    correct: 1
+                },
+                {
+                    question: '¿Qué representa la traza de una matriz?',
+                    options: ['El determinante', 'La suma de elementos diagonales', 'El rango de la matriz', 'Los eigenvalores'],
+                    correct: 1
+                },
+                {
+                    question: '¿Cuál es el objetivo de la descomposición SVD?',
+                    options: ['Resolver sistemas lineales', 'Factorizar una matriz en tres matrices', 'Calcular determinantes', 'Normalizar datos'],
+                    correct: 1
+                },
+                {
+                    question: '¿Qué es la función de pérdida cuadrática?',
+                    options: ['(y - ŷ)', '(y - ŷ)²', '|y - ŷ|', 'log(y/ŷ)'],
+                    correct: 1
+                },
+                {
+                    question: '¿Cuál es la derivada de ln(x)?',
+                    options: ['x', '1/x', 'ln(x)', 'x²'],
+                    correct: 1
+                },
+                {
+                    question: '¿Qué distribución se usa para modelar probabilidades binarias?',
+                    options: ['Normal', 'Bernoulli', 'Poisson', 'Exponencial'],
+                    correct: 1
+                },
+                {
+                    question: '¿Cuál es la regla de la cadena en cálculo?',
+                    options: ['d/dx[f(g(x))] = f\'(g(x)) * g\'(x)', 'd/dx[f(x)g(x)] = f\'(x) + g\'(x)', 'd/dx[f(x) + g(x)] = f\'(x)g\'(x)', 'Ninguna'],
+                    correct: 0
+                },
+                {
+                    question: '¿Qué es una matriz singular?',
+                    options: ['Una matriz cuadrada', 'Una matriz con determinante cero', 'Una matriz diagonal', 'Una matriz simétrica'],
+                    correct: 1
+                },
+                {
+                    question: '¿Cuál es la diferencia entre varianza y desviación estándar?',
+                    options: ['No hay diferencia', 'Desviación estándar = √(varianza)', 'Varianza = √(desviación estándar)', 'Son independientes'],
+                    correct: 1
+                },
+                {
+                    question: '¿Qué representa el determinante de una matriz 2x2?',
+                    options: ['La suma de elementos', 'El área del paralelogramo formado por sus vectores', 'La diagonal principal', 'El rango'],
+                    correct: 1
+                },
+                {
+                    question: '¿Cuándo dos eventos son independientes?',
+                    options: ['P(A|B) = P(A)', 'P(A|B) = P(B)', 'P(A,B) = 0', 'P(A) = P(B)'],
+                    correct: 0
+                },
+                {
+                    question: '¿Qué es el gradiente conjugado?',
+                    options: ['Un tipo de matriz', 'Un método de optimización', 'Una función de pérdida', 'Un algoritmo de clustering'],
+                    correct: 1
+                },
+                {
+                    question: '¿Cuál es la integral de e^x?',
+                    options: ['e^x + C', 'xe^x + C', 'e^(x+1) + C', 'ln(x) + C'],
+                    correct: 0
+                }
+            ],
+            'Programación y Herramientas': [
+                {
+                    question: '¿Cuál es la diferencia principal entre NumPy arrays y Python lists?',
+                    options: ['No hay diferencia', 'NumPy arrays son más rápidos para operaciones numéricas', 'Lists son más rápidos', 'NumPy solo maneja enteros'],
+                    correct: 1
+                },
+                {
+                    question: '¿Qué hace pandas.DataFrame.groupby()?',
+                    options: ['Ordena los datos', 'Agrupa filas por valores de columna', 'Elimina duplicados', 'Transpone la matriz'],
+                    correct: 1
+                },
+                {
+                    question: '¿Cuál es el propósito de matplotlib.pyplot?',
+                    options: ['Manipular datos', 'Crear visualizaciones', 'Entrenar modelos', 'Conectar bases de datos'],
+                    correct: 1
+                },
+                {
+                    question: '¿Qué comando SQL obtiene valores únicos?',
+                    options: ['UNIQUE', 'DISTINCT', 'DIFFERENT', 'SINGLE'],
+                    correct: 1
+                },
+                {
+                    question: '¿Para qué sirve git branch?',
+                    options: ['Crear una rama nueva', 'Eliminar archivos', 'Comprimir código', 'Ejecutar scripts'],
+                    correct: 0
+                },
+                {
+                    question: '¿Qué hace scikit-learn train_test_split?',
+                    options: ['Entrena un modelo', 'Divide datos en entrenamiento y prueba', 'Calcula métricas', 'Normaliza datos'],
+                    correct: 1
+                },
+                {
+                    question: '¿Cuál es la diferencia entre TensorFlow y Keras?',
+                    options: ['Son iguales', 'Keras es una API de alto nivel sobre TensorFlow', 'TensorFlow es más simple', 'No se pueden usar juntos'],
+                    correct: 1
+                },
+                {
+                    question: '¿Qué tipo de JOIN devuelve todas las filas de ambas tablas?',
+                    options: ['INNER JOIN', 'LEFT JOIN', 'RIGHT JOIN', 'FULL OUTER JOIN'],
+                    correct: 3
+                },
+                {
+                    question: '¿Qué hace numpy.reshape()?',
+                    options: ['Cambia los valores', 'Cambia las dimensiones del array', 'Ordena elementos', 'Elimina elementos'],
+                    correct: 1
+                },
+                {
+                    question: '¿Cuál es el propósito de pandas.merge()?',
+                    options: ['Ordenar DataFrames', 'Combinar DataFrames', 'Limpiar datos', 'Crear gráficos'],
+                    correct: 1
