@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Machine Learning - Conocimientos y Evaluaciones</title>
+    <title>Machine Learning Quiz</title>
     <style>
         * {
             margin: 0;
@@ -47,8 +47,9 @@
             opacity: 0.9;
         }
 
-        .section {
-            background: white;
+        .quiz-section {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
             margin: 20px 0;
             padding: 30px;
             border-radius: 15px;
@@ -56,87 +57,16 @@
             transition: transform 0.3s ease;
         }
 
-        .section:hover {
+        .quiz-section:hover {
             transform: translateY(-5px);
-        }
-
-        .section h2 {
-            color: #4a5568;
-            font-size: 2rem;
-            margin-bottom: 20px;
-            border-bottom: 3px solid #667eea;
-            padding-bottom: 10px;
-        }
-
-        .knowledge-list {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
-        }
-
-        .knowledge-category {
-            background: #f8f9fa;
-            padding: 20px;
-            border-radius: 10px;
-            border-left: 5px solid #667eea;
-        }
-
-        .knowledge-category h3 {
-            color: #2d3748;
-            margin-bottom: 15px;
-            font-size: 1.3rem;
-        }
-
-        .checkbox-item {
-            display: flex;
-            align-items: center;
-            margin: 8px 0;
-            padding: 8px;
-            border-radius: 5px;
-            transition: background-color 0.2s;
-        }
-
-        .checkbox-item:hover {
-            background-color: #e2e8f0;
-        }
-
-        .checkbox-item input[type="checkbox"] {
-            margin-right: 10px;
-            transform: scale(1.2);
-            accent-color: #667eea;
-        }
-
-        .checkbox-item label {
-            cursor: pointer;
-            font-weight: 500;
-        }
-
-        .resources {
-            margin-top: 8px;
-            margin-left: 30px;
-            font-size: 0.9rem;
-            opacity: 0.8;
-        }
-
-        .resources a {
-            color: #667eea;
-            text-decoration: none;
-            font-weight: 500;
-        }
-
-        .resources a:hover {
-            text-decoration: underline;
-            color: #5a67d8;
-        }
-
-        .quiz-section {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            color: white;
         }
 
         .quiz-section h2 {
             color: white;
-            border-bottom-color: white;
+            font-size: 2rem;
+            margin-bottom: 20px;
+            border-bottom: 3px solid white;
+            padding-bottom: 10px;
         }
 
         .quiz-controls {
@@ -262,333 +192,518 @@
                 font-size: 2rem;
             }
             
-            .knowledge-list {
-                grid-template-columns: 1fr;
-            }
-            
             .container {
                 padding: 10px;
             }
-        }
-
-        .footer {
-            text-align: center;
-            color: white;
-            margin-top: 40px;
-            padding: 20px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 15px;
-            backdrop-filter: blur(10px);
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>🤖 Machine Learning Mastery</h1>
-            <p>Guía completa de conocimientos y evaluaciones profesionales</p>
+            <h1>🤖 Machine Learning Quiz</h1>
+            <p>Evaluación de conocimientos profesionales</p>
         </div>
 
-        <!-- Lista de Conocimientos -->
-        <div class="section">
-            <h2>📚 Conocimientos Fundamentales</h2>
-            <div class="knowledge-list">
-                <div class="knowledge-category">
-                    <h3>🔢 Matemáticas y Estadística</h3>
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="algebra">
-                        <label for="algebra">Álgebra Lineal (vectores, matrices, eigenvalores)</label>
-                        <div class="resources">
-                            📚 <a href="https://www.coursera.org/learn/linear-algebra-machine-learning" target="_blank">Linear Algebra for ML - Coursera</a><br>
-                            🎥 <a href="https://www.youtube.com/watch?v=fNk_zzaMoSs&list=PLZHQObOWTQDPD3MizzM2xVFitgF8hE_ab" target="_blank">Essence of Linear Algebra - 3Blue1Brown</a><br>
-                            📖 <a href="https://www.deeplearningbook.org/contents/linear_algebra.html" target="_blank">Deep Learning Book - Linear Algebra</a>
-                        </div>
-                    </div>
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="calculo">
-                        <label for="calculo">Cálculo (derivadas, gradientes, optimización)</label>
-                        <div class="resources">
-                            📚 <a href="https://www.coursera.org/learn/multivariate-calculus-machine-learning" target="_blank">Multivariate Calculus for ML - Coursera</a><br>
-                            🎥 <a href="https://www.youtube.com/watch?v=WUvTyaaNkzM&list=PLZHQObOWTQDMsr9K-rj53DwVRMYO3t5Yr" target="_blank">Essence of Calculus - 3Blue1Brown</a><br>
-                            📖 <a href="https://www.khanacademy.org/math/multivariable-calculus" target="_blank">Khan Academy - Multivariable Calculus</a>
-                        </div>
-                    </div>
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="estadistica">
-                        <label for="estadistica">Estadística (probabilidad, distribuciones)</label>
-                        <div class="resources">
-                            📚 <a href="https://www.coursera.org/learn/probability-statistics-machine-learning" target="_blank">Statistics for ML - Coursera</a><br>
-                            🎥 <a href="https://www.youtube.com/watch?v=Tk4ubu7BlSk" target="_blank">Curso Estadística - Dot CSV</a><br>
-                            📖 <a href="https://www.statlearning.com/" target="_blank">Introduction to Statistical Learning</a>
-                        </div>
-                    </div>
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="bayesiana">
-                        <label for="bayesiana">Estadística Bayesiana (teorema de Bayes)</label>
-                        <div class="resources">
-                            📚 <a href="https://www.coursera.org/learn/bayesian-statistics" target="_blank">Bayesian Statistics - Coursera</a><br>
-                            🎥 <a href="https://www.youtube.com/watch?v=HZGCoVF3YvM" target="_blank">Bayes Theorem - 3Blue1Brown</a><br>
-                            📖 <a href="https://www.amazon.com/Bayesian-Data-Analysis-Third-Chapman/dp/1439840954" target="_blank">Bayesian Data Analysis - Gelman</a>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="knowledge-category">
-                    <h3>💻 Programación</h3>
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="python">
-                        <label for="python">Python (NumPy, Pandas, Matplotlib)</label>
-                        <div class="resources">
-                            📚 <a href="https://www.coursera.org/learn/python-for-applied-data-science-ai" target="_blank">Python for Data Science - Coursera</a><br>
-                            🎥 <a href="https://www.youtube.com/watch?v=rfscVS0vtbw" target="_blank">Learn Python - freeCodeCamp</a><br>
-                            📖 <a href="https://pandas.pydata.org/docs/user_guide/index.html" target="_blank">Pandas Documentation</a>
-                        </div>
-                    </div>
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="r">
-                        <label for="r">R (análisis estadístico avanzado)</label>
-                        <div class="resources">
-                            📚 <a href="https://www.coursera.org/learn/r-programming" target="_blank">R Programming - Coursera</a><br>
-                            🎥 <a href="https://www.youtube.com/watch?v=_V8eKsto3Ug" target="_blank">R Tutorial - MarinStatsLectures</a><br>
-                            📖 <a href="https://r4ds.had.co.nz/" target="_blank">R for Data Science</a>
-                        </div>
-                    </div>
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="sql">
-                        <label for="sql">SQL (manejo de bases de datos)</label>
-                        <div class="resources">
-                            📚 <a href="https://www.coursera.org/learn/sql-for-data-science" target="_blank">SQL for Data Science - Coursera</a><br>
-                            🎥 <a href="https://www.youtube.com/watch?v=HXV3zeQKqGY" target="_blank">SQL Tutorial - freeCodeCamp</a><br>
-                            📖 <a href="https://www.w3schools.com/sql/" target="_blank">W3Schools SQL Tutorial</a>
-                        </div>
-                    </div>
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="git">
-                        <label for="git">Git (control de versiones)</label>
-                        <div class="resources">
-                            📚 <a href="https://www.coursera.org/learn/version-control" target="_blank">Version Control - Coursera</a><br>
-                            🎥 <a href="https://www.youtube.com/watch?v=RGOj5yH7evk" target="_blank">Git Tutorial - freeCodeCamp</a><br>
-                            📖 <a href="https://git-scm.com/doc" target="_blank">Git Documentation</a>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="knowledge-category">
-                    <h3>🧠 Machine Learning Core</h3>
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="supervised">
-                        <label for="supervised">Supervised Learning (regresión, clasificación)</label>
-                        <div class="resources">
-                            📚 <a href="https://www.coursera.org/specializations/machine-learning-introduction" target="_blank">ML Specialization - Andrew Ng</a><br>
-                            🎥 <a href="https://www.youtube.com/watch?v=aircAruvnKk" target="_blank">Neural Networks - 3Blue1Brown</a><br>
-                            📖 <a href="https://scikit-learn.org/stable/supervised_learning.html" target="_blank">Scikit-learn Supervised Learning</a>
-                        </div>
-                    </div>
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="unsupervised">
-                        <label for="unsupervised">Unsupervised Learning (clustering, PCA)</label>
-                        <div class="resources">
-                            📚 <a href="https://www.coursera.org/learn/unsupervised-learning-recommenders-reinforcement-learning" target="_blank">Unsupervised Learning - Coursera</a><br>
-                            🎥 <a href="https://www.youtube.com/watch?v=FgakZw6K1QQ" target="_blank">Principal Component Analysis - StatQuest</a><br>
-                            📖 <a href="https://scikit-learn.org/stable/unsupervised_learning.html" target="_blank">Scikit-learn Unsupervised Learning</a>
-                        </div>
-                    </div>
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="deep">
-                        <label for="deep">Deep Learning (CNN, RNN, Transformers)</label>
-                        <div class="resources">
-                            📚 <a href="https://www.coursera.org/specializations/deep-learning" target="_blank">Deep Learning - Andrew Ng</a><br>
-                            🎥 <a href="https://www.youtube.com/watch?v=VMj-3S1tku0" target="_blank">Attention is All You Need - Yannic Kilcher</a><br>
-                            📖 <a href="https://www.deeplearningbook.org/" target="_blank">Deep Learning Book - Goodfellow</a>
-                        </div>
-                    </div>
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="reinforcement">
-                        <label for="reinforcement">Reinforcement Learning (Q-learning)</label>
-                        <div class="resources">
-                            📚 <a href="https://www.coursera.org/learn/reinforcement-learning-course" target="_blank">Reinforcement Learning - Coursera</a><br>
-                            🎥 <a href="https://www.youtube.com/watch?v=2pWv7GOvuf0" target="_blank">RL Course - DeepMind</a><br>
-                            📖 <a href="http://incompleteideas.net/book/the-book-2nd.html" target="_blank">Sutton & Barto RL Book</a>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="knowledge-category">
-                    <h3>🛠️ Herramientas y Frameworks</h3>
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="sklearn">
-                        <label for="sklearn">Scikit-learn (ML tradicional)</label>
-                        <div class="resources">
-                            📚 <a href="https://www.coursera.org/learn/machine-learning-with-python" target="_blank">ML with Python - Coursera</a><br>
-                            🎥 <a href="https://www.youtube.com/watch?v=pqNCD_5r0IU" target="_blank">Scikit-learn Tutorial - sentdex</a><br>
-                            📖 <a href="https://scikit-learn.org/stable/tutorial/index.html" target="_blank">Scikit-learn Tutorial</a>
-                        </div>
-                    </div>
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="tensorflow">
-                        <label for="tensorflow">TensorFlow/Keras (Deep Learning)</label>
-                        <div class="resources">
-                            📚 <a href="https://www.coursera.org/professional-certificates/tensorflow-in-practice" target="_blank">TensorFlow Developer Certificate</a><br>
-                            🎥 <a href="https://www.youtube.com/watch?v=tPYj3fFJGjk" target="_blank">TensorFlow Tutorial - freeCodeCamp</a><br>
-                            📖 <a href="https://www.tensorflow.org/tutorials" target="_blank">TensorFlow Official Tutorials</a>
-                        </div>
-                    </div>
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="pytorch">
-                        <label for="pytorch">PyTorch (investigación y producción)</label>
-                        <div class="resources">
-                            📚 <a href="https://www.coursera.org/learn/deep-neural-networks-with-pytorch" target="_blank">Deep Neural Networks with PyTorch</a><br>
-                            🎥 <a href="https://www.youtube.com/watch?v=Z_ikDlimN6A" target="_blank">PyTorch Tutorial - Python Engineer</a><br>
-                            📖 <a href="https://pytorch.org/tutorials/" target="_blank">PyTorch Official Tutorials</a>
-                        </div>
-                    </div>
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="mlops">
-                        <label for="mlops">MLOps (MLflow, Docker, Kubernetes)</label>
-                        <div class="resources">
-                            📚 <a href="https://www.coursera.org/learn/machine-learning-engineering-for-production-mlops" target="_blank">MLOps Specialization - Coursera</a><br>
-                            🎥 <a href="https://www.youtube.com/watch?v=9BgIDqAzfuA" target="_blank">Docker Tutorial - Programming with Mosh</a><br>
-                            📖 <a href="https://mlflow.org/docs/latest/tutorials-and-examples/index.html" target="_blank">MLflow Documentation</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Sección de Recursos Adicionales -->
-        <div class="section">
-            <h2>🎯 Recursos Adicionales</h2>
-            <div class="knowledge-list">
-                <div class="knowledge-category">
-                    <h3>📊 Práctica y Datasets</h3>
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="kaggle">
-                        <label for="kaggle">Kaggle (competencias y datasets)</label>
-                        <div class="resources">
-                            🏆 <a href="https://www.kaggle.com/competitions" target="_blank">Kaggle Competitions</a><br>
-                            📊 <a href="https://www.kaggle.com/datasets" target="_blank">Kaggle Datasets</a><br>
-                            🎓 <a href="https://www.kaggle.com/learn" target="_blank">Kaggle Learn</a>
-                        </div>
-                    </div>
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="colab">
-                        <label for="colab">Google Colab (notebooks gratuitos)</label>
-                        <div class="resources">
-                            💻 <a href="https://colab.research.google.com/" target="_blank">Google Colab</a><br>
-                            📚 <a href="https://colab.research.google.com/notebooks/intro.ipynb" target="_blank">Colab Intro</a><br>
-                            🎥 <a href="https://www.youtube.com/watch?v=inN8seMm7UI" target="_blank">Colab Tutorial</a>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="knowledge-category">
-                    <h3>🌐 Comunidades y Ayuda</h3>
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="stackoverflow">
-                        <label for="stackoverflow">Stack Overflow (resolución de dudas)</label>
-                        <div class="resources">
-                            ❓ <a href="https://stackoverflow.com/questions/tagged/machine-learning" target="_blank">ML Questions</a><br>
-                            🐍 <a href="https://stackoverflow.com/questions/tagged/python" target="_blank">Python Questions</a><br>
-                            📊 <a href="https://stackoverflow.com/questions/tagged/pandas" target="_blank">Pandas Questions</a>
-                        </div>
-                    </div>
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="reddit">
-                        <label for="reddit">Reddit (r/MachineLearning, r/datascience)</label>
-                        <div class="resources">
-                            🤖 <a href="https://www.reddit.com/r/MachineLearning/" target="_blank">r/MachineLearning</a><br>
-                            📈 <a href="https://www.reddit.com/r/datascience/" target="_blank">r/datascience</a><br>
-                            💻 <a href="https://www.reddit.com/r/LearnMachineLearning/" target="_blank">r/LearnMachineLearning</a>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="knowledge-category">
-                    <h3>📖 Libros Recomendados 2024-2025</h3>
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="hands-on-ml">
-                        <label for="hands-on-ml">Hands-On Machine Learning - Aurélien Géron</label>
-                        <div class="resources">
-                            📚 <a href="https://www.oreilly.com/library/view/hands-on-machine-learning/9781492032632/" target="_blank">O'Reilly Book</a><br>
-                            💻 <a href="https://github.com/ageron/handson-ml3" target="_blank">GitHub Code</a><br>
-                            🎥 <a href="https://www.youtube.com/watch?v=1w5dCrtIhSs" target="_blank">Book Review</a>
-                        </div>
-                    </div>
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="pattern-recognition">
-                        <label for="pattern-recognition">Pattern Recognition and ML - Christopher Bishop</label>
-                        <div class="resources">
-                            📚 <a href="https://www.microsoft.com/en-us/research/uploads/prod/2006/01/Bishop-Pattern-Recognition-and-Machine-Learning-2006.pdf" target="_blank">Free PDF</a><br>
-                            🎓 <a href="https://www.coursera.org/learn/bayesian-methods-in-machine-learning" target="_blank">Related Course</a><br>
-                            📊 <a href="https://github.com/ctgk/PRML" target="_blank">Python Code</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Sección de Evaluación -->
-        <div class="section quiz-section">
-            <h2>🎯 Evaluación Profesional</h2>
+        <!-- Quiz Section -->
+        <div class="quiz-section">
+            <h2>🎯 Quiz de Evaluación</h2>
             <div class="quiz-controls">
-                <button class="btn" onclick="generateQuiz()">🎲 Generar Quiz Aleatorio</button>
-                <button class="btn btn-danger" onclick="resetQuiz()">🔄 Reiniciar Quiz</button>
+                <button class="btn" onclick="startQuiz()">Iniciar Quiz</button>
+                <button class="btn btn-danger" onclick="resetQuiz()">Reiniciar</button>
             </div>
             
             <div class="progress-bar">
-                <div class="progress-fill" id="progressFill"></div>
+                <div class="progress-fill" id="progressBar"></div>
             </div>
-            
-            <div class="quiz-container" id="quizContainer">
-                <p style="text-align: center; font-size: 1.2rem; opacity: 0.8;">
-                    ¡Haz clic en "Generar Quiz Aleatorio" para comenzar tu evaluación profesional!
-                </p>
-            </div>
-            
-            <div class="results" id="results">
-                <!-- Los resultados se mostrarán aquí -->
-            </div>
-        </div>
 
-        <div class="footer">
-            <p>💡 <strong>Tip:</strong> Practica regularmente y combina teoría con proyectos reales</p>
-            <p>🚀 ¡El futuro del ML está en tus manos!</p>
+            <div class="quiz-container" id="quizContainer" style="display: none;">
+                <!-- Las preguntas se generarán dinámicamente aquí -->
+            </div>
+
+            <div class="results" id="results">
+                <div class="score" id="finalScore"></div>
+                <div id="detailedResults"></div>
+            </div>
         </div>
     </div>
 
     <script>
-        // Base de datos de preguntas organizadas por tema
-        const questionDatabase = {
-            matematicas: [
-                {
-                    question: "¿Qué representa la matriz de covarianza?",
-                    options: ["Correlación entre variables", "Valores perdidos", "Errores del modelo", "Pesos de la red neuronal"],
-                    correct: 0,
-                    explanation: "La matriz de covarianza muestra cómo las variables se relacionan entre sí, esencial para entender la estructura de los datos."
-                },
-                {
-                    question: "En el teorema de Bayes, ¿qué es el prior?",
-                    options: ["La evidencia observada", "La probabilidad inicial antes de observar datos", "El resultado final", "La función de pérdida"],
-                    correct: 1,
-                    explanation: "El prior representa nuestro conocimiento inicial sobre un parámetro antes de observar nuevos datos."
-                },
-                {
-                    question: "¿Qué es la norma L2 en el contexto de regularización?",
-                    options: ["Suma de valores absolutos", "Suma de cuadrados", "Valor máximo", "Promedio aritmético"],
-                    correct: 1,
-                    explanation: "La norma L2 es la suma de los cuadrados de los elementos, usada en Ridge regression para regularización."
-                },
-                {
-                    question: "¿Cuál es la diferencia principal entre eigenvalores y eigenvectores?",
-                    options: ["No hay diferencia", "Eigenvalores son escalares, eigenvectores son vectores", "Solo se usan en clasificación", "Son lo mismo"],
-                    correct: 1,
-                    explanation: "Los eigenvalores son escalares que representan la magnitud, mientras que los eigenvectores son direcciones en el espacio."
-                },
-                {
-                    question: "¿Qué distribución se asume comúnmente en regresión lineal para los errores?",
-                    options: ["Uniforme", "Normal/Gaussiana", "Exponencial", "Binomial"],
-                    correct: 1,
-                    explanation: "Se asume distribución normal para los errores, lo que permite usar mínimos cuadrados y hacer inferencias estadísticas."
-                },
-                {
-                    question: "¿Para qué
+        const quizData = [
+            // Matemáticas y Estadística
+            {
+                question: "¿Cuál es la diferencia principal entre eigenvalores y eigenvectores?",
+                options: [
+                    "Los eigenvalores son escalares, los eigenvectores son vectores direccionales",
+                    "Los eigenvalores son vectores, los eigenvectores son matrices",
+                    "No hay diferencia, son conceptos equivalentes",
+                    "Los eigenvalores se usan en 2D, los eigenvectores en 3D"
+                ],
+                correct: 0,
+                explanation: "Los eigenvalores son escalares que indican cuánto se estira o comprime un eigenvector cuando se aplica una transformación matricial. Los eigenvectores indican la dirección en la que ocurre esta transformación. Es fundamental en PCA y descomposición matricial."
+            },
+            {
+                question: "En el contexto de Machine Learning, ¿para qué se utiliza principalmente el gradiente?",
+                options: [
+                    "Para calcular la precisión del modelo",
+                    "Para encontrar la dirección de máximo crecimiento y optimizar funciones de pérdida",
+                    "Para normalizar los datos de entrada",
+                    "Para dividir el dataset en train y test"
+                ],
+                correct: 1,
+                explanation: "El gradiente indica la dirección de máximo crecimiento de una función. En ML se usa para minimizar funciones de pérdida mediante gradient descent, actualizando los parámetros del modelo en la dirección opuesta al gradiente."
+            },
+            {
+                question: "¿Qué representa el teorema de Bayes en Machine Learning?",
+                options: [
+                    "La probabilidad de que ocurra un evento aleatorio",
+                    "P(A|B) = P(B|A) * P(A) / P(B) - actualizar probabilidades con nueva evidencia",
+                    "La distribución normal de los datos",
+                    "El error cuadrático medio"
+                ],
+                correct: 1,
+                explanation: "El teorema de Bayes permite actualizar la probabilidad de una hipótesis cuando se obtiene nueva evidencia. Es fundamental en clasificadores Naive Bayes y estadística bayesiana, permitiendo inferencia probabilística."
+            },
+            {
+                question: "¿Cuál es la principal diferencia entre matriz de covarianza y matriz de correlación?",
+                options: [
+                    "No hay diferencia, son términos sinónimos",
+                    "Covarianza mide relación lineal escalada, correlación está normalizada [-1,1]",
+                    "Covarianza solo se usa con variables categóricas",
+                    "Correlación solo funciona con datos positivos"
+                ],
+                correct: 1,
+                explanation: "La covarianza mide la relación lineal entre variables pero depende de las unidades. La correlación normaliza este valor entre -1 y 1, siendo independiente de las unidades y más fácil de interpretar."
+            },
+            {
+                question: "¿Qué distribución es más apropiada para modelar conteos de eventos raros?",
+                options: [
+                    "Distribución Normal",
+                    "Distribución Uniforme",
+                    "Distribución de Poisson",
+                    "Distribución Exponencial"
+                ],
+                correct: 2,
+                explanation: "La distribución de Poisson es ideal para modelar conteos de eventos que ocurren independientemente en un intervalo fijo de tiempo o espacio, especialmente cuando la tasa es baja (eventos raros)."
+            },
+            {
+                question: "¿Cuál es el propósito de la descomposición en valores singulares (SVD)?",
+                options: [
+                    "Solo para compresión de imágenes",
+                    "Factorizar matrices en componentes ortogonales para reducción de dimensionalidad",
+                    "Calcular determinantes de matrices grandes",
+                    "Solo para sistemas de ecuaciones lineales"
+                ],
+                correct: 1,
+                explanation: "SVD descompone cualquier matriz en tres matrices con propiedades especiales, útil para reducción de dimensionalidad, sistemas de recomendación, PCA, y análisis de datos. Es más general que eigendecomposición."
+            },
+            // Machine Learning Core
+            {
+                question: "¿Cuál es la diferencia principal entre overfitting y underfitting?",
+                options: [
+                    "Overfitting: modelo muy simple, Underfitting: modelo muy complejo",
+                    "Overfitting: buen desempeño en training pero malo en test, Underfitting: mal desempeño en ambos",
+                    "No hay diferencia práctica entre ambos conceptos",
+                    "Overfitting solo ocurre con pocos datos, Underfitting con muchos datos"
+                ],
+                correct: 1,
+                explanation: "Overfitting ocurre cuando el modelo memoriza los datos de entrenamiento pero no generaliza (alta varianza). Underfitting cuando el modelo es demasiado simple para capturar patrones subyacentes (alto sesgo). Ambos reducen la capacidad predictiva."
+            },
+            {
+                question: "¿Qué técnica de regularización penaliza la suma de los valores absolutos de los parámetros?",
+                options: [
+                    "L2 (Ridge)",
+                    "L1 (Lasso)",
+                    "Elastic Net",
+                    "Dropout"
+                ],
+                correct: 1,
+                explanation: "L1 (Lasso) penaliza la suma de valores absolutos de los parámetros, tendiendo a hacer que algunos parámetros sean exactamente cero. Esto realiza selección de características automática, útil cuando hay muchas variables irrelevantes."
+            },
+            {
+                question: "En un problema de clasificación binaria, ¿qué métrica es más robusta cuando las clases están desbalanceadas?",
+                options: [
+                    "Accuracy",
+                    "F1-Score",
+                    "Mean Squared Error",
+                    "R-squared"
+                ],
+                correct: 1,
+                explanation: "F1-Score es la media armónica entre precisión y recall, siendo más informativo que accuracy cuando hay desbalance de clases. Accuracy puede ser engañoso si una clase domina el dataset."
+            },
+            {
+                question: "¿Cuál es la ventaja principal del algoritmo Random Forest sobre un único árbol de decisión?",
+                options: [
+                    "Siempre es más rápido de entrenar",
+                    "Reduce overfitting mediante ensemble de árboles con bootstrap sampling",
+                    "Solo funciona con variables numéricas",
+                    "No requiere validación cruzada"
+                ],
+                correct: 1,
+                explanation: "Random Forest combina múltiples árboles entrenados con muestras bootstrap y subconjuntos aleatorios de características. Esto reduce la varianza y overfitting, mejorando la generalización respecto a árboles individuales."
+            },
+            {
+                question: "¿Qué es el 'curse of dimensionality' en Machine Learning?",
+                options: [
+                    "Cuando hay muy pocos datos para entrenar",
+                    "Los algoritmos se vuelven menos efectivos en espacios de alta dimensionalidad",
+                    "Error al usar muchas GPU para entrenamiento",
+                    "Problemas de memoria en computadoras lentas"
+                ],
+                correct: 1,
+                explanation: "En espacios de alta dimensionalidad, los datos se vuelven escasos y las distancias entre puntos tienden a ser similares, haciendo que muchos algoritmos (especialmente k-NN) pierdan efectividad. Se necesita reducción de dimensionalidad."
+            },
+            {
+                question: "¿Cuándo es preferible usar Support Vector Machines (SVM)?",
+                options: [
+                    "Solo con datasets muy grandes",
+                    "Con datasets pequeños/medianos y alta dimensionalidad, especialmente con kernel trick",
+                    "Solo para problemas de regresión",
+                    "Cuando los datos tienen muchos valores faltantes"
+                ],
+                correct: 1,
+                explanation: "SVM es efectivo con datasets pequeños a medianos de alta dimensionalidad. El kernel trick permite mapear datos a espacios de mayor dimensión donde pueden ser linealmente separables, sin calcular explícitamente la transformación."
+            },
+            // Deep Learning
+            {
+                question: "¿Cuál es la función principal de las capas convolucionales en CNN?",
+                options: [
+                    "Reducir la dimensionalidad de los datos",
+                    "Detectar características locales como bordes, texturas y patrones",
+                    "Clasificar las imágenes finales",
+                    "Normalizar los valores de los píxeles"
+                ],
+                correct: 1,
+                explanation: "Las capas convolucionales aplican filtros (kernels) que se deslizan sobre la imagen para detectar características locales específicas como bordes, texturas y patrones. Cada filtro aprende a detectar un tipo particular de característica."
+            },
+            {
+                question: "¿Qué problema resuelve principalmente el mecanismo de Attention en modelos de secuencia?",
+                options: [
+                    "El vanishing gradient problem",
+                    "La pérdida de información en secuencias largas y el cuello de botella del encoder-decoder",
+                    "El overfitting en redes profundas",
+                    "La inicialización de pesos"
+                ],
+                correct: 1,
+                explanation: "Attention permite al modelo 'prestar atención' a diferentes partes de la secuencia de entrada al generar cada elemento de salida, resolviendo la pérdida de información en secuencias largas que ocurría en modelos encoder-decoder tradicionales."
+            },
+            {
+                question: "¿Cuál es la ventaja principal de ResNet (Residual Networks)?",
+                options: [
+                    "Reduce el número de parámetros",
+                    "Permite entrenar redes muy profundas mediante conexiones residuales",
+                    "Funciona solo con imágenes pequeñas",
+                    "Elimina la necesidad de función de activación"
+                ],
+                correct: 1,
+                explanation: "Las conexiones residuales (skip connections) permiten que el gradiente fluya directamente a través de las capas, evitando el vanishing gradient problem y facilitando el entrenamiento de redes de cientos de capas."
+            },
+            {
+                question: "¿Para qué se utiliza principalmente la técnica de Dropout en redes neuronales?",
+                options: [
+                    "Para acelerar el entrenamiento",
+                    "Para prevenir overfitting desactivando aleatoriamente neuronas durante entrenamiento",
+                    "Para reducir el número de parámetros permanentemente",
+                    "Para cambiar la función de activación"
+                ],
+                correct: 1,
+                explanation: "Dropout desactiva aleatoriamente un porcentaje de neuronas durante el entrenamiento, forzando a la red a no depender excesivamente de neuronas específicas. Esto actúa como regularización y reduce overfitting."
+            },
+            {
+                question: "¿Cuál es la diferencia principal entre RNN y LSTM?",
+                options: [
+                    "RNN solo funciona con texto, LSTM con imágenes",
+                    "LSTM resuelve el problema de vanishing gradient en secuencias largas mediante gates",
+                    "RNN es más rápido pero menos preciso",
+                    "No hay diferencia significativa en la práctica"
+                ],
+                correct: 1,
+                explanation: "LSTM usa gates (forget, input, output) para controlar el flujo de información y mantener memoria a largo plazo, resolviendo el vanishing gradient problem que limita a las RNN básicas en secuencias largas."
+            },
+            {
+                question: "¿Qué técnica es más efectiva para transfer learning en visión computacional?",
+                options: [
+                    "Entrenar desde cero siempre",
+                    "Usar modelo preentrenado y fine-tuning en capas finales",
+                    "Solo usar modelos con menos de 10 capas",
+                    "Cambiar completamente la arquitectura"
+                ],
+                correct: 1,
+                explanation: "Transfer learning usa modelos preentrenados (como ImageNet) y ajusta las capas finales para la tarea específica. Las capas iniciales capturan características generales útiles, mientras las finales se especializan en la nueva tarea."
+            },
+            // MLOps y Producción
+            {
+                question: "¿Cuál es el propósito principal de la validación cruzada (cross-validation)?",
+                options: [
+                    "Aumentar el tamaño del dataset",
+                    "Obtener una estimación más robusta del rendimiento del modelo y reducir la varianza",
+                    "Acelerar el entrenamiento del modelo",
+                    "Limpiar datos faltantes"
+                ],
+                correct: 1,
+                explanation: "Cross-validation divide los datos en k folds, entrenando en k-1 y validando en 1, rotando el fold de validación. Esto proporciona múltiples estimaciones del rendimiento, reduciendo la varianza de la evaluación y detectando overfitting."
+            },
+            {
+                question: "¿Qué significa 'Data Drift' en el contexto de MLOps?",
+                options: [
+                    "Pérdida de datos en el pipeline",
+                    "Cambio en la distribución de los datos de entrada comparado con los datos de entrenamiento",
+                    "Corrupción de datos en la base de datos",
+                    "Datos duplicados en el sistema"
+                ],
+                correct: 1,
+                explanation: "Data drift ocurre cuando las características estadísticas de los datos de producción cambian respecto a los datos de entrenamiento, afectando el rendimiento del modelo. Requiere monitoreo continuo y posible reentrenamiento."
+            },
+            {
+                question: "¿Cuál es la función principal de Docker en un pipeline de ML?",
+                options: [
+                    "Acelerar el entrenamiento de modelos",
+                    "Crear entornos reproducibles y portables para aplicaciones",
+                    "Visualizar métricas del modelo",
+                    "Almacenar grandes datasets"
+                ],
+                correct: 1,
+                explanation: "Docker permite empaquetar aplicaciones con todas sus dependencias en contenedores, garantizando que funcionen consistentemente en diferentes entornos (desarrollo, testing, producción), resolviendo problemas de 'funciona en mi máquina'."
+            },
+            {
+                question: "¿Qué es A/B testing en el contexto de Machine Learning?",
+                options: [
+                    "Comparar dos algoritmos de ML en el mismo dataset",
+                    "Exponer diferentes versiones del modelo a distintos grupos de usuarios para comparar performance",
+                    "Dividir los datos en train y test",
+                    "Usar dos métricas diferentes para evaluar"
+                ],
+                correct: 1,
+                explanation: "A/B testing en ML expone diferentes versiones del modelo a grupos de usuarios reales, midiendo métricas de negocio para determinar cuál versión funciona mejor en producción, más allá de métricas técnicas."
+            },
+            {
+                question: "¿Cuál es la diferencia entre CI/CD en desarrollo tradicional vs MLOps?",
+                options: [
+                    "No hay diferencia alguna",
+                    "MLOps incluye versionado de datos, modelos y pipeline de reentrenamiento automático",
+                    "MLOps es más simple que CI/CD tradicional",
+                    "MLOps solo se enfoca en código"
+                ],
+                correct: 1,
+                explanation: "MLOps extiende CI/CD tradicional incluyendo versionado de datos y modelos, pipelines de reentrenamiento automático, monitoreo de drift, y validación de calidad de datos, no solo código."
+            },
+            {
+                question: "¿Qué es model serving y cuáles son sus principales desafíos?",
+                options: [
+                    "Solo guardar el modelo en un archivo",
+                    "Poner el modelo en producción para inferencia, con desafíos de latencia, escalabilidad y monitoreo",
+                    "Entrenar múltiples modelos simultáneamente",
+                    "Visualizar los resultados del modelo"
+                ],
+                correct: 1,
+                explanation: "Model serving es el proceso de poner modelos ML en producción para servir predicciones en tiempo real. Los desafíos incluyen latencia baja, escalabilidad, monitoreo de performance, manejo de versiones y rollback."
+            },
+            // Procesamiento de Datos y Feature Engineering
+            {
+                question: "¿Cuál es la diferencia entre missing data MAR y MCAR?",
+                options: [
+                    "No hay diferencia práctica",
+                    "MAR: datos faltantes dependen de variables observadas, MCAR: completamente aleatorio",
+                    "MAR solo ocurre con variables numéricas",
+                    "MCAR es más problemático que MAR siempre"
+                ],
+                correct: 1,
+                explanation: "MCAR (Missing Completely At Random) significa que los datos faltantes son completamente aleatorios. MAR (Missing At Random) significa que dependen de variables observadas pero no de la variable faltante misma. Esto afecta la estrategia de imputación."
+            },
+            {
+                question: "¿Cuándo es apropiado usar One-Hot Encoding vs Label Encoding?",
+                options: [
+                    "Siempre usar One-Hot Encoding",
+                    "One-Hot para variables nominales, Label para ordinales o cuando hay orden natural",
+                    "Label Encoding es siempre mejor",
+                    "Depende del tamaño del dataset únicamente"
+                ],
+                correct: 1,
+                explanation: "One-Hot Encoding evita que el modelo asuma orden cuando no existe (variables nominales). Label Encoding es apropiado para variables ordinales con orden natural o cuando One-Hot crearía demasiadas dimensiones."
+            },
+            {
+                question: "¿Qué problema resuelve la normalización/estandarización de características?",
+                options: [
+                    "Reduce el overfitting automáticamente",
+                    "Evita que características con mayor escala dominen el algoritmo",
+                    "Elimina outliers completamente",
+                    "Convierte variables categóricas en numéricas"
+                ],
+                correct: 1,
+                explanation: "Algoritmos basados en distancia (k-NN, SVM, redes neuronales) son sensibles a la escala. Sin normalización, características con valores grandes pueden dominar el cálculo de distancias, afectando el rendimiento del modelo."
+            },
+            // Evaluación y Métricas
+            {
+                question: "¿Cuándo usar precisión vs recall como métrica prioritaria?",
+                options: [
+                    "Siempre usar ambas por igual",
+                    "Precisión cuando los falsos positivos son costosos, Recall cuando los falsos negativos son costosos",
+                    "Precisión solo para regresión, Recall para clasificación",
+                    "Depende del tamaño del dataset únicamente"
+                ],
+                correct: 1,
+                explanation: "Precisión es crítica cuando falsos positivos son costosos (ej: spam detection). Recall es crítico cuando falsos negativos son costosos (ej: detección de cáncer). F1-Score balancea ambos."
+            },
+            {
+                question: "¿Qué indica un AUC-ROC de 0.5 en clasificación binaria?",
+                options: [
+                    "Modelo perfecto",
+                    "Modelo equivalente a predicción aleatoria",
+                    "Modelo con overfitting severo",
+                    "Error en el cálculo de la métrica"
+                ],
+                correct: 1,
+                explanation: "AUC-ROC de 0.5 significa que el modelo no tiene poder discriminativo, equivalente a adivinar aleatoriamente. AUC=1.0 es perfecto, AUC<0.5 sugiere que el modelo está invirtiendo las predicciones."
+            },
+            {
+                question: "¿Para qué tipo de problemas es más apropiado usar RMSE vs MAE?",
+                options: [
+                    "RMSE solo para clasificación, MAE para regresión",
+                    "RMSE penaliza más los errores grandes, MAE trata todos los errores igual",
+                    "No hay diferencia práctica entre ambos",
+                    "MAE solo funciona con valores positivos"
+                ],
+                correct: 1,
+                explanation: "RMSE (Root Mean Square Error) penaliza más los errores grandes debido al cuadrado, útil cuando errores grandes son especialmente problemáticos. MAE (Mean Absolute Error) trata todos los errores linealmente, más robusto a outliers."
+            }
+        ];
+
+        let currentQuestions = [];
+        let currentQuestionIndex = 0;
+        let userAnswers = [];
+        let quizStarted = false;
+
+        function shuffleArray(array) {
+            const shuffled = [...array];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            return shuffled;
+        }
+
+        function generateQuestions() {
+            // Tomar 5 preguntas aleatorias de las 30 disponibles
+            const shuffledQuestions = shuffleArray(quizData);
+            currentQuestions = shuffledQuestions.slice(0, 5);
+        }
+
+        function startQuiz() {
+            generateQuestions();
+            currentQuestionIndex = 0;
+            userAnswers = [];
+            quizStarted = true;
+            
+            document.getElementById('quizContainer').style.display = 'block';
+            document.getElementById('results').style.display = 'none';
+            
+            displayQuestion();
+            updateProgressBar();
+        }
+
+        function displayQuestion() {
+            const container = document.getElementById('quizContainer');
+            const question = currentQuestions[currentQuestionIndex];
+            
+            container.innerHTML = `
+                <div class="question">
+                    <h4>Pregunta ${currentQuestionIndex + 1} de ${currentQuestions.length}</h4>
+                    <p>${question.question}</p>
+                    <div class="options">
+                        ${question.options.map((option, index) => `
+                            <div class="option">
+                                <input type="radio" id="option${index}" name="answer" value="${index}">
+                                <label for="option${index}">${option}</label>
+                            </div>
+                        `).join('')}
+                    </div>
+                    <div style="text-align: center; margin-top: 20px;">
+                        ${currentQuestionIndex > 0 ? '<button class="btn" onclick="previousQuestion()">Anterior</button>' : ''}
+                        <button class="btn" onclick="nextQuestion()" id="nextBtn">
+                            ${currentQuestionIndex === currentQuestions.length - 1 ? 'Finalizar Quiz' : 'Siguiente'}
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function nextQuestion() {
+            const selectedAnswer = document.querySelector('input[name="answer"]:checked');
+            if (!selectedAnswer) {
+                alert('Por favor selecciona una respuesta');
+                return;
+            }
+
+            userAnswers[currentQuestionIndex] = parseInt(selectedAnswer.value);
+
+            if (currentQuestionIndex === currentQuestions.length - 1) {
+                finishQuiz();
+            } else {
+                currentQuestionIndex++;
+                displayQuestion();
+                updateProgressBar();
+            }
+        }
+
+        function previousQuestion() {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                displayQuestion();
+                updateProgressBar();
+                
+                // Restaurar respuesta previa si existe
+                if (userAnswers[currentQuestionIndex] !== undefined) {
+                    document.querySelector(`input[value="${userAnswers[currentQuestionIndex]}"]`).checked = true;
+                }
+            }
+        }
+
+        function updateProgressBar() {
+            const progress = ((currentQuestionIndex + 1) / currentQuestions.length) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+        }
+
+        function finishQuiz() {
+            let correctAnswers = 0;
+            let detailedResults = '';
+
+            currentQuestions.forEach((question, index) => {
+                const userAnswer = userAnswers[index];
+                const isCorrect = userAnswer === question.correct;
+                if (isCorrect) correctAnswers++;
+
+                detailedResults += `
+                    <div class="question" style="margin-bottom: 20px;">
+                        <h4>Pregunta ${index + 1}: ${question.question}</h4>
+                        <p><strong>Tu respuesta:</strong> <span class="${isCorrect ? 'correct' : 'incorrect'}">
+                            ${question.options[userAnswer]}
+                        </span></p>
+                        ${!isCorrect ? `<p><strong>Respuesta correcta:</strong> <span class="correct">${question.options[question.correct]}</span></p>` : ''}
+                        <p><strong>Explicación:</strong> ${question.explanation}</p>
+                    </div>
+                `;
+            });
+
+            const percentage = Math.round((correctAnswers / currentQuestions.length) * 100);
+            
+            document.getElementById('finalScore').innerHTML = `
+                Puntuación: ${correctAnswers}/${currentQuestions.length} (${percentage}%)
+            `;
+            
+            document.getElementById('detailedResults').innerHTML = detailedResults;
+            document.getElementById('quizContainer').style.display = 'none';
+            document.getElementById('results').style.display = 'block';
+        }
+
+        function resetQuiz() {
+            currentQuestionIndex = 0;
+            userAnswers = [];
+            quizStarted = false;
+            
+            document.getElementById('quizContainer').style.display = 'none';
+            document.getElementById('results').style.display = 'none';
+            document.getElementById('progressBar').style.width = '0%';
+        }
+    </script>
+</body>
+</html>
