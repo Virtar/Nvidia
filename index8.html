@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Machine Learning - Conocimientos y Evaluaciones</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .section {
+            background: white;
+            margin: 20px 0;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .section:hover {
+            transform: translateY(-5px);
+        }
+
+        .section h2 {
+            color: #4a5568;
+            font-size: 2rem;
+            margin-bottom: 20px;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .knowledge-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .knowledge-category {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 5px solid #667eea;
+        }
+
+        .knowledge-category h3 {
+            color: #2d3748;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            margin: 8px 0;
+            padding: 8px;
+            border-radius: 5px;
+            transition: background-color 0.2s;
+        }
+
+        .checkbox-item:hover {
+            background-color: #e2e8f0;
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            margin-right: 10px;
+            transform: scale(1.2);
+            accent-color: #667eea;
+        }
+
+        .checkbox-item label {
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .resources {
+            margin-top: 8px;
+            margin-left: 30px;
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .resources a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .resources a:hover {
+            text-decoration: underline;
+            color: #5a67d8;
+        }
+
+        .quiz-section {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+
+        .quiz-section h2 {
+            color: white;
+            border-bottom-color: white;
+        }
+
+        .quiz-controls {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            margin: 5px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:hover {
+            background: #5a67d8;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        .btn-danger {
+            background: #e53e3e;
+            box-shadow: 0 4px 15px rgba(229, 62, 62, 0.4);
+        }
+
+        .btn-danger:hover {
+            background: #c53030;
+            box-shadow: 0 6px 20px rgba(229, 62, 62, 0.6);
+        }
+
+        .quiz-container {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 25px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            margin: 20px 0;
+        }
+
+        .question {
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+        }
+
+        .question h4 {
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+
+        .options {
+            margin-left: 20px;
+        }
+
+        .option {
+            margin: 8px 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .option input[type="radio"] {
+            margin-right: 10px;
+            transform: scale(1.1);
+            accent-color: white;
+        }
+
+        .option label {
+            cursor: pointer;
+        }
+
+        .results {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .correct {
+            color: #68d391;
+            font-weight: bold;
+        }
+
+        .incorrect {
+            color: #fc8181;
+            font-weight: bold;
+        }
+
+        .score {
+            font-size: 1.5rem;
+            text-align: center;
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 3px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: #68d391;
+            transition: width 0.3s ease;
+            border-radius: 3px;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .knowledge-list {
+                grid-template-columns: 1fr;
+            }
+            
+            .container {
+                padding: 10px;
+            }
+        }
+
+        .footer {
+            text-align: center;
+            color: white;
+            margin-top: 40px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🤖 Machine Learning Mastery</h1>
+            <p>Guía completa de conocimientos y evaluaciones profesionales</p>
+        </div>
+
+        <!-- Lista de Conocimientos -->
+        <div class="section">
+            <h2>📚 Conocimientos Fundamentales</h2>
+            <div class="knowledge-list">
+                <div class="knowledge-category">
+                    <h3>🔢 Matemáticas y Estadística</h3>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="algebra">
+                        <label for="algebra">Álgebra Lineal (vectores, matrices, eigenvalores)</label>
+                        <div class="resources">
+                            📚 <a href="https://www.coursera.org/learn/linear-algebra-machine-learning" target="_blank">Linear Algebra for ML - Coursera</a><br>
+                            🎥 <a href="https://www.youtube.com/watch?v=fNk_zzaMoSs&list=PLZHQObOWTQDPD3MizzM2xVFitgF8hE_ab" target="_blank">Essence of Linear Algebra - 3Blue1Brown</a><br>
+                            📖 <a href="https://www.deeplearningbook.org/contents/linear_algebra.html" target="_blank">Deep Learning Book - Linear Algebra</a>
+                        </div>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="calculo">
+                        <label for="calculo">Cálculo (derivadas, gradientes, optimización)</label>
+                        <div class="resources">
+                            📚 <a href="https://www.coursera.org/learn/multivariate-calculus-machine-learning" target="_blank">Multivariate Calculus for ML - Coursera</a><br>
+                            🎥 <a href="https://www.youtube.com/watch?v=WUvTyaaNkzM&list=PLZHQObOWTQDMsr9K-rj53DwVRMYO3t5Yr" target="_blank">Essence of Calculus - 3Blue1Brown</a><br>
+                            📖 <a href="https://www.khanacademy.org/math/multivariable-calculus" target="_blank">Khan Academy - Multivariable Calculus</a>
+                        </div>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="estadistica">
+                        <label for="estadistica">Estadística (probabilidad, distribuciones)</label>
+                        <div class="resources">
+                            📚 <a href="https://www.coursera.org/learn/probability-statistics-machine-learning" target="_blank">Statistics for ML - Coursera</a><br>
+                            🎥 <a href="https://www.youtube.com/watch?v=Tk4ubu7BlSk" target="_blank">Curso Estadística - Dot CSV</a><br>
+                            📖 <a href="https://www.statlearning.com/" target="_blank">Introduction to Statistical Learning</a>
+                        </div>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="bayesiana">
+                        <label for="bayesiana">Estadística Bayesiana (teorema de Bayes)</label>
+                        <div class="resources">
+                            📚 <a href="https://www.coursera.org/learn/bayesian-statistics" target="_blank">Bayesian Statistics - Coursera</a><br>
+                            🎥 <a href="https://www.youtube.com/watch?v=HZGCoVF3YvM" target="_blank">Bayes Theorem - 3Blue1Brown</a><br>
+                            📖 <a href="https://www.amazon.com/Bayesian-Data-Analysis-Third-Chapman/dp/1439840954" target="_blank">Bayesian Data Analysis - Gelman</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="knowledge-category">
+                    <h3>💻 Programación</h3>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="python">
+                        <label for="python">Python (NumPy, Pandas, Matplotlib)</label>
+                        <div class="resources">
+                            📚 <a href="https://www.coursera.org/learn/python-for-applied-data-science-ai" target="_blank">Python for Data Science - Coursera</a><br>
+                            🎥 <a href="https://www.youtube.com/watch?v=rfscVS0vtbw" target="_blank">Learn Python - freeCodeCamp</a><br>
+                            📖 <a href="https://pandas.pydata.org/docs/user_guide/index.html" target="_blank">Pandas Documentation</a>
+                        </div>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="r">
+                        <label for="r">R (análisis estadístico avanzado)</label>
+                        <div class="resources">
+                            📚 <a href="https://www.coursera.org/learn/r-programming" target="_blank">R Programming - Coursera</a><br>
+                            🎥 <a href="https://www.youtube.com/watch?v=_V8eKsto3Ug" target="_blank">R Tutorial - MarinStatsLectures</a><br>
+                            📖 <a href="https://r4ds.had.co.nz/" target="_blank">R for Data Science</a>
+                        </div>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="sql">
+                        <label for="sql">SQL (manejo de bases de datos)</label>
+                        <div class="resources">
+                            📚 <a href="https://www.coursera.org/learn/sql-for-data-science" target="_blank">SQL for Data Science - Coursera</a><br>
+                            🎥 <a href="https://www.youtube.com/watch?v=HXV3zeQKqGY" target="_blank">SQL Tutorial - freeCodeCamp</a><br>
+                            📖 <a href="https://www.w3schools.com/sql/" target="_blank">W3Schools SQL Tutorial</a>
+                        </div>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="git">
+                        <label for="git">Git (control de versiones)</label>
+                        <div class="resources">
+                            📚 <a href="https://www.coursera.org/learn/version-control" target="_blank">Version Control - Coursera</a><br>
+                            🎥 <a href="https://www.youtube.com/watch?v=RGOj5yH7evk" target="_blank">Git Tutorial - freeCodeCamp</a><br>
+                            📖 <a href="https://git-scm.com/doc" target="_blank">Git Documentation</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="knowledge-category">
+                    <h3>🧠 Machine Learning Core</h3>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="supervised">
+                        <label for="supervised">Supervised Learning (regresión, clasificación)</label>
+                        <div class="resources">
+                            📚 <a href="https://www.coursera.org/specializations/machine-learning-introduction" target="_blank">ML Specialization - Andrew Ng</a><br>
+                            🎥 <a href="https://www.youtube.com/watch?v=aircAruvnKk" target="_blank">Neural Networks - 3Blue1Brown</a><br>
+                            📖 <a href="https://scikit-learn.org/stable/supervised_learning.html" target="_blank">Scikit-learn Supervised Learning</a>
+                        </div>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="unsupervised">
+                        <label for="unsupervised">Unsupervised Learning (clustering, PCA)</label>
+                        <div class="resources">
+                            📚 <a href="https://www.coursera.org/learn/unsupervised-learning-recommenders-reinforcement-learning" target="_blank">Unsupervised Learning - Coursera</a><br>
+                            🎥 <a href="https://www.youtube.com/watch?v=FgakZw6K1QQ" target="_blank">Principal Component Analysis - StatQuest</a><br>
+                            📖 <a href="https://scikit-learn.org/stable/unsupervised_learning.html" target="_blank">Scikit-learn Unsupervised Learning</a>
+                        </div>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="deep">
+                        <label for="deep">Deep Learning (CNN, RNN, Transformers)</label>
+                        <div class="resources">
+                            📚 <a href="https://www.coursera.org/specializations/deep-learning" target="_blank">Deep Learning - Andrew Ng</a><br>
+                            🎥 <a href="https://www.youtube.com/watch?v=VMj-3S1tku0" target="_blank">Attention is All You Need - Yannic Kilcher</a><br>
+                            📖 <a href="https://www.deeplearningbook.org/" target="_blank">Deep Learning Book - Goodfellow</a>
+                        </div>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="reinforcement">
+                        <label for="reinforcement">Reinforcement Learning (Q-learning)</label>
+                        <div class="resources">
+                            📚 <a href="https://www.coursera.org/learn/reinforcement-learning-course" target="_blank">Reinforcement Learning - Coursera</a><br>
+                            🎥 <a href="https://www.youtube.com/watch?v=2pWv7GOvuf0" target="_blank">RL Course - DeepMind</a><br>
+                            📖 <a href="http://incompleteideas.net/book/the-book-2nd.html" target="_blank">Sutton & Barto RL Book</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="knowledge-category">
+                    <h3>🛠️ Herramientas y Frameworks</h3>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="sklearn">
+                        <label for="sklearn">Scikit-learn (ML tradicional)</label>
+                        <div class="resources">
+                            📚 <a href="https://www.coursera.org/learn/machine-learning-with-python" target="_blank">ML with Python - Coursera</a><br>
+                            🎥 <a href="https://www.youtube.com/watch?v=pqNCD_5r0IU" target="_blank">Scikit-learn Tutorial - sentdex</a><br>
+                            📖 <a href="https://scikit-learn.org/stable/tutorial/index.html" target="_blank">Scikit-learn Tutorial</a>
+                        </div>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="tensorflow">
+                        <label for="tensorflow">TensorFlow/Keras (Deep Learning)</label>
+                        <div class="resources">
+                            📚 <a href="https://www.coursera.org/professional-certificates/tensorflow-in-practice" target="_blank">TensorFlow Developer Certificate</a><br>
+                            🎥 <a href="https://www.youtube.com/watch?v=tPYj3fFJGjk" target="_blank">TensorFlow Tutorial - freeCodeCamp</a><br>
+                            📖 <a href="https://www.tensorflow.org/tutorials" target="_blank">TensorFlow Official Tutorials</a>
+                        </div>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="pytorch">
+                        <label for="pytorch">PyTorch (investigación y producción)</label>
+                        <div class="resources">
+                            📚 <a href="https://www.coursera.org/learn/deep-neural-networks-with-pytorch" target="_blank">Deep Neural Networks with PyTorch</a><br>
+                            🎥 <a href="https://www.youtube.com/watch?v=Z_ikDlimN6A" target="_blank">PyTorch Tutorial - Python Engineer</a><br>
+                            📖 <a href="https://pytorch.org/tutorials/" target="_blank">PyTorch Official Tutorials</a>
+                        </div>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="mlops">
+                        <label for="mlops">MLOps (MLflow, Docker, Kubernetes)</label>
+                        <div class="resources">
+                            📚 <a href="https://www.coursera.org/learn/machine-learning-engineering-for-production-mlops" target="_blank">MLOps Specialization - Coursera</a><br>
+                            🎥 <a href="https://www.youtube.com/watch?v=9BgIDqAzfuA" target="_blank">Docker Tutorial - Programming with Mosh</a><br>
+                            📖 <a href="https://mlflow.org/docs/latest/tutorials-and-examples/index.html" target="_blank">MLflow Documentation</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sección de Recursos Adicionales -->
+        <div class="section">
+            <h2>🎯 Recursos Adicionales</h2>
+            <div class="knowledge-list">
+                <div class="knowledge-category">
+                    <h3>📊 Práctica y Datasets</h3>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="kaggle">
+                        <label for="kaggle">Kaggle (competencias y datasets)</label>
+                        <div class="resources">
+                            🏆 <a href="https://www.kaggle.com/competitions" target="_blank">Kaggle Competitions</a><br>
+                            📊 <a href="https://www.kaggle.com/datasets" target="_blank">Kaggle Datasets</a><br>
+                            🎓 <a href="https://www.kaggle.com/learn" target="_blank">Kaggle Learn</a>
+                        </div>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="colab">
+                        <label for="colab">Google Colab (notebooks gratuitos)</label>
+                        <div class="resources">
+                            💻 <a href="https://colab.research.google.com/" target="_blank">Google Colab</a><br>
+                            📚 <a href="https://colab.research.google.com/notebooks/intro.ipynb" target="_blank">Colab Intro</a><br>
+                            🎥 <a href="https://www.youtube.com/watch?v=inN8seMm7UI" target="_blank">Colab Tutorial</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="knowledge-category">
+                    <h3>🌐 Comunidades y Ayuda</h3>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="stackoverflow">
+                        <label for="stackoverflow">Stack Overflow (resolución de dudas)</label>
+                        <div class="resources">
+                            ❓ <a href="https://stackoverflow.com/questions/tagged/machine-learning" target="_blank">ML Questions</a><br>
+                            🐍 <a href="https://stackoverflow.com/questions/tagged/python" target="_blank">Python Questions</a><br>
+                            📊 <a href="https://stackoverflow.com/questions/tagged/pandas" target="_blank">Pandas Questions</a>
+                        </div>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="reddit">
+                        <label for="reddit">Reddit (r/MachineLearning, r/datascience)</label>
+                        <div class="resources">
+                            🤖 <a href="https://www.reddit.com/r/MachineLearning/" target="_blank">r/MachineLearning</a><br>
+                            📈 <a href="https://www.reddit.com/r/datascience/" target="_blank">r/datascience</a><br>
+                            💻 <a href="https://www.reddit.com/r/LearnMachineLearning/" target="_blank">r/LearnMachineLearning</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="knowledge-category">
+                    <h3>📖 Libros Recomendados 2024-2025</h3>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="hands-on-ml">
+                        <label for="hands-on-ml">Hands-On Machine Learning - Aurélien Géron</label>
+                        <div class="resources">
+                            📚 <a href="https://www.oreilly.com/library/view/hands-on-machine-learning/9781492032632/" target="_blank">O'Reilly Book</a><br>
+                            💻 <a href="https://github.com/ageron/handson-ml3" target="_blank">GitHub Code</a><br>
+                            🎥 <a href="https://www.youtube.com/watch?v=1w5dCrtIhSs" target="_blank">Book Review</a>
+                        </div>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="pattern-recognition">
+                        <label for="pattern-recognition">Pattern Recognition and ML - Christopher Bishop</label>
+                        <div class="resources">
+                            📚 <a href="https://www.microsoft.com/en-us/research/uploads/prod/2006/01/Bishop-Pattern-Recognition-and-Machine-Learning-2006.pdf" target="_blank">Free PDF</a><br>
+                            🎓 <a href="https://www.coursera.org/learn/bayesian-methods-in-machine-learning" target="_blank">Related Course</a><br>
+                            📊 <a href="https://github.com/ctgk/PRML" target="_blank">Python Code</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sección de Evaluación -->
+        <div class="section quiz-section">
+            <h2>🎯 Evaluación Profesional</h2>
+            <div class="quiz-controls">
+                <button class="btn" onclick="generateQuiz()">🎲 Generar Quiz Aleatorio</button>
+                <button class="btn btn-danger" onclick="resetQuiz()">🔄 Reiniciar Quiz</button>
+            </div>
+            
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            
+            <div class="quiz-container" id="quizContainer">
+                <p style="text-align: center; font-size: 1.2rem; opacity: 0.8;">
+                    ¡Haz clic en "Generar Quiz Aleatorio" para comenzar tu evaluación profesional!
+                </p>
+            </div>
+            
+            <div class="results" id="results">
+                <!-- Los resultados se mostrarán aquí -->
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>💡 <strong>Tip:</strong> Practica regularmente y combina teoría con proyectos reales</p>
+            <p>🚀 ¡El futuro del ML está en tus manos!</p>
+        </div>
+    </div>
+
+    <script>
+        // Base de datos de preguntas organizadas por tema
+        const questionDatabase = {
+            matematicas: [
+                {
+                    question: "¿Qué representa la matriz de covarianza?",
+                    options: ["Correlación entre variables", "Valores perdidos", "Errores del modelo", "Pesos de la red neuronal"],
+                    correct: 0,
+                    explanation: "La matriz de covarianza muestra cómo las variables se relacionan entre sí, esencial para entender la estructura de los datos."
+                },
+                {
+                    question: "En el teorema de Bayes, ¿qué es el prior?",
+                    options: ["La evidencia observada", "La probabilidad inicial antes de observar datos", "El resultado final", "La función de pérdida"],
+                    correct: 1,
+                    explanation: "El prior representa nuestro conocimiento inicial sobre un parámetro antes de observar nuevos datos."
+                },
+                {
+                    question: "¿Qué es la norma L2 en el contexto de regularización?",
+                    options: ["Suma de valores absolutos", "Suma de cuadrados", "Valor máximo", "Promedio aritmético"],
+                    correct: 1,
+                    explanation: "La norma L2 es la suma de los cuadrados de los elementos, usada en Ridge regression para regularización."
+                },
+                {
+                    question: "¿Cuál es la diferencia principal entre eigenvalores y eigenvectores?",
+                    options: ["No hay diferencia", "Eigenvalores son escalares, eigenvectores son vectores", "Solo se usan en clasificación", "Son lo mismo"],
+                    correct: 1,
+                    explanation: "Los eigenvalores son escalares que representan la magnitud, mientras que los eigenvectores son direcciones en el espacio."
+                },
+                {
+                    question: "¿Qué distribución se asume comúnmente en regresión lineal para los errores?",
+                    options: ["Uniforme", "Normal/Gaussiana", "Exponencial", "Binomial"],
+                    correct: 1,
+                    explanation: "Se asume distribución normal para los errores, lo que permite usar mínimos cuadrados y hacer inferencias estadísticas."
+                },
+                {
+                    question: "¿Para qué
