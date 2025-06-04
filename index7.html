@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Checklist Machine Learning - Evaluación Profesional</title>
+    <title>Machine Learning - Conocimientos y Evaluaciones</title>
     <style>
         * {
             margin: 0;
@@ -13,762 +13,819 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
-            padding: 20px;
         }
 
         .container {
             max-width: 1200px;
             margin: 0 auto;
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 20px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
-            backdrop-filter: blur(10px);
-            overflow: hidden;
+            padding: 20px;
         }
 
         .header {
-            background: linear-gradient(45deg, #2196F3, #21CBF3);
-            color: white;
-            padding: 30px;
             text-align: center;
-            position: relative;
-        }
-
-        .header::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="20" cy="20" r="2" fill="rgba(255,255,255,0.1)"/><circle cx="80" cy="80" r="2" fill="rgba(255,255,255,0.1)"/><circle cx="60" cy="30" r="1" fill="rgba(255,255,255,0.1)"/></svg>');
+            color: white;
+            margin-bottom: 40px;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
         }
 
         .header h1 {
-            font-size: 2.5em;
+            font-size: 3rem;
             margin-bottom: 10px;
-            position: relative;
-            z-index: 1;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
         }
 
         .header p {
-            font-size: 1.2em;
+            font-size: 1.2rem;
             opacity: 0.9;
-            position: relative;
-            z-index: 1;
-        }
-
-        .progress-bar {
-            background: rgba(255, 255, 255, 0.2);
-            height: 6px;
-            border-radius: 3px;
-            margin-top: 20px;
-            overflow: hidden;
-            position: relative;
-            z-index: 1;
-        }
-
-        .progress-fill {
-            background: #4CAF50;
-            height: 100%;
-            width: 0%;
-            border-radius: 3px;
-            transition: width 0.3s ease;
-        }
-
-        .nav-tabs {
-            display: flex;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
-            margin-top: 20px;
-            position: relative;
-            z-index: 1;
-        }
-
-        .nav-tab {
-            flex: 1;
-            padding: 12px 20px;
-            text-align: center;
-            cursor: pointer;
-            border-radius: 8px;
-            transition: all 0.3s ease;
-            font-weight: 500;
-        }
-
-        .nav-tab.active {
-            background: rgba(255, 255, 255, 0.2);
-            backdrop-filter: blur(5px);
-        }
-
-        .nav-tab:hover {
-            background: rgba(255, 255, 255, 0.15);
-        }
-
-        .main-content {
-            padding: 40px;
-        }
-
-        .tab-content {
-            display: none;
-        }
-
-        .tab-content.active {
-            display: block;
         }
 
         .section {
-            margin-bottom: 40px;
-            border-radius: 15px;
             background: white;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
-            overflow: hidden;
+            margin: 20px 0;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
             transition: transform 0.3s ease;
         }
 
         .section:hover {
-            transform: translateY(-2px);
+            transform: translateY(-5px);
         }
 
-        .section-header {
-            background: linear-gradient(45deg, #FF6B6B, #FF8E8E);
-            color: white;
-            padding: 20px;
-            font-size: 1.4em;
-            font-weight: bold;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+        .section h2 {
+            color: #4a5568;
+            font-size: 2rem;
+            margin-bottom: 20px;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
         }
 
-        .section-content {
-            padding: 25px;
-        }
-
-        .checklist-item {
-            display: flex;
-            align-items: center;
-            padding: 15px;
-            margin: 8px 0;
-            border-radius: 10px;
-            border: 2px solid #f0f0f0;
-            transition: all 0.3s ease;
-            cursor: pointer;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .checklist-item::before {
-            content: '';
-            position: absolute;
-            left: -100%;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(33, 150, 243, 0.1), transparent);
-            transition: left 0.5s ease;
-        }
-
-        .checklist-item:hover::before {
-            left: 100%;
-        }
-
-        .checklist-item:hover {
-            border-color: #2196F3;
-            background-color: #f8f9ff;
-            transform: translateX(5px);
-        }
-
-        .checklist-item.completed {
-            background-color: #e8f5e8;
-            border-color: #4CAF50;
-        }
-
-        .checklist-item input[type="checkbox"] {
-            margin-right: 15px;
-            transform: scale(1.2);
-            cursor: pointer;
-        }
-
-        .checklist-item label {
-            cursor: pointer;
-            font-size: 1.1em;
-            line-height: 1.4;
-            flex: 1;
-        }
-
-        .quiz-question {
-            background: white;
-            border-radius: 10px;
-            padding: 20px;
-            margin: 15px 0;
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
-            border-left: 4px solid #2196F3;
-        }
-
-        .quiz-question h4 {
-            color: #333;
-            margin-bottom: 15px;
-            font-size: 1.1em;
-        }
-
-        .quiz-options {
+        .knowledge-list {
             display: grid;
-            gap: 10px;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
         }
 
-        .quiz-option {
+        .knowledge-category {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 5px solid #667eea;
+        }
+
+        .knowledge-category h3 {
+            color: #2d3748;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+
+        .checkbox-item {
             display: flex;
             align-items: center;
-            padding: 10px;
-            border-radius: 8px;
-            border: 2px solid #e0e0e0;
-            cursor: pointer;
-            transition: all 0.3s ease;
+            margin: 8px 0;
+            padding: 8px;
+            border-radius: 5px;
+            transition: background-color 0.2s;
         }
 
-        .quiz-option:hover {
-            border-color: #2196F3;
-            background-color: #f0f8ff;
+        .checkbox-item:hover {
+            background-color: #e2e8f0;
         }
 
-        .quiz-option.selected {
-            border-color: #2196F3;
-            background-color: #e3f2fd;
-        }
-
-        .quiz-option.correct {
-            border-color: #4CAF50;
-            background-color: #e8f5e8;
-        }
-
-        .quiz-option.incorrect {
-            border-color: #f44336;
-            background-color: #ffebee;
-        }
-
-        .quiz-option input[type="radio"] {
+        .checkbox-item input[type="checkbox"] {
             margin-right: 10px;
+            transform: scale(1.2);
+            accent-color: #667eea;
+        }
+
+        .checkbox-item label {
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .resources {
+            margin-top: 8px;
+            margin-left: 30px;
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .resources a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .resources a:hover {
+            text-decoration: underline;
+            color: #5a67d8;
+        }
+
+        .quiz-section {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+
+        .quiz-section h2 {
+            color: white;
+            border-bottom-color: white;
         }
 
         .quiz-controls {
             text-align: center;
-            margin: 30px 0;
+            margin-bottom: 30px;
         }
 
         .btn {
-            background: linear-gradient(45deg, #2196F3, #21CBF3);
+            background: #667eea;
             color: white;
             border: none;
-            padding: 12px 30px;
+            padding: 12px 25px;
             border-radius: 25px;
             cursor: pointer;
-            font-size: 1em;
-            font-weight: bold;
-            margin: 0 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            margin: 5px;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(33, 150, 243, 0.3);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
         }
 
         .btn:hover {
+            background: #5a67d8;
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(33, 150, 243, 0.4);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
         }
 
-        .btn:disabled {
-            background: #ccc;
-            cursor: not-allowed;
-            transform: none;
-            box-shadow: none;
+        .btn-danger {
+            background: #e53e3e;
+            box-shadow: 0 4px 15px rgba(229, 62, 62, 0.4);
         }
 
-        .btn-secondary {
-            background: linear-gradient(45deg, #FF9800, #FF6B6B);
+        .btn-danger:hover {
+            background: #c53030;
+            box-shadow: 0 6px 20px rgba(229, 62, 62, 0.6);
         }
 
-        .quiz-results {
-            background: linear-gradient(45deg, #4CAF50, #45a049);
-            color: white;
-            padding: 20px;
-            border-radius: 10px;
-            text-align: center;
-            margin: 20px 0;
-        }
-
-        .interview-section {
-            background: linear-gradient(45deg, #667eea, #764ba2);
-            color: white;
-            margin-top: 40px;
-            border-radius: 15px;
-            padding: 30px;
-        }
-
-        .interview-question {
+        .quiz-container {
             background: rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
-            padding: 20px;
+            padding: 25px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
             margin: 20px 0;
-            backdrop-filter: blur(5px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
-        .interview-question h4 {
-            color: #FFD700;
-            margin-bottom: 10px;
-            font-size: 1.2em;
-        }
-
-        .solution {
-            background: rgba(255, 255, 255, 0.15);
-            border-radius: 8px;
+        .question {
+            margin: 20px 0;
             padding: 15px;
-            margin-top: 15px;
-            border-left: 4px solid #FFD700;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
         }
 
-        .solution h5 {
-            color: #FFD700;
-            margin-bottom: 8px;
-            font-size: 1em;
+        .question h4 {
+            margin-bottom: 15px;
+            font-size: 1.1rem;
         }
 
-        .solution-content {
-            line-height: 1.6;
-            font-size: 0.95em;
+        .options {
+            margin-left: 20px;
         }
 
-        .solution-hidden {
+        .option {
+            margin: 8px 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .option input[type="radio"] {
+            margin-right: 10px;
+            transform: scale(1.1);
+            accent-color: white;
+        }
+
+        .option label {
+            cursor: pointer;
+        }
+
+        .results {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
             display: none;
         }
 
-        .show-solution-btn {
-            background: rgba(255, 215, 0, 0.2);
-            border: 1px solid #FFD700;
-            color: #FFD700;
-            padding: 8px 16px;
-            border-radius: 20px;
-            cursor: pointer;
-            font-size: 0.9em;
-            margin-top: 10px;
-            transition: all 0.3s ease;
+        .correct {
+            color: #68d391;
+            font-weight: bold;
         }
 
-        .show-solution-btn:hover {
-            background: rgba(255, 215, 0, 0.3);
+        .incorrect {
+            color: #fc8181;
+            font-weight: bold;
         }
 
-        .stats {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: rgba(255, 255, 255, 0.9);
+        .score {
+            font-size: 1.5rem;
+            text-align: center;
+            margin: 20px 0;
             padding: 15px;
+            background: rgba(255, 255, 255, 0.3);
             border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-            backdrop-filter: blur(10px);
-            z-index: 1000;
         }
 
-        .stats-item {
-            margin: 5px 0;
-            font-size: 0.9em;
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 3px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: #68d391;
+            transition: width 0.3s ease;
+            border-radius: 3px;
         }
 
         @media (max-width: 768px) {
-            .container {
-                margin: 10px;
-            }
-            
             .header h1 {
-                font-size: 2em;
+                font-size: 2rem;
             }
             
-            .main-content {
-                padding: 20px;
+            .knowledge-list {
+                grid-template-columns: 1fr;
             }
             
-            .stats {
-                position: static;
-                margin-bottom: 20px;
-            }
-
-            .nav-tabs {
-                flex-direction: column;
+            .container {
+                padding: 10px;
             }
         }
 
-        .celebration {
-            display: none;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: white;
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-            z-index: 2000;
+        .footer {
             text-align: center;
-        }
-
-        .overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 1500;
-        }
-
-        .section-score {
-            font-size: 0.9em;
-            opacity: 0.9;
-        }
-
-        .refresh-btn {
-            background: rgba(255, 255, 255, 0.2);
-            border: none;
             color: white;
-            padding: 8px 15px;
-            border-radius: 20px;
-            cursor: pointer;
-            font-size: 0.9em;
-        }
-
-        .refresh-btn:hover {
-            background: rgba(255, 255, 255, 0.3);
-        }
-
-        .difficulty-badge {
-            display: inline-block;
-            padding: 4px 12px;
+            margin-top: 40px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
             border-radius: 15px;
-            font-size: 0.8em;
-            font-weight: bold;
-            margin-left: 10px;
+            backdrop-filter: blur(10px);
         }
-
-        .difficulty-beginner { background: #4CAF50; color: white; }
-        .difficulty-intermediate { background: #FF9800; color: white; }
-        .difficulty-advanced { background: #f44336; color: white; }
     </style>
 </head>
 <body>
-    <div class="overlay" id="overlay"></div>
-    
-    <div class="stats" id="stats">
-        <div class="stats-item"><strong>Checklist:</strong> <span id="completed">0</span>/<span id="total">0</span> (<span id="percentage">0%</span>)</div>
-        <div class="stats-item"><strong>Quiz:</strong> <span id="quizScore">0</span>/<span id="quizTotal">0</span></div>
-        <div class="stats-item"><strong>Evaluación:</strong> <span id="currentEval">1</span>/20</div>
-    </div>
-
     <div class="container">
         <div class="header">
-            <h1>🤖 Machine Learning Checklist</h1>
-            <p>Evaluación Completa de Conocimientos Profesionales</p>
-            
-            <div class="nav-tabs">
-                <div class="nav-tab active" onclick="switchTab('checklist')">📋 Checklist</div>
-                <div class="nav-tab" onclick="switchTab('quiz')">🧠 Quiz Conocimiento</div>
-                <div class="nav-tab" onclick="switchTab('interview')">💼 Evaluación Profesional</div>
-            </div>
-            
-            <div class="progress-bar">
-                <div class="progress-fill" id="progressFill"></div>
+            <h1>🤖 Machine Learning Mastery</h1>
+            <p>Guía completa de conocimientos y evaluaciones profesionales</p>
+        </div>
+
+        <!-- Lista de Conocimientos -->
+        <div class="section">
+            <h2>📚 Conocimientos Fundamentales</h2>
+            <div class="knowledge-list">
+                <div class="knowledge-category">
+                    <h3>🔢 Matemáticas y Estadística</h3>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="algebra">
+                        <label for="algebra">Álgebra Lineal (vectores, matrices, eigenvalores)</label>
+                        <div class="resources">
+                            📚 <a href="https://www.coursera.org/learn/linear-algebra-machine-learning" target="_blank">Linear Algebra for ML - Coursera</a><br>
+                            🎥 <a href="https://www.youtube.com/watch?v=fNk_zzaMoSs&list=PLZHQObOWTQDPD3MizzM2xVFitgF8hE_ab" target="_blank">Essence of Linear Algebra - 3Blue1Brown</a><br>
+                            📖 <a href="https://www.deeplearningbook.org/contents/linear_algebra.html" target="_blank">Deep Learning Book - Linear Algebra</a>
+                        </div>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="calculo">
+                        <label for="calculo">Cálculo (derivadas, gradientes, optimización)</label>
+                        <div class="resources">
+                            📚 <a href="https://www.coursera.org/learn/multivariate-calculus-machine-learning" target="_blank">Multivariate Calculus for ML - Coursera</a><br>
+                            🎥 <a href="https://www.youtube.com/watch?v=WUvTyaaNkzM&list=PLZHQObOWTQDMsr9K-rj53DwVRMYO3t5Yr" target="_blank">Essence of Calculus - 3Blue1Brown</a><br>
+                            📖 <a href="https://www.khanacademy.org/math/multivariable-calculus" target="_blank">Khan Academy - Multivariable Calculus</a>
+                        </div>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="estadistica">
+                        <label for="estadistica">Estadística (probabilidad, distribuciones)</label>
+                        <div class="resources">
+                            📚 <a href="https://www.coursera.org/learn/probability-statistics-machine-learning" target="_blank">Statistics for ML - Coursera</a><br>
+                            🎥 <a href="https://www.youtube.com/watch?v=Tk4ubu7BlSk" target="_blank">Curso Estadística - Dot CSV</a><br>
+                            📖 <a href="https://www.statlearning.com/" target="_blank">Introduction to Statistical Learning</a>
+                        </div>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="bayesiana">
+                        <label for="bayesiana">Estadística Bayesiana (teorema de Bayes)</label>
+                        <div class="resources">
+                            📚 <a href="https://www.coursera.org/learn/bayesian-statistics" target="_blank">Bayesian Statistics - Coursera</a><br>
+                            🎥 <a href="https://www.youtube.com/watch?v=HZGCoVF3YvM" target="_blank">Bayes Theorem - 3Blue1Brown</a><br>
+                            📖 <a href="https://www.amazon.com/Bayesian-Data-Analysis-Third-Chapman/dp/1439840954" target="_blank">Bayesian Data Analysis - Gelman</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="knowledge-category">
+                    <h3>💻 Programación</h3>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="python">
+                        <label for="python">Python (NumPy, Pandas, Matplotlib)</label>
+                        <div class="resources">
+                            📚 <a href="https://www.coursera.org/learn/python-for-applied-data-science-ai" target="_blank">Python for Data Science - Coursera</a><br>
+                            🎥 <a href="https://www.youtube.com/watch?v=rfscVS0vtbw" target="_blank">Learn Python - freeCodeCamp</a><br>
+                            📖 <a href="https://pandas.pydata.org/docs/user_guide/index.html" target="_blank">Pandas Documentation</a>
+                        </div>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="r">
+                        <label for="r">R (análisis estadístico avanzado)</label>
+                        <div class="resources">
+                            📚 <a href="https://www.coursera.org/learn/r-programming" target="_blank">R Programming - Coursera</a><br>
+                            🎥 <a href="https://www.youtube.com/watch?v=_V8eKsto3Ug" target="_blank">R Tutorial - MarinStatsLectures</a><br>
+                            📖 <a href="https://r4ds.had.co.nz/" target="_blank">R for Data Science</a>
+                        </div>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="sql">
+                        <label for="sql">SQL (manejo de bases de datos)</label>
+                        <div class="resources">
+                            📚 <a href="https://www.coursera.org/learn/sql-for-data-science" target="_blank">SQL for Data Science - Coursera</a><br>
+                            🎥 <a href="https://www.youtube.com/watch?v=HXV3zeQKqGY" target="_blank">SQL Tutorial - freeCodeCamp</a><br>
+                            📖 <a href="https://www.w3schools.com/sql/" target="_blank">W3Schools SQL Tutorial</a>
+                        </div>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="git">
+                        <label for="git">Git (control de versiones)</label>
+                        <div class="resources">
+                            📚 <a href="https://www.coursera.org/learn/version-control" target="_blank">Version Control - Coursera</a><br>
+                            🎥 <a href="https://www.youtube.com/watch?v=RGOj5yH7evk" target="_blank">Git Tutorial - freeCodeCamp</a><br>
+                            📖 <a href="https://git-scm.com/doc" target="_blank">Git Documentation</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="knowledge-category">
+                    <h3>🧠 Machine Learning Core</h3>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="supervised">
+                        <label for="supervised">Supervised Learning (regresión, clasificación)</label>
+                        <div class="resources">
+                            📚 <a href="https://www.coursera.org/specializations/machine-learning-introduction" target="_blank">ML Specialization - Andrew Ng</a><br>
+                            🎥 <a href="https://www.youtube.com/watch?v=aircAruvnKk" target="_blank">Neural Networks - 3Blue1Brown</a><br>
+                            📖 <a href="https://scikit-learn.org/stable/supervised_learning.html" target="_blank">Scikit-learn Supervised Learning</a>
+                        </div>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="unsupervised">
+                        <label for="unsupervised">Unsupervised Learning (clustering, PCA)</label>
+                        <div class="resources">
+                            📚 <a href="https://www.coursera.org/learn/unsupervised-learning-recommenders-reinforcement-learning" target="_blank">Unsupervised Learning - Coursera</a><br>
+                            🎥 <a href="https://www.youtube.com/watch?v=FgakZw6K1QQ" target="_blank">Principal Component Analysis - StatQuest</a><br>
+                            📖 <a href="https://scikit-learn.org/stable/unsupervised_learning.html" target="_blank">Scikit-learn Unsupervised Learning</a>
+                        </div>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="deep">
+                        <label for="deep">Deep Learning (CNN, RNN, Transformers)</label>
+                        <div class="resources">
+                            📚 <a href="https://www.coursera.org/specializations/deep-learning" target="_blank">Deep Learning - Andrew Ng</a><br>
+                            🎥 <a href="https://www.youtube.com/watch?v=VMj-3S1tku0" target="_blank">Attention is All You Need - Yannic Kilcher</a><br>
+                            📖 <a href="https://www.deeplearningbook.org/" target="_blank">Deep Learning Book - Goodfellow</a>
+                        </div>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="reinforcement">
+                        <label for="reinforcement">Reinforcement Learning (Q-learning)</label>
+                        <div class="resources">
+                            📚 <a href="https://www.coursera.org/learn/reinforcement-learning-course" target="_blank">Reinforcement Learning - Coursera</a><br>
+                            🎥 <a href="https://www.youtube.com/watch?v=2pWv7GOvuf0" target="_blank">RL Course - DeepMind</a><br>
+                            📖 <a href="http://incompleteideas.net/book/the-book-2nd.html" target="_blank">Sutton & Barto RL Book</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="knowledge-category">
+                    <h3>🛠️ Herramientas y Frameworks</h3>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="sklearn">
+                        <label for="sklearn">Scikit-learn (ML tradicional)</label>
+                        <div class="resources">
+                            📚 <a href="https://www.coursera.org/learn/machine-learning-with-python" target="_blank">ML with Python - Coursera</a><br>
+                            🎥 <a href="https://www.youtube.com/watch?v=pqNCD_5r0IU" target="_blank">Scikit-learn Tutorial - sentdex</a><br>
+                            📖 <a href="https://scikit-learn.org/stable/tutorial/index.html" target="_blank">Scikit-learn Tutorial</a>
+                        </div>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="tensorflow">
+                        <label for="tensorflow">TensorFlow/Keras (Deep Learning)</label>
+                        <div class="resources">
+                            📚 <a href="https://www.coursera.org/professional-certificates/tensorflow-in-practice" target="_blank">TensorFlow Developer Certificate</a><br>
+                            🎥 <a href="https://www.youtube.com/watch?v=tPYj3fFJGjk" target="_blank">TensorFlow Tutorial - freeCodeCamp</a><br>
+                            📖 <a href="https://www.tensorflow.org/tutorials" target="_blank">TensorFlow Official Tutorials</a>
+                        </div>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="pytorch">
+                        <label for="pytorch">PyTorch (investigación y producción)</label>
+                        <div class="resources">
+                            📚 <a href="https://www.coursera.org/learn/deep-neural-networks-with-pytorch" target="_blank">Deep Neural Networks with PyTorch</a><br>
+                            🎥 <a href="https://www.youtube.com/watch?v=Z_ikDlimN6A" target="_blank">PyTorch Tutorial - Python Engineer</a><br>
+                            📖 <a href="https://pytorch.org/tutorials/" target="_blank">PyTorch Official Tutorials</a>
+                        </div>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="mlops">
+                        <label for="mlops">MLOps (MLflow, Docker, Kubernetes)</label>
+                        <div class="resources">
+                            📚 <a href="https://www.coursera.org/learn/machine-learning-engineering-for-production-mlops" target="_blank">MLOps Specialization - Coursera</a><br>
+                            🎥 <a href="https://www.youtube.com/watch?v=9BgIDqAzfuA" target="_blank">Docker Tutorial - Programming with Mosh</a><br>
+                            📖 <a href="https://mlflow.org/docs/latest/tutorials-and-examples/index.html" target="_blank">MLflow Documentation</a>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <div class="main-content">
-            <!-- CHECKLIST TAB -->
-            <div class="tab-content active" id="checklist">
-                <div class="section">
-                    <div class="section-header">📊 Fundamentos Matemáticos</div>
-                    <div class="section-content">
-                        <div class="checklist-item">
-                            <input type="checkbox" id="algebra">
-                            <label for="algebra">Álgebra Lineal (vectores, matrices, eigenvalores)</label>
+        <!-- Sección de Recursos Adicionales -->
+        <div class="section">
+            <h2>🎯 Recursos Adicionales</h2>
+            <div class="knowledge-list">
+                <div class="knowledge-category">
+                    <h3>📊 Práctica y Datasets</h3>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="kaggle">
+                        <label for="kaggle">Kaggle (competencias y datasets)</label>
+                        <div class="resources">
+                            🏆 <a href="https://www.kaggle.com/competitions" target="_blank">Kaggle Competitions</a><br>
+                            📊 <a href="https://www.kaggle.com/datasets" target="_blank">Kaggle Datasets</a><br>
+                            🎓 <a href="https://www.kaggle.com/learn" target="_blank">Kaggle Learn</a>
                         </div>
-                        <div class="checklist-item">
-                            <input type="checkbox" id="calculus">
-                            <label for="calculus">Cálculo Diferencial (derivadas, gradientes)</label>
-                        </div>
-                        <div class="checklist-item">
-                            <input type="checkbox" id="statistics">
-                            <label for="statistics">Estadística y Probabilidad</label>
-                        </div>
-                        <div class="checklist-item">
-                            <input type="checkbox" id="optimization">
-                            <label for="optimization">Optimización Matemática</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="colab">
+                        <label for="colab">Google Colab (notebooks gratuitos)</label>
+                        <div class="resources">
+                            💻 <a href="https://colab.research.google.com/" target="_blank">Google Colab</a><br>
+                            📚 <a href="https://colab.research.google.com/notebooks/intro.ipynb" target="_blank">Colab Intro</a><br>
+                            🎥 <a href="https://www.youtube.com/watch?v=inN8seMm7UI" target="_blank">Colab Tutorial</a>
                         </div>
                     </div>
                 </div>
 
-                <div class="section">
-                    <div class="section-header">💻 Programación y Herramientas</div>
-                    <div class="section-content">
-                        <div class="checklist-item">
-                            <input type="checkbox" id="python">
-                            <label for="python">Python (Numpy, Pandas, Matplotlib)</label>
+                <div class="knowledge-category">
+                    <h3>🌐 Comunidades y Ayuda</h3>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="stackoverflow">
+                        <label for="stackoverflow">Stack Overflow (resolución de dudas)</label>
+                        <div class="resources">
+                            ❓ <a href="https://stackoverflow.com/questions/tagged/machine-learning" target="_blank">ML Questions</a><br>
+                            🐍 <a href="https://stackoverflow.com/questions/tagged/python" target="_blank">Python Questions</a><br>
+                            📊 <a href="https://stackoverflow.com/questions/tagged/pandas" target="_blank">Pandas Questions</a>
                         </div>
-                        <div class="checklist-item">
-                            <input type="checkbox" id="sklearn">
-                            <label for="sklearn">Scikit-learn</label>
-                        </div>
-                        <div class="checklist-item">
-                            <input type="checkbox" id="tensorflow">
-                            <label for="tensorflow">TensorFlow/Keras o PyTorch</label>
-                        </div>
-                        <div class="checklist-item">
-                            <input type="checkbox" id="sql">
-                            <label for="sql">SQL y manejo de bases de datos</label>
-                        </div>
-                        <div class="checklist-item">
-                            <input type="checkbox" id="git">
-                            <label for="git">Git y control de versiones</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="reddit">
+                        <label for="reddit">Reddit (r/MachineLearning, r/datascience)</label>
+                        <div class="resources">
+                            🤖 <a href="https://www.reddit.com/r/MachineLearning/" target="_blank">r/MachineLearning</a><br>
+                            📈 <a href="https://www.reddit.com/r/datascience/" target="_blank">r/datascience</a><br>
+                            💻 <a href="https://www.reddit.com/r/LearnMachineLearning/" target="_blank">r/LearnMachineLearning</a>
                         </div>
                     </div>
                 </div>
 
-                <div class="section">
-                    <div class="section-header">🧠 Algoritmos de Machine Learning</div>
-                    <div class="section-content">
-                        <div class="checklist-item">
-                            <input type="checkbox" id="supervised">
-                            <label for="supervised">Aprendizaje Supervisado (regresión, clasificación)</label>
-                        </div>
-                        <div class="checklist-item">
-                            <input type="checkbox" id="unsupervised">
-                            <label for="unsupervised">Aprendizaje No Supervisado (clustering, PCA)</label>
-                        </div>
-                        <div class="checklist-item">
-                            <input type="checkbox" id="neural">
-                            <label for="neural">Redes Neuronales y Deep Learning</label>
-                        </div>
-                        <div class="checklist-item">
-                            <input type="checkbox" id="ensemble">
-                            <label for="ensemble">Métodos de Ensemble (Random Forest, XGBoost)</label>
-                        </div>
-                        <div class="checklist-item">
-                            <input type="checkbox" id="validation">
-                            <label for="validation">Validación Cruzada y Métricas de Evaluación</label>
+                <div class="knowledge-category">
+                    <h3>📖 Libros Recomendados 2024-2025</h3>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="hands-on-ml">
+                        <label for="hands-on-ml">Hands-On Machine Learning - Aurélien Géron</label>
+                        <div class="resources">
+                            📚 <a href="https://www.oreilly.com/library/view/hands-on-machine-learning/9781492032632/" target="_blank">O'Reilly Book</a><br>
+                            💻 <a href="https://github.com/ageron/handson-ml3" target="_blank">GitHub Code</a><br>
+                            🎥 <a href="https://www.youtube.com/watch?v=1w5dCrtIhSs" target="_blank">Book Review</a>
                         </div>
                     </div>
-                </div>
-
-                <div class="section">
-                    <div class="section-header">🔄 MLOps y Producción</div>
-                    <div class="section-content">
-                        <div class="checklist-item">
-                            <input type="checkbox" id="preprocessing">
-                            <label for="preprocessing">Preprocesamiento y Feature Engineering</label>
-                        </div>
-                        <div class="checklist-item">
-                            <input type="checkbox" id="deployment">
-                            <label for="deployment">Despliegue de modelos (API, Docker)</label>
-                        </div>
-                        <div class="checklist-item">
-                            <input type="checkbox" id="monitoring">
-                            <label for="monitoring">Monitoreo y mantenimiento de modelos</label>
-                        </div>
-                        <div class="checklist-item">
-                            <input type="checkbox" id="cloud">
-                            <label for="cloud">Plataformas en la nube (AWS, GCP, Azure)</label>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="pattern-recognition">
+                        <label for="pattern-recognition">Pattern Recognition and ML - Christopher Bishop</label>
+                        <div class="resources">
+                            📚 <a href="https://www.microsoft.com/en-us/research/uploads/prod/2006/01/Bishop-Pattern-Recognition-and-Machine-Learning-2006.pdf" target="_blank">Free PDF</a><br>
+                            🎓 <a href="https://www.coursera.org/learn/bayesian-methods-in-machine-learning" target="_blank">Related Course</a><br>
+                            📊 <a href="https://github.com/ctgk/PRML" target="_blank">Python Code</a>
                         </div>
                     </div>
-                </div>
-            </div>
-
-            <!-- QUIZ TAB -->
-            <div class="tab-content" id="quiz">
-                <div id="quizContainer"></div>
-                <div class="quiz-controls">
-                    <button class="btn" id="checkAnswers" onclick="checkQuizAnswers()">Verificar Respuestas</button>
-                    <button class="btn btn-secondary" id="resetQuiz" onclick="resetQuiz()">Reiniciar Quiz</button>
-                </div>
-                <div id="quizResultsContainer"></div>
-            </div>
-
-            <!-- INTERVIEW TAB -->
-            <div class="tab-content" id="interview">
-                <div class="interview-section">
-                    <h3>🎯 Evaluación Profesional Random 
-                        <button class="refresh-btn" onclick="generateNewEvaluation()">🔄 Nueva Evaluación</button>
-                    </h3>
-                    <p>Evaluación <span id="evaluationNumber">1</span> de 20 versiones disponibles</p>
-                    <div id="interviewContainer"></div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <div class="celebration" id="celebration">
-        <h2>🎉 ¡Felicitaciones!</h2>
-        <p>Has completado todos los conocimientos de Machine Learning</p>
-        <button onclick="hideCelebration()" style="margin-top: 15px; padding: 10px 20px; background: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer;">Continuar</button>
+        <div class="footer">
+            <p>💡 <strong>Tip:</strong> Practica regularmente y combina teoría con proyectos reales</p>
+            <p>🚀 ¡El futuro del ML está en tus manos!</p>
+        </div>
     </div>
 
     <script>
-        // Variables globales
-        let totalItems = 0;
-        let completedItems = 0;
-        let currentEvaluationIndex = 0;
-        let quizData = {};
-        let currentQuizAnswers = {};
-
-        // Datos del quiz
-        const quizQuestions = {
-            'Fundamentos Matemáticos': [
+        // Base de datos de preguntas por tema
+        const questionDatabase = {
+            matematicas: [
                 {
-                    question: '¿Qué es un eigenvalor en álgebra lineal?',
-                    options: ['Un vector que no cambia de dirección al aplicar una transformación', 'Un escalar que representa cuánto se escala un eigenvector', 'Una matriz diagonal', 'Un determinante'],
-                    correct: 1
+                    question: "¿Qué es el gradiente en el contexto de machine learning?",
+                    options: ["Vector de derivadas parciales", "Matriz de covarianza", "Vector propio", "Determinante"],
+                    correct: 0,
+                    explanation: "El gradiente es un vector que contiene las derivadas parciales de una función, fundamental para la optimización en ML."
                 },
                 {
-                    question: '¿Cuál es el propósito principal del gradiente en optimización?',
-                    options: ['Calcular la segunda derivada', 'Encontrar la dirección de mayor incremento de una función', 'Normalizar vectores', 'Calcular eigenvalores'],
-                    correct: 1
+                    question: "¿Para qué se utiliza la descomposición en valores singulares (SVD)?",
+                    options: ["Solo para compresión de imágenes", "Reducción de dimensionalidad y PCA", "Clasificación de texto", "Redes neuronales únicamente"],
+                    correct: 1,
+                    explanation: "SVD es fundamental para PCA y reducción de dimensionalidad, descomponiendo matrices en factores más manejables."
                 },
                 {
-                    question: '¿Qué representa la covarianza entre dos variables?',
-                    options: ['La independencia entre variables', 'La relación lineal y direccional entre variables', 'La media de las variables', 'La varianza individual'],
-                    correct: 1
+                    question: "¿Qué representa la matriz de covarianza?",
+                    options: ["Correlación entre variables", "Valores perdidos", "Errores del modelo", "Pesos de la red neuronal"],
+                    correct: 0,
+                    explanation: "La matriz de covarianza muestra cómo las variables se relacionan entre sí, esencial para entender la estructura de los datos."
                 },
                 {
-                    question: '¿Cuál es la diferencia entre probabilidad condicional P(A|B) y probabilidad conjunta P(A,B)?',
-                    options: ['No hay diferencia', 'P(A|B) = P(A,B) / P(B)', 'P(A|B) es siempre mayor', 'P(A,B) no depende de B'],
-                    correct: 1
+                    question: "En el teorema de Bayes, ¿qué es el prior?",
+                    options: ["La evidencia observada", "La probabilidad inicial antes de observar datos", "El resultado final", "La función de pérdida"],
+                    correct: 1,
+                    explanation: "El prior representa nuestro conocimiento inicial sobre un parámetro antes de observar nuevos datos."
                 },
                 {
-                    question: '¿Qué método de optimización es más eficiente para funciones convexas?',
-                    options: ['Búsqueda aleatoria', 'Gradiente descendente', 'Fuerza bruta', 'Eliminación gaussiana'],
-                    correct: 1
+                    question: "¿Qué es la norma L2 en el contexto de regularización?",
+                    options: ["Suma de valores absolutos", "Suma de cuadrados", "Valor máximo", "Promedio aritmético"],
+                    correct: 1,
+                    explanation: "La norma L2 es la suma de los cuadrados de los elementos, usada en Ridge regression para regularización."
                 },
                 {
-                    question: '¿Cuál es el rango de valores de una matriz de correlación?',
-                    options: ['[0, 1]', '[-1, 1]', '[0, ∞]', '[-∞, ∞]'],
-                    correct: 1
+                    question: "¿Cuál es la diferencia principal entre eigenvalores y eigenvectores?",
+                    options: ["No hay diferencia", "Eigenvalores son escalares, eigenvectores son vectores", "Solo se usan en clasificación", "Son lo mismo"],
+                    correct: 1,
+                    explanation: "Los eigenvalores son escalares que representan la magnitud, mientras que los eigenvectores son direcciones en el espacio."
                 },
                 {
-                    question: '¿Qué es la norma L2 de un vector?',
-                    options: ['La suma de elementos', 'La raíz cuadrada de la suma de cuadrados', 'El elemento máximo', 'La mediana'],
-                    correct: 1
+                    question: "¿Qué distribución se asume comúnmente en regresión lineal para los errores?",
+                    options: ["Uniforme", "Normal/Gaussiana", "Exponencial", "Binomial"],
+                    correct: 1,
+                    explanation: "Se asume distribución normal para los errores, lo que permite usar mínimos cuadrados y hacer inferencias estadísticas."
                 },
                 {
-                    question: '¿Cuándo usar el teorema de Bayes?',
-                    options: ['Solo con variables continuas', 'Para calcular probabilidades posteriores', 'Solo en regresión lineal', 'Para normalizar datos'],
-                    correct: 1
-                },
-                {
-                    question: '¿Qué representa la traza de una matriz?',
-                    options: ['El determinante', 'La suma de elementos diagonales', 'El rango de la matriz', 'Los eigenvalores'],
-                    correct: 1
-                },
-                {
-                    question: '¿Cuál es el objetivo de la descomposición SVD?',
-                    options: ['Resolver sistemas lineales', 'Factorizar una matriz en tres matrices', 'Calcular determinantes', 'Normalizar datos'],
-                    correct: 1
-                },
-                {
-                    question: '¿Qué es la función de pérdida cuadrática?',
-                    options: ['(y - ŷ)', '(y - ŷ)²', '|y - ŷ|', 'log(y/ŷ)'],
-                    correct: 1
-                },
-                {
-                    question: '¿Cuál es la derivada de ln(x)?',
-                    options: ['x', '1/x', 'ln(x)', 'x²'],
-                    correct: 1
-                },
-                {
-                    question: '¿Qué distribución se usa para modelar probabilidades binarias?',
-                    options: ['Normal', 'Bernoulli', 'Poisson', 'Exponencial'],
-                    correct: 1
-                },
-                {
-                    question: '¿Cuál es la regla de la cadena en cálculo?',
-                    options: ['d/dx[f(g(x))] = f\'(g(x)) * g\'(x)', 'd/dx[f(x)g(x)] = f\'(x) + g\'(x)', 'd/dx[f(x) + g(x)] = f\'(x)g\'(x)', 'Ninguna'],
-                    correct: 0
-                },
-                {
-                    question: '¿Qué es una matriz singular?',
-                    options: ['Una matriz cuadrada', 'Una matriz con determinante cero', 'Una matriz diagonal', 'Una matriz simétrica'],
-                    correct: 1
-                },
-                {
-                    question: '¿Cuál es la diferencia entre varianza y desviación estándar?',
-                    options: ['No hay diferencia', 'Desviación estándar = √(varianza)', 'Varianza = √(desviación estándar)', 'Son independientes'],
-                    correct: 1
-                },
-                {
-                    question: '¿Qué representa el determinante de una matriz 2x2?',
-                    options: ['La suma de elementos', 'El área del paralelogramo formado por sus vectores', 'La diagonal principal', 'El rango'],
-                    correct: 1
-                },
-                {
-                    question: '¿Cuándo dos eventos son independientes?',
-                    options: ['P(A|B) = P(A)', 'P(A|B) = P(B)', 'P(A,B) = 0', 'P(A) = P(B)'],
-                    correct: 0
-                },
-                {
-                    question: '¿Qué es el gradiente conjugado?',
-                    options: ['Un tipo de matriz', 'Un método de optimización', 'Una función de pérdida', 'Un algoritmo de clustering'],
-                    correct: 1
-                },
-                {
-                    question: '¿Cuál es la integral de e^x?',
-                    options: ['e^x + C', 'xe^x + C', 'e^(x+1) + C', 'ln(x) + C'],
-                    correct: 0
+                    question: "¿Para qué se utiliza la función logaritmo en machine learning?",
+                    options: ["Solo para visualización", "Estabilizar gradientes y manejar probabilidades", "Acelerar cómputo", "Reducir memoria"],
+                    correct: 1,
+                    explanation: "El logaritmo estabiliza gradientes, convierte productos en sumas y maneja probabilidades pequeñas de forma numérica estable."
                 }
             ],
-            'Programación y Herramientas': [
+            programacion: [
                 {
-                    question: '¿Cuál es la diferencia principal entre NumPy arrays y Python lists?',
-                    options: ['No hay diferencia', 'NumPy arrays son más rápidos para operaciones numéricas', 'Lists son más rápidos', 'NumPy solo maneja enteros'],
-                    correct: 1
+                    question: "¿Cuál es la principal ventaja de usar Pandas sobre NumPy para análisis de datos?",
+                    options: ["Mayor velocidad", "Manejo de datos estructurados y etiquetados", "Menor uso de memoria", "Mejor para cálculos matemáticos"],
+                    correct: 1,
+                    explanation: "Pandas permite manejar datos estructurados con etiquetas (DataFrames), facilitando la manipulación y análisis de datos reales."
                 },
                 {
-                    question: '¿Qué hace pandas.DataFrame.groupby()?',
-                    options: ['Ordena los datos', 'Agrupa filas por valores de columna', 'Elimina duplicados', 'Transpone la matriz'],
-                    correct: 1
+                    question: "¿Qué comando de Git se usa para combinar ramas?",
+                    options: ["git combine", "git merge", "git join", "git add"],
+                    correct: 1,
+                    explanation: "Git merge combina los cambios de diferentes ramas, esencial para el trabajo colaborativo en proyectos de ML."
                 },
                 {
-                    question: '¿Cuál es el propósito de matplotlib.pyplot?',
-                    options: ['Manipular datos', 'Crear visualizaciones', 'Entrenar modelos', 'Conectar bases de datos'],
-                    correct: 1
+                    question: "En Python, ¿qué hace la función 'fit_transform' en sklearn?",
+                    options: ["Solo ajusta el modelo", "Ajusta y transforma los datos", "Solo transforma", "Evalúa el modelo"],
+                    correct: 1,
+                    explanation: "fit_transform primero ajusta el transformer a los datos y luego los transforma, común en preprocesamiento."
                 },
                 {
-                    question: '¿Qué comando SQL obtiene valores únicos?',
-                    options: ['UNIQUE', 'DISTINCT', 'DIFFERENT', 'SINGLE'],
-                    correct: 1
+                    question: "¿Cuál es la diferencia entre '==' y 'is' en Python?",
+                    options: ["No hay diferencia", "== compara valores, is compara identidad de objeto", "is es más rápido", "== es más preciso"],
+                    correct: 1,
+                    explanation: "== compara si los valores son iguales, mientras que 'is' verifica si son el mismo objeto en memoria."
                 },
                 {
-                    question: '¿Para qué sirve git branch?',
-                    options: ['Crear una rama nueva', 'Eliminar archivos', 'Comprimir código', 'Ejecutar scripts'],
-                    correct: 0
+                    question: "¿Para qué se usa principalmente SQL en machine learning?",
+                    options: ["Entrenar modelos", "Extraer y preparar datos", "Visualizar resultados", "Hacer predicciones"],
+                    correct: 1,
+                    explanation: "SQL es fundamental para extraer, filtrar y preparar datos desde bases de datos antes del modelado."
                 },
                 {
-                    question: '¿Qué hace scikit-learn train_test_split?',
-                    options: ['Entrena un modelo', 'Divide datos en entrenamiento y prueba', 'Calcula métricas', 'Normaliza datos'],
-                    correct: 1
+                    question: "¿Qué es un DataFrame en Pandas?",
+                    options: ["Un tipo de gráfico", "Una estructura de datos tabular", "Un algoritmo de ML", "Una función matemática"],
+                    correct: 1,
+                    explanation: "Un DataFrame es una estructura de datos bidimensional con filas y columnas etiquetadas, similar a una tabla de base de datos."
                 },
                 {
-                    question: '¿Cuál es la diferencia entre TensorFlow y Keras?',
-                    options: ['Son iguales', 'Keras es una API de alto nivel sobre TensorFlow', 'TensorFlow es más simple', 'No se pueden usar juntos'],
-                    correct: 1
+                    question: "¿Cuál es la ventaja principal de usar NumPy arrays sobre listas de Python?",
+                    options: ["Sintaxis más simple", "Mayor velocidad de cómputo", "Menos memoria", "Mejor documentación"],
+                    correct: 1,
+                    explanation: "NumPy arrays son mucho más rápidos para operaciones numéricas debido a su implementación en C y operaciones vectorizadas."
                 },
                 {
-                    question: '¿Qué tipo de JOIN devuelve todas las filas de ambas tablas?',
-                    options: ['INNER JOIN', 'LEFT JOIN', 'RIGHT JOIN', 'FULL OUTER JOIN'],
-                    correct: 3
+                    question: "¿Qué hace 'pip install -r requirements.txt'?",
+                    options: ["Instala Python", "Instala todas las dependencias listadas", "Actualiza pip", "Crea un entorno virtual"],
+                    correct: 1,
+                    explanation: "Este comando instala todas las librerías y sus versiones específicas listadas en el archivo requirements.txt."
+                }
+            ],
+            mlcore: [
+                {
+                    question: "¿Cuál es la diferencia principal entre clasificación y regresión?",
+                    options: ["No hay diferencia", "Clasificación predice categorías, regresión valores continuos", "Regresión es más compleja", "Clasificación usa más datos"],
+                    correct: 1,
+                    explanation: "La clasificación predice categorías discretas (ej: spam/no spam), mientras que la regresión predice valores continuos (ej: precio)."
                 },
                 {
-                    question: '¿Qué hace numpy.reshape()?',
-                    options: ['Cambia los valores', 'Cambia las dimensiones del array', 'Ordena elementos', 'Elimina elementos'],
-                    correct: 1
+                    question: "¿Qué es overfitting?",
+                    options: ["Modelo muy simple", "Modelo se ajusta demasiado a datos de entrenamiento", "Pocos datos", "Error en el código"],
+                    correct: 1,
+                    explanation: "Overfitting ocurre cuando el modelo memoriza los datos de entrenamiento pero no generaliza bien a datos nuevos."
                 },
                 {
-                    question: '¿Cuál es el propósito de pandas.merge()?',
-                    options: ['Ordenar DataFrames', 'Combinar DataFrames', 'Limpiar datos', 'Crear gráficos'],
-                    correct: 1
+                    question: "¿Para qué se usa cross-validation?",
+                    options: ["Limpiar datos", "Evaluar modelo de forma robusta", "Acelerar entrenamiento", "Visualizar resultados"],
+                    correct: 1,
+                    explanation: "Cross-validation divide los datos en múltiples folds para evaluar el modelo de manera más confiable y detectar overfitting."
+                },
+                {
+                    question: "¿Qué algoritmo es mejor para datasets con muchas características?",
+                    options: ["K-means siempre", "Depende del problema, pero SVM y Random Forest son robustos", "Regresión lineal únicamente", "No importa el algoritmo"],
+                    correct: 1,
+                    explanation: "Con muchas características, algoritmos como SVM y Random Forest manejan bien la alta dimensionalidad y el riesgo de overfitting."
+                },
+                {
+                    question: "¿Qué es feature engineering?",
+                    options: ["Eliminar características", "Crear y transformar variables para mejorar el modelo", "Solo normalización", "Visualización de datos"],
+                    correct: 1,
+                    explanation: "Feature engineering involucra crear, transformar y seleccionar características para que el modelo aprenda mejor los patrones."
+                },
+                {
+                    question: "¿Cuándo usar Random Forest vs SVM?",
+                    options: ["Siempre Random Forest", "RF para datos tabulares grandes, SVM para alta dimensionalidad", "Siempre SVM", "No importa"],
+                    correct: 1,
+                    explanation: "Random Forest es excelente para datos tabulares y datasets grandes, mientras SVM funciona bien con alta dimensionalidad y datasets medianos."
+                },
+                {
+                    question: "¿Qué es la maldición de la dimensionalidad?",
+                    options: ["Error de programación", "Problemas cuando hay demasiadas características vs muestras", "Falta de datos", "Problema de visualización"],
+                    correct: 1,
+                    explanation: "Con muchas dimensiones, los datos se vuelven dispersos, las distancias pierden significado y se necesitan exponencialmente más datos."
+                },
+                {
+                    question: "¿Para qué se usa PCA?",
+                    options: ["Solo visualización", "Reducir dimensionalidad preservando varianza", "Clasificación únicamente", "Limpiar datos"],
+                    correct: 1,
+                    explanation: "PCA reduce dimensionalidad proyectando datos a componentes principales que capturan la mayor varianza."
+                }
+            ],
+            herramientas: [
+                {
+                    question: "¿Cuál es la ventaja principal de PyTorch sobre TensorFlow?",
+                    options: ["Siempre más rápido", "Grafos dinámicos y debugging más fácil", "Menos memoria", "Mejor documentación"],
+                    correct: 1,
+                    explanation: "PyTorch usa grafos computacionales dinámicos, permitiendo debugging más intuitivo y mayor flexibilidad durante el desarrollo."
+                },
+                {
+                    question: "¿Para qué se usa Docker en MLOps?",
+                    options: ["Solo almacenamiento", "Crear entornos reproducibles", "Acelerar modelos", "Visualizar datos"],
+                    correct: 1,
+                    explanation: "Docker permite crear contenedores con todas las dependencias, asegurando que el modelo funcione igual en cualquier entorno."
+                },
+                {
+                    question: "¿Qué es MLflow?",
+                    options: ["Un algoritmo de ML", "Plataforma para gestionar experimentos de ML", "Base de datos", "Librería de visualización"],
+                    correct: 1,
+                    explanation: "MLflow es una plataforma open-source para gestionar el ciclo de vida completo de experimentos de machine learning."
+                },
+                {
+                    question: "¿Cuándo elegir Scikit-learn vs deep learning frameworks?",
+                    options: ["Siempre deep learning", "Sklearn para ML tradicional, DL frameworks para redes neuronales", "Depende del tamaño", "Siempre sklearn"],
+                    correct: 1,
+                    explanation: "Sklearn es perfecto para algoritmos tradicionales de ML, mientras que TensorFlow/PyTorch son necesarios para deep learning."
+                },
+                {
+                    question: "¿Qué es Kubernetes en el contexto de ML?",
+                    options: ["Algoritmo de clustering", "Orquestador de contenedores para escalabilidad", "Base de datos", "Librería de Python"],
+                    correct: 1,
+                    explanation: "Kubernetes orquesta contenedores Docker, permitiendo escalar modelos de ML automáticamente según la demanda."
+                },
+                {
+                    question: "¿Para qué se usa Jupyter Notebooks?",
+                    options: ["Solo documentación", "Desarrollo iterativo y prototipado", "Producción únicamente", "Almacenamiento"],
+                    correct: 1,
+                    explanation: "Jupyter permite desarrollo iterativo combinando código, visualizaciones y texto, ideal para exploración y prototipado."
+                },
+                {
+                    question: "¿Qué es Apache Spark en machine learning?",
+                    options: ["Solo para visualización", "Framework para procesamiento distribuido de big data", "Base de datos", "Algoritmo de ML"],
+                    correct: 1,
+                    explanation: "Spark permite procesar grandes datasets de forma distribuida, con MLlib para machine learning a gran escala."
+                },
+                {
+                    question: "¿Cuál es el propósito de un pipeline en ML?",
+                    options: ["Solo limpiar datos", "Automatizar secuencia completa desde datos hasta modelo", "Visualización únicamente", "Almacenar modelos"],
+                    correct: 1,
+                    explanation: "Un pipeline automatiza todo el flujo: preprocesamiento, entrenamiento, evaluación y deployment, asegurando reproducibilidad."
+                }
+            ]
+        };
+
+        let currentQuiz = [];
+        let userAnswers = {};
+
+        function generateQuiz() {
+            currentQuiz = [];
+            userAnswers = {};
+            
+            // Seleccionar preguntas aleatorias de cada tema
+            const topics = Object.keys(questionDatabase);
+            topics.forEach(topic => {
+                const questions = questionDatabase[topic];
+                const randomQuestions = getRandomQuestions(questions, 5);
+                currentQuiz = currentQuiz.concat(randomQuestions.map(q => ({...q, topic})));
+            });
+
+            // Mezclar todas las preguntas
+            currentQuiz = shuffleArray(currentQuiz);
+            
+            displayQuiz();
+            document.getElementById('results').style.display = 'none';
+            updateProgress();
+        }
+
+        function getRandomQuestions(questions, count) {
+            const shuffled = shuffleArray([...questions]);
+            return shuffled.slice(0, Math.min(count, shuffled.length));
+        }
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        function displayQuiz() {
+            const container = document.getElementById('quizContainer');
+            let html = '<h3>📋 Evaluación Profesional - 20 Preguntas</h3>';
+            
+            currentQuiz.forEach((question, index) => {
+                html += `
+                    <div class="question">
+                        <h4>${index + 1}. ${question.question}</h4>
+                        <div class="options">
+                            ${question.options.map((option, optIndex) => `
+                                <div class="option">
+                                    <input type="radio" name="q${index}" id="q${index}_${optIndex}" value="${optIndex}" onchange="saveAnswer(${index}, ${optIndex})">
+                                    <label for="q${index}_${optIndex}">${option}</label>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            });
+            
+            html += '<button class="btn" onclick="submitQuiz()" style="margin-top: 20px;">✅ Evaluar Respuestas</button>';
+            container.innerHTML = html;
+        }
+
+        function saveAnswer(questionIndex, answerIndex) {
+            userAnswers[questionIndex] = answerIndex;
+            updateProgress();
+        }
+
+        function updateProgress() {
+            const answeredCount = Object.keys(userAnswers).length;
+            const totalQuestions = currentQuiz.length;
+            const percentage = (answeredCount / totalQuestions) * 100;
+            document.getElementById('progressFill').style.width = percentage + '%';
+        }
+
+        function submitQuiz() {
+            if (Object.keys(userAnswers).length < currentQuiz.length) {
+                alert('⚠️ Por favor responde todas las preguntas antes de evaluar.');
+                return;
+            }
+
+            let score = 0;
+            let results = '<h3>📊 Resultados de la Evaluación</h3>';
+            
+            currentQuiz.forEach((question, index) => {
+                const userAnswer = userAnswers[index];
+                const isCorrect = userAnswer === question.correct;
+                if (isCorrect) score++;
+                
+                results += `
+                    <div class="question">
+                        <h4>${index + 1}. ${question.question}</h4>
+                        <p><strong>Tu respuesta:</strong> <span class="${isCorrect ? 'correct' : 'incorrect'}">${question.options[userAnswer]}</span></p>
+                        <p><strong>Respuesta correcta:</strong> <span class="correct">${question.options[question.correct]}</span></p>
