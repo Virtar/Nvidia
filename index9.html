@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ideas de Negocio IT - Buenos Aires</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .business-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.2);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .card-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            margin-right: 15px;
+            color: white;
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #2d3748;
+        }
+
+        .card-description {
+            font-size: 1rem;
+            line-height: 1.6;
+            color: #4a5568;
+            margin-bottom: 20px;
+        }
+
+        .metrics {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .metric {
+            text-align: center;
+            padding: 10px;
+            background: rgba(102, 126, 234, 0.1);
+            border-radius: 10px;
+        }
+
+        .metric-value {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .metric-label {
+            font-size: 0.8rem;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .tag {
+            padding: 5px 12px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .expand-btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .expand-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .detailed-info {
+            display: none;
+            margin-top: 20px;
+            padding: 20px;
+            background: rgba(102, 126, 234, 0.05);
+            border-radius: 15px;
+            border-left: 4px solid #667eea;
+        }
+
+        .detailed-info.active {
+            display: block;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                max-height: 0;
+            }
+            to {
+                opacity: 1;
+                max-height: 500px;
+            }
+        }
+
+        .info-section {
+            margin-bottom: 15px;
+        }
+
+        .info-title {
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+
+        .floating-action {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: white;
+            font-size: 24px;
+        }
+
+        .floating-action:hover {
+            transform: scale(1.1);
+            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.6);
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .business-cards {
+                grid-template-columns: 1fr;
+            }
+            
+            .card {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>💡 Ideas de Negocio IT</h1>
+            <p>Oportunidades innovadoras en Buenos Aires con baja inversión</p>
+        </div>
+
+        <div class="business-cards">
+            <div class="card" data-id="1">
+                <div class="card-header">
+                    <div class="card-icon" style="background: linear-gradient(45deg, #ff6b6b, #ee5a52);">🛠️</div>
+                    <div class="card-title">Micro-Servicios Digitales para PyMEs</div>
+                </div>
+                <div class="card-description">
+                    Marketplace especializada en servicios digitales básicos para pequeñas y medianas empresas que necesitan digitalización rápida y accesible.
+                </div>
+                <div class="metrics">
+                    <div class="metric">
+                        <div class="metric-value">$50K</div>
+                        <div class="metric-label">Inversión inicial</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-value">2-3 meses</div>
+                        <div class="metric-label">Tiempo desarrollo</div>
+                    </div>
+                </div>
+                <div class="tags">
+                    <span class="tag">SaaS</span>
+                    <span class="tag">Marketplace</span>
+                    <span class="tag">Automatización</span>
+                    <span class="tag">PyMEs</span>
+                </div>
+                <button class="expand-btn" onclick="toggleDetails(1)">Ver Detalles</button>
+                <div class="detailed-info" id="details-1">
+                    <div class="info-section">
+                        <div class="info-title">🎯 Mercado Objetivo:</div>
+                        <p>PyMEs porteñas (500K+ empresas), estudios contables, comercios tradicionales que necesitan digitalización básica.</p>
+                    </div>
+                    <div class="info-section">
+                        <div class="info-title">💰 Modelo de Negocio:</div>
+                        <p>Comisión del 15-20% por servicio + suscripción premium para proveedores ($2000/mes).</p>
+                    </div>
+                    <div class="info-section">
+                        <div class="info-title">🚀 Estrategia de Lanzamiento:</div>
+                        <p>MVP con 5 servicios básicos, partnership con cámaras de comercio, marketing digital segmentado.</p>
+                    </div>
+                    <div class="info-section">
+                        <div class="info-title">⚡ Ventaja Competitiva:</div>
+                        <p>Precios accesibles, servicios en español, comprensión del mercado local argentino.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card" data-id="2">
+                <div class="card-header">
+                    <div class="card-icon" style="background: linear-gradient(45deg, #4ecdc4, #44a08d);">🏢</div>
+                    <div class="card-title">SaaS Gestión Vecinal/Consorcio</div>
+                </div>
+                <div class="card-description">
+                    Plataforma integral para administración de consorcios y barrios privados con funcionalidades específicas para el mercado argentino.
+                </div>
+                <div class="metrics">
+                    <div class="metric">
+                        <div class="metric-value">$30K</div>
+                        <div class="metric-label">Inversión inicial</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-value">3-4 meses</div>
+                        <div class="metric-label">Tiempo desarrollo</div>
+                    </div>
+                </div>
+                <div class="tags">
+                    <span class="tag">SaaS</span>
+                    <span class="tag">Gestión</span>
+                    <span class="tag">Consorcios</span>
+                    <span class="tag">Mobile</span>
+                </div>
+                <button class="expand-btn" onclick="toggleDetails(2)">Ver Detalles</button>
+                <div class="detailed-info" id="details-2">
+                    <div class="info-section">
+                        <div class="info-title">🎯 Mercado Objetivo:</div>
+                        <p>50K+ consorcios en CABA, administradores independientes, barrios privados, countries.</p>
+                    </div>
+                    <div class="info-section">
+                        <div class="info-title">💰 Modelo de Negocio:</div>
+                        <p>$800-2500/mes por edificio según cantidad de unidades. Freemium para edificios pequeños.</p>
+                    </div>
+                    <div class="info-section">
+                        <div class="info-title">🚀 Estrategia de Lanzamiento:</div>
+                        <p>Pilot con 10 consorcios, integración con bancos para débito automático, app móvil nativa.</p>
+                    </div>
+                    <div class="info-section">
+                        <div class="info-title">⚡ Ventaja Competitiva:</div>
+                        <p>Compliance AFIP, integración bancaria, interfaz pensada para no-técnicos.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card" data-id="3">
+                <div class="card-header">
+                    <div class="card-icon" style="background: linear-gradient(45deg, #a8edea, #fed6e3);">📊</div>
+                    <div class="card-title">Automatización para Contadores</div>
+                </div>
+                <div class="card-description">
+                    Suite de herramientas especializadas en automatizar procesos repetitivos de estudios contables argentinos.
+                </div>
+                <div class="metrics">
+                    <div class="metric">
+                        <div class="metric-value">$40K</div>
+                        <div class="metric-label">Inversión inicial</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-value">4-5 meses</div>
+                        <div class="metric-label">Tiempo desarrollo</div>
+                    </div>
+                </div>
+                <div class="tags">
+                    <span class="tag">IA/ML</span>
+                    <span class="tag">OCR</span>
+                    <span class="tag">AFIP</span>
+                    <span class="tag">Automatización</span>
+                </div>
+                <button class="expand-btn" onclick="toggleDetails(3)">Ver Detalles</button>
+                <div class="detailed-info" id="details-3">
+                    <div class="info-section">
+                        <div class="info-title">🎯 Mercado Objetivo:</div>
+                        <p>15K+ estudios contables pequeños/medianos, contadores independientes, PyMEs con contador interno.</p>
+                    </div>
+                    <div class="info-section">
+                        <div class="info-title">💰 Modelo de Negocio:</div>
+                        <p>$1500-5000/mes por estudio + precio por procesamiento de documentos ($10-50 por comprobante).</p>
+                    </div>
+                    <div class="info-section">
+                        <div class="info-title">🚀 Estrategia de Lanzamiento:</div>
+                        <p>Beta con consejo profesional de contadores, demos en eventos del sector, content marketing.</p>
+                    </div>
+                    <div class="info-section">
+                        <div class="info-title">⚡ Ventaja Competitiva:</div>
+                        <p>Especialización en normativa argentina, integración directa AFIP, ROI demostrable.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card" data-id="4">
+                <div class="card-header">
+                    <div class="card-icon" style="background: linear-gradient(45deg, #ffecd2, #fcb69f);">🚚</div>
+                    <div class="card-title">Delivery Hiperlocal B2B</div>
+                </div>
+                <div class="card-description">
+                    Red colaborativa de delivery entre comercios del mismo barrio para optimizar logística y reducir costos.
+                </div>
+                <div class="metrics">
+                    <div class="metric">
+                        <div class="metric-value">$35K</div>
+                        <div class="metric-label">Inversión inicial</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-value">2-3 meses</div>
+                        <div class="metric-label">Tiempo desarrollo</div>
+                    </div>
+                </div>
+                <div class="tags">
+                    <span class="tag">Logística</span>
+                    <span class="tag">Marketplace</span>
+                    <span class="tag">Geolocalización</span>
+                    <span class="tag">B2B</span>
+                </div>
+                <button class="expand-btn" onclick="toggleDetails(4)">Ver Detalles</button>
+                <div class="detailed-info" id="details-4">
+                    <div class="info-section">
+                        <div class="info-title">🎯 Mercado Objetivo:</div>
+                        <p>Comercios barriales (almacenes, farmacias, kioscos), emprendedores locales, centros comerciales.</p>
+                    </div>
+                    <div class="info-section">
+                        <div class="info-title">💰 Modelo de Negocio:</div>
+                        <p>Comisión 8-12% por delivery + suscripción mensual $500-1500 para comercios premium.</p>
+                    </div>
+                    <div class="info-section">
+                        <div class="info-title">🚀 Estrategia de Lanzamiento:</div>
+                        <p>Pilot en Palermo/Villa Crick, alianzas con cámaras de comercio, incentivos por volumen.</p>
+                    </div>
+                    <div class="info-section">
+                        <div class="info-title">⚡ Ventaja Competitiva:</div>
+                        <p>Modelo colaborativo, menores costos que apps tradicionales, enfoque hiperlocal.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card" data-id="5">
+                <div class="card-header">
+                    <div class="card-icon" style="background: linear-gradient(45deg, #a18cd1, #fbc2eb);">🎓</div>
+                    <div class="card-title">EdTech Capacitación Laboral</div>
+                </div>
+                <div class="card-description">
+                    Plataforma de cursos interactivos para habilidades técnicas demandadas en el mercado laboral argentino.
+                </div>
+                <div class="metrics">
+                    <div class="metric">
+                        <div class="metric-value">$25K</div>
+                        <div class="metric-label">Inversión inicial</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-value">3-4 meses</div>
+                        <div class="metric-label">Tiempo desarrollo</div>
+                    </div>
+                </div>
+                <div class="tags">
+                    <span class="tag">EdTech</span>
+                    <span class="tag">Gamificación</span>
+                    <span class="tag">Certificaciones</span>
+                    <span class="tag">Mobile Learning</span>
+                </div>
+                <button class="expand-btn" onclick="toggleDetails(5)">Ver Detalles</button>
+                <div class="detailed-info" id="details-5">
+                    <div class="info-section">
+                        <div class="info-title">🎯 Mercado Objetivo:</div>
+                        <p>Desocupados, trabajadores en transición, empresas que necesitan capacitar personal, sindicatos.</p>
+                    </div>
+                    <div class="info-section">
+                        <div class="info-title">💰 Modelo de Negocio:</div>
+                        <p>B2C: $500-2000/curso. B2B: $5000-15000/mes por empresa. Certificaciones: $300-800.</p>
+                    </div>
+                    <div class="info-section">
+                        <div class="info-title">🚀 Estrategia de Lanzamiento:</div>
+                        <p>Alianza con sindicatos/UTN, contenido gratuito inicial, partnerships con empresas.</p>
+                    </div>
+                    <div class="info-section">
+                        <div class="info-title">⚡ Ventaja Competitiva:</div>
+                        <p>Foco en empleabilidad inmediata, contenido localizado, certificaciones reconocidas.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="floating-action" onclick="scrollToTop()">
+        ↑
+    </div>
+
+    <script>
+        function toggleDetails(id) {
+            const details = document.getElementById(`details-${id}`);
+            const btn = details.previousElementSibling;
+            
+            if (details.classList.contains('active')) {
+                details.classList.remove('active');
+                btn.textContent = 'Ver Detalles';
+            } else {
+                // Close all other details
+                document.querySelectorAll('.detailed-info.active').forEach(detail => {
+                    detail.classList.remove('active');
+                    detail.previousElementSibling.textContent = 'Ver Detalles';
+                });
+                
+                details.classList.add('active');
+                btn.textContent = 'Ocultar Detalles';
+            }
+        }
+
+        function scrollToTop() {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        }
+
+        // Add hover effects and animations
+        document.addEventListener('DOMContentLoaded', function() {
+            const cards = document.querySelectorAll('.card');
+            
+            cards.forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-10px
