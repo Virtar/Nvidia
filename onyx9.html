@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Onyx Design Studio | Diseño Web y Redes</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #14b8a6;
+            --secondary: #0d9488;
+            --dark: #0f172a;
+            --light: #f8fafc;
+            --accent: #5eead4;
+            --social: #10b981;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: var(--dark);
+            color: var(--light);
+            overflow-x: hidden;
+        }
+
+        /* Header & Navigation */
+        header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        nav {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2.5rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--light);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--primary);
+            transition: width 0.3s;
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .cta-button {
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: white;
+            padding: 0.8rem 2rem;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: transform 0.3s;
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            position: relative;
+            overflow: hidden;
+            padding-top: 80px;
+        }
+
+        .hero-content {
+            text-align: center;
+            max-width: 1200px;
+            padding: 2rem;
+            z-index: 2;
+        }
+
+        .hero h1 {
+            font-size: 4rem;
+            margin-bottom: 1.5rem;
+            line-height: 1.2;
+        }
+
+        .rotating-text {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 800;
+            transition: opacity 0.3s;
+        }
+
+        /* Section Global Styles */
+        section {
+            padding: 8rem 2rem;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 3rem;
+            margin-bottom: 4rem;
+            background: linear-gradient(135deg, white, #94a3b8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Pricing & Cards Grid */
+        .grid-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2.5rem;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 3rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.4s;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            border-color: var(--primary);
+            box-shadow: 0 20px 60px rgba(20, 184, 166, 0.2);
+        }
+
+        .card.featured {
+            border: 2px solid var(--primary);
+            transform: scale(1.05);
+        }
+
+        .card-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .card h3 {
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+            color: white;
+        }
+
+        .price-tag {
+            font-size: 1.2rem;
+            color: var(--primary);
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+        }
+
+        .features-list {
+            list-style: none;
+            margin-bottom: 2rem;
+            flex-grow: 1;
+        }
+
+        .features-list li {
+            padding: 0.6rem 0;
+            color: #cbd5e1;
+            display: flex;
+            align-items: flex-start;
+            gap: 0.7rem;
+            font-size: 0.95rem;
+        }
+
+        .features-list li::before {
+            content: '✓';
+            color: var(--primary);
+            font-weight: bold;
+        }
+
+        .btn-card {
+            width: 100%;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: white;
+            padding: 1rem;
+            border: none;
+            border-radius: 30px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+            text-decoration: none;
+        }
+
+        .btn-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(20, 184, 166, 0.4);
+        }
+
+        .badge {
+            position: absolute;
+            top: -15px;
+            right: 20px;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: white;
+            padding: 0.4rem 1.2rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 700;
+        }
+
+        /* Social Media Specific */
+        .social-section {
+            background: linear-gradient(180deg, #0f172a 0%, #1e1b4b 100%);
+        }
+
+        .social-section .price-tag {
+            color: var(--social);
+            font-size: 1.5rem;
+        }
+
+        .social-section .card:hover {
+            border-color: var(--social);
+            box-shadow: 0 20px 60px rgba(16, 185, 129, 0.2);
+        }
+
+        .social-section .btn-card {
+            background: linear-gradient(135deg, #10b981, #34d399);
+        }
+
+        .social-section .features-list li::before {
+            color: var(--social);
+        }
+
+        /* Footer & WhatsApp */
+        footer {
+            background: #020617;
+            padding: 4rem 2rem 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .whatsapp-float {
+            position: fixed;
+            width: 60px;
+            height: 60px;
+            bottom: 40px;
+            right: 40px;
+            background-color: #25d366;
+            color: white;
+            border-radius: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            box-shadow: 2px 2px 20px rgba(37, 211, 102, 0.4);
+            z-index: 999;
+            text-decoration: none;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.7); }
+            70% { box-shadow: 0 0 0 15px rgba(37, 211, 102, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0); }
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2.5rem; }
+            .nav-links { display: none; }
+            .card.featured { transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <nav>
+            <div class="logo">Onyx Design Studio</div>
+            <ul class="nav-links">
+                <li><a href="#web">Diseño Web</a></li>
+                <li><a href="#social">Redes Sociales</a></li>
+                <li><a href="#contacto">Contacto</a></li>
+            </ul>
+            <a href="https://api.whatsapp.com/send?phone=+5491141788982" class="cta-button">Empezar Proyecto</a>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Creamos <span class="rotating-text" id="rotatingText">Experiencias</span><br>Digitales Impactantes</h1>
+            <p>Diseños web modernos y gestión estratégica de redes sociales</p>
+        </div>
+    </section>
+
+    <section id="web">
+        <h2 class="section-title">Elegí tu tipo de Diseño Web</h2>
+        <div class="grid-container">
+            <div class="card">
+                <div class="badge">Más Rápido</div>
+                <div class="card-icon">🚀</div>
+                <h3>Landing Page</h3>
+                <p class="price-tag">Consultar Precio</p>
+                <ul class="features-list">
+                    <li>Diseño de una sola página (One Page)</li>
+                    <li>Optimizada para conversión</li>
+                    <li>Llamadas a la acción (CTA) potentes</li>
+                    <li>1 formulario de contacto profesional</li>
+                    <li>Botón WhatsApp integrado</li>
+                    <li>Diseño Responsive y SEO básico</li>
+                    <li>Entrega en 7-10 días</li>
+                </ul>
+                <button class="btn-card" onclick="contactWhatsApp('Landing Page')">Consultar</button>
+            </div>
+
+            <div class="card featured">
+                <div class="badge">Recomendado</div>
+                <div class="card-icon">💼</div>
+                <h3>Sitio Corporativo</h3>
+                <p class="price-tag">Consultar Precio</p>
+                <ul class="features-list">
+                    <li>Hosting y SSL gratis (1 año)</li>
+                    <li>Hasta 7 secciones personalizadas</li>
+                    <li>Correo corporativo profesional</li>
+                    <li>Panel de administración</li>
+                    <li>Optimización SEO avanzada</li>
+                    <li>Integración con redes sociales</li>
+                    <li>Entrega en 15-20 días</li>
+                </ul>
+                <button class="btn-card" onclick="contactWhatsApp('Sitio Corporativo')">Consultar</button>
+            </div>
+
+            <div class="card">
+                <div class="badge">E-commerce</div>
+                <div class="card-icon">🛒</div>
+                <h3>Tienda Online</h3>
+                <p class="price-tag">Consultar Precio</p>
+                <ul class="features-list">
+                    <li>Carrito de compras completo</li>
+                    <li>Pasarela de pagos (MercadoPago)</li>
+                    <li>Gestión de productos ilimitados</li>
+                    <li>Sistema de cupones y envíos</li>
+                    <li>Hosting y SSL gratis (1 año)</li>
+                    <li>Panel administrativo intuitivo</li>
+                    <li>Entrega en 20-30 días</li>
+                </ul>
+                <button class="btn-card" onclick="contactWhatsApp('Tienda Online')">Consultar</button>
+            </div>
+        </div>
+    </section>
+
+    <section id="social" class="social-section">
+        <h2 class="section-title">Gestión de Redes Sociales</h2>
+        <div class="grid-container">
+            <div class="card">
+                <div class="card-icon">📱</div>
+                <h3>Plan 1 - Inicial</h3>
+                <p class="price-tag">AR$ 90.000/mes</p>
+                <ul class="features-list">
+                    <li>4 publicaciones mensuales en feed</li>
+                    <li>4 publicaciones mensuales en historias</li>
+                    <li>Creación de perfiles profesionales</li>
+                    <li>Alta de cuenta publicitaria</li>
+                    <li>Implementación de campañas</li>
+                    <li>Reportes mensuales</li>
+                    <li>Atención personalizada</li>
+                </ul>
+                <button class="btn-card" onclick="contactWhatsApp('Plan Redes 1')">Contratar Ahora</button>
+            </div>
+
+            <div class="card featured">
+                <div class="badge">Popular</div>
+                <div class="card-icon">🔥</div>
+                <h3>Plan 2 - Profesional</h3>
+                <p class="price-tag">AR$ 105.000/mes</p>
+                <ul class="features-list">
+                    <li>8 publicaciones mensuales en feed</li>
+                    <li>8 publicaciones mensuales en historias</li>
+                    <li>Alta de cuenta publicitaria</li>
+                    <li>Campañas avanzadas</li>
+                    <li>Mejoras continuas de contenido</li>
+                    <li>Reportes semanales detallados</li>
+                    <li>Atención personalizada</li>
+                </ul>
+                <button class="btn-card" onclick="contactWhatsApp('Plan Redes 2')">Contratar Ahora</button>
+            </div>
+
+            <div class="card">
+                <div class="card-icon">🚀</div>
+                <h3>Plan 3 - Avanzado</h3>
+                <p class="price-tag">AR$ 125.000/mes</p>
+                <ul class="features-list">
+                    <li>12 publicaciones mensuales en feed</li>
+                    <li>12 publicaciones mensuales en historias</li>
+                    <li>Campañas Premium</li>
+                    <li>Análisis de competencia</li>
+                    <li>Atención personalizada VIP</li>
+                    <li>Reportes semanales + estrategia</li>
+                    <li>Optimización constante</li>
+                </ul>
+                <button class="btn-card" onclick="contactWhatsApp('Plan Redes 3')">Contratar Ahora</button>
+            </div>
+        </div>
+    </section>
+
+    <footer id="contacto">
+        <div style="max-width: 1200px; margin: 0 auto; text-align: center;">
+            <div class="logo" style="margin-bottom: 2rem;">Onyx Design Studio</div>
+            <p style="color: #94a3b8; margin-bottom: 1rem;">✉️ paginaweb.com.ar@gmail.com</p>
+            <p style="color: #94a3b8;">© 2025 Onyx Design Studio. Buenos Aires, Argentina.</p>
+        </div>
+    </footer>
+
+    <a href="https://api.whatsapp.com/send?phone=+5491141788982&text=Hola! Quisiera más información sobre sus servicios" class="whatsapp-float" target="_blank">
+        <svg width="30" height="30" viewBox="0 0 32 32" fill="white">
+            <path d="M16 0C7.164 0 0 7.164 0 16c0 2.828.744 5.488 2.04 7.792L0 32l8.416-2.04C10.656 31.256 13.272 32 16 32c8.836 0 16-7.164 16-16S24.836 0 16 0zm0 29.376c-2.528 0-4.92-.692-6.972-1.892l-.5-.296-5.196 1.26 1.284-5.084-.328-.52C2.756 20.82 2.024 18.468 2.024 16c0-7.72 6.28-14 14-14s14 6.28 14 14-6.28 13.376-14 13.376z"/>
+            <path d="M23.868 19.732c-.416-.208-2.46-1.216-2.84-1.352-.38-.14-.656-.208-.932.208-.276.416-1.072 1.352-1.312 1.628-.24.276-.48.312-.896.104-.416-.208-1.756-.648-3.344-2.064-1.236-1.104-2.072-2.468-2.312-2.884-.24-.416-.024-.64.184-.848.188-.188.416-.484.624-.728.208-.244.276-.416.416-.692.14-.276.068-.52-.036-.728-.104-.208-.932-2.248-1.276-3.08-.336-.804-.68-.696-.932-.708-.24-.012-.516-.016-.792-.016-.276 0-.728.104-1.108.52-.38.416-1.452 1.42-1.452 3.46s1.488 4.012 1.696 4.288c.208.276 2.928 4.472 7.096 6.272.992.428 1.768.684 2.372.876.996.316 1.904.272 2.62.164.8-.12 2.46-1.008 2.808-1.98.348-.972.348-1.804.244-1.98-.104-.176-.38-.276-.796-.484z"/>
+        </svg>
+    </a>
+
+    <script>
+        // Rotating text
+        const words = ['Experiencias', 'Sitios Web', 'Tiendas Online', 'Resultados'];
+        let currentIndex = 0;
+        const rotatingElement = document.getElementById('rotatingText');
+
+        setInterval(() => {
+            rotatingElement.style.opacity = '0';
+            setTimeout(() => {
+                currentIndex = (currentIndex + 1) % words.length;
+                rotatingElement.textContent = words[currentIndex];
+                rotatingElement.style.opacity = '1';
+            }, 300);
+        }, 3000);
+
+        // WhatsApp function
+        function contactWhatsApp(item) {
+            const message = encodeURIComponent(`Hola Onyx! Me interesa el servicio: ${item}. Quisiera más información.`);
+            window.open(`https://api.whatsapp.com/send?phone=+5491141788982&text=${message}`, '_blank');
+        }
+
+        // Observer for animations
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.card').forEach(card => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(30px)';
+            card.style.transition = 'all 0.6s ease-out';
+            observer.observe(card);
+        });
+    </script>
+</body>
+</html>
