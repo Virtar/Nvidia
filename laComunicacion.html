@@ -13,245 +13,505 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
             min-height: 100vh;
             padding: 20px;
             color: #333;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: moveBackground 20s linear infinite;
+            z-index: 0;
+        }
+
+        @keyframes moveBackground {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(50px, 50px); }
         }
 
         .container {
-            max-width: 900px;
+            max-width: 1000px;
             margin: 0 auto;
             background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            border-radius: 30px;
+            box-shadow: 0 30px 80px rgba(0,0,0,0.3);
             overflow: hidden;
+            position: relative;
+            z-index: 1;
         }
 
         .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            padding: 40px 30px;
+            background: linear-gradient(135deg, #f6d365 0%, #fda085 50%, #43cea2 100%);
+            padding: 60px 30px;
             text-align: center;
             color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '💬';
+            position: absolute;
+            font-size: 200px;
+            opacity: 0.1;
+            top: -40px;
+            right: -40px;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .header::after {
+            content: '🎯';
+            position: absolute;
+            font-size: 150px;
+            opacity: 0.1;
+            bottom: -30px;
+            left: -30px;
+            animation: float 8s ease-in-out infinite reverse;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(5deg); }
         }
 
         .header h1 {
-            font-size: 2.5em;
-            margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+            font-size: 3em;
+            margin-bottom: 15px;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.2);
+            animation: slideDown 0.8s ease;
+            position: relative;
+            z-index: 2;
         }
 
         .header p {
-            font-size: 1.1em;
+            font-size: 1.3em;
             opacity: 0.95;
+            animation: slideUp 0.8s ease;
+            position: relative;
+            z-index: 2;
+        }
+
+        @keyframes slideDown {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
         }
 
         .progress-bar {
-            height: 6px;
-            background: #e0e0e0;
+            height: 8px;
+            background: linear-gradient(90deg, #f6d365 0%, #fda085 50%, #43cea2 100%);
             position: relative;
+            overflow: hidden;
+        }
+
+        .progress-bar::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.5), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
         }
 
         .progress-fill {
             height: 100%;
-            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(90deg, #FFD700 0%, #FF8C00 50%, #32CD32 100%);
             width: 0%;
-            transition: width 0.5s ease;
+            transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
         }
 
         .content {
-            padding: 40px 30px;
+            padding: 50px 40px;
         }
 
         .section {
             display: none;
-            animation: fadeIn 0.5s ease;
         }
 
         .section.active {
             display: block;
+            animation: fadeInScale 0.6s ease;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+        @keyframes fadeInScale {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
         }
 
         .illustration {
             text-align: center;
             margin: 30px 0;
-            font-size: 80px;
+            font-size: 100px;
+            animation: bounce 2s ease-in-out infinite;
+            filter: drop-shadow(0 10px 20px rgba(0,0,0,0.2));
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+
+        .illustration-img {
+            width: 200px;
+            height: 200px;
+            margin: 30px auto;
+            display: block;
+            animation: pulse 3s ease-in-out infinite;
+            filter: drop-shadow(0 10px 30px rgba(0,0,0,0.2));
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
         }
 
         .info-card {
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            border-radius: 15px;
-            padding: 25px;
-            margin: 20px 0;
-            border-left: 5px solid #667eea;
+            background: linear-gradient(135deg, #fff9e6 0%, #ffe8cc 100%);
+            border-radius: 20px;
+            padding: 30px;
+            margin: 25px 0;
+            border-left: 6px solid #FFB84D;
+            box-shadow: 0 10px 30px rgba(255, 184, 77, 0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .info-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 70%);
+            animation: rotate 15s linear infinite;
+        }
+
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .info-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(255, 184, 77, 0.3);
         }
 
         .info-card h3 {
-            color: #667eea;
+            color: #FF8C00;
             margin-bottom: 15px;
-            font-size: 1.4em;
+            font-size: 1.5em;
+            position: relative;
+            z-index: 1;
+        }
+
+        .info-card p, .info-card div {
+            position: relative;
+            z-index: 1;
         }
 
         .stat-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin: 25px 0;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 25px;
+            margin: 30px 0;
         }
 
         .stat-card {
-            background: white;
-            border-radius: 12px;
-            padding: 20px;
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            border-radius: 20px;
+            padding: 30px;
             text-align: center;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            transition: transform 0.3s ease;
+            box-shadow: 0 10px 30px rgba(255, 165, 0, 0.3);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            color: white;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255,255,255,0.3);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.6s ease, height 0.6s ease;
+        }
+
+        .stat-card:hover::before {
+            width: 300px;
+            height: 300px;
         }
 
         .stat-card:hover {
-            transform: translateY(-5px);
+            transform: translateY(-10px) scale(1.05);
+            box-shadow: 0 20px 50px rgba(255, 165, 0, 0.5);
         }
 
         .stat-number {
-            font-size: 3em;
+            font-size: 3.5em;
             font-weight: bold;
-            color: #667eea;
+            position: relative;
+            z-index: 1;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
         }
 
         .stat-label {
             margin-top: 10px;
-            color: #666;
-            font-size: 0.95em;
+            font-size: 1em;
+            position: relative;
+            z-index: 1;
         }
 
         .question-box {
-            background: #f8f9fa;
-            border-radius: 15px;
-            padding: 30px;
-            margin: 25px 0;
+            background: linear-gradient(135deg, #f0fff4 0%, #e6ffe6 100%);
+            border-radius: 20px;
+            padding: 35px;
+            margin: 30px 0;
+            border: 3px solid #32CD32;
+            box-shadow: 0 10px 30px rgba(50, 205, 50, 0.2);
         }
 
         .question-box h3 {
-            color: #333;
-            margin-bottom: 20px;
-            font-size: 1.3em;
+            color: #228B22;
+            margin-bottom: 25px;
+            font-size: 1.4em;
         }
 
         .option {
             background: white;
-            border: 2px solid #e0e0e0;
-            border-radius: 10px;
-            padding: 15px 20px;
-            margin: 12px 0;
+            border: 3px solid #e0e0e0;
+            border-radius: 15px;
+            padding: 20px 25px;
+            margin: 15px 0;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             display: flex;
             align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .option::before {
+            content: '';
+            position: absolute;
+            left: -100%;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .option:hover::before {
+            left: 100%;
         }
 
         .option:hover {
-            border-color: #667eea;
-            transform: translateX(5px);
+            border-color: #FFB84D;
+            transform: translateX(10px);
+            box-shadow: 0 5px 20px rgba(255, 184, 77, 0.3);
         }
 
         .option.selected {
-            border-color: #667eea;
-            background: #e8eaf6;
+            border-color: #FFA500;
+            background: linear-gradient(135deg, #fff9e6 0%, #ffe8cc 100%);
+            animation: pulse-border 1s ease;
+        }
+
+        @keyframes pulse-border {
+            0%, 100% { border-width: 3px; }
+            50% { border-width: 5px; }
         }
 
         .option.correct {
-            border-color: #4caf50;
-            background: #e8f5e9;
+            border-color: #32CD32;
+            background: linear-gradient(135deg, #f0fff4 0%, #e6ffe6 100%);
+            animation: successPulse 0.6s ease;
+        }
+
+        @keyframes successPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.03); }
+            100% { transform: scale(1); }
         }
 
         .option.incorrect {
-            border-color: #f44336;
-            background: #ffebee;
+            border-color: #FF6347;
+            background: linear-gradient(135deg, #fff5f5 0%, #ffe6e6 100%);
+            animation: shake 0.5s ease;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
         }
 
         .option-label {
             display: inline-block;
-            width: 30px;
-            height: 30px;
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
-            background: #667eea;
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
             color: white;
             text-align: center;
-            line-height: 30px;
-            margin-right: 15px;
+            line-height: 40px;
+            margin-right: 20px;
             font-weight: bold;
+            font-size: 1.1em;
+            box-shadow: 0 4px 10px rgba(255, 165, 0, 0.3);
+            transition: transform 0.3s ease;
+        }
+
+        .option:hover .option-label {
+            transform: rotate(360deg);
         }
 
         .feedback {
-            margin-top: 20px;
-            padding: 20px;
-            border-radius: 10px;
+            margin-top: 25px;
+            padding: 25px;
+            border-radius: 15px;
             display: none;
+            animation: slideInFeedback 0.5s ease;
+        }
+
+        @keyframes slideInFeedback {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .feedback.show {
             display: block;
-            animation: fadeIn 0.5s ease;
         }
 
         .feedback.correct {
-            background: #e8f5e9;
-            border-left: 5px solid #4caf50;
+            background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+            border-left: 6px solid #28a745;
+            box-shadow: 0 5px 20px rgba(40, 167, 69, 0.2);
         }
 
         .feedback.incorrect {
-            background: #ffebee;
-            border-left: 5px solid #f44336;
+            background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+            border-left: 6px solid #dc3545;
+            box-shadow: 0 5px 20px rgba(220, 53, 69, 0.2);
         }
 
         .btn {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
             color: white;
             border: none;
-            padding: 15px 35px;
-            border-radius: 25px;
-            font-size: 1.1em;
+            padding: 18px 40px;
+            border-radius: 30px;
+            font-size: 1.2em;
+            font-weight: bold;
             cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 6px 20px rgba(255, 165, 0, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255,255,255,0.3);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.6s ease, height 0.6s ease;
+        }
+
+        .btn:hover::before {
+            width: 300px;
+            height: 300px;
         }
 
         .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(255, 165, 0, 0.6);
+        }
+
+        .btn:active {
+            transform: translateY(-1px);
         }
 
         .btn:disabled {
             opacity: 0.5;
             cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn span {
+            position: relative;
+            z-index: 1;
         }
 
         .navigation {
             display: flex;
             justify-content: space-between;
-            margin-top: 30px;
+            margin-top: 40px;
         }
 
         .score-display {
             text-align: center;
-            margin: 30px 0;
-            font-size: 1.2em;
+            margin: 40px 0;
+            font-size: 1.3em;
         }
 
         .score-number {
-            font-size: 3em;
-            color: #667eea;
+            font-size: 4em;
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 50%, #32CD32 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
             font-weight: bold;
+            animation: scoreReveal 1s ease;
+        }
+
+        @keyframes scoreReveal {
+            from { transform: scale(0); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
         }
 
         .list-item {
-            padding: 12px 0;
-            border-bottom: 1px solid #e0e0e0;
+            padding: 15px 0;
+            border-bottom: 2px solid #f0f0f0;
+            transition: padding-left 0.3s ease;
+        }
+
+        .list-item:hover {
+            padding-left: 10px;
         }
 
         .list-item:last-child {
@@ -259,10 +519,33 @@
         }
 
         .highlight {
-            background: linear-gradient(120deg, #ffd54f 0%, #ffecb3 100%);
-            padding: 2px 8px;
-            border-radius: 4px;
+            background: linear-gradient(120deg, #FFD700 0%, #FFA500 100%);
+            padding: 3px 10px;
+            border-radius: 6px;
             font-weight: bold;
+            color: white;
+            box-shadow: 0 2px 8px rgba(255, 165, 0, 0.3);
+        }
+
+        .success-icon {
+            display: inline-block;
+            animation: rotate 2s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .trophy-animation {
+            font-size: 120px;
+            animation: trophy 2s ease-in-out infinite;
+        }
+
+        @keyframes trophy {
+            0%, 100% { transform: scale(1) rotate(0deg); }
+            25% { transform: scale(1.1) rotate(-10deg); }
+            75% { transform: scale(1.1) rotate(10deg); }
         }
     </style>
 </head>
@@ -281,25 +564,25 @@
             <!-- Sección 1: Introducción -->
             <div class="section active" id="section1">
                 <div class="illustration">💬</div>
-                <h2 style="text-align: center; margin-bottom: 20px;">Los Componentes de la Comunicación</h2>
+                <h2 style="text-align: center; margin-bottom: 30px; color: #FF8C00; font-size: 2.2em;">Los Componentes de la Comunicación</h2>
                 
                 <div class="info-card">
                     <h3>¿Sabías que las palabras son solo el 7% de tu comunicación?</h3>
-                    <p>La comunicación eficaz va mucho más allá de lo que dices. El impacto real proviene de cómo lo dices y cómo lo expresas con tu cuerpo.</p>
+                    <p style="font-size: 1.1em; line-height: 1.8;">La comunicación eficaz va mucho más allá de lo que dices. El impacto real proviene de cómo lo dices y cómo lo expresas con tu cuerpo.</p>
                 </div>
 
                 <div class="stat-grid">
                     <div class="stat-card">
                         <div class="stat-number">55%</div>
-                        <div class="stat-label">Lenguaje Corporal</div>
+                        <div class="stat-label">👤 Lenguaje Corporal</div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-number">38%</div>
-                        <div class="stat-label">Tono de Voz</div>
+                        <div class="stat-label">🎵 Tono de Voz</div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-number">7%</div>
-                        <div class="stat-label">Palabras</div>
+                        <div class="stat-label">💭 Palabras</div>
                     </div>
                 </div>
 
@@ -322,40 +605,40 @@
                         <span>Todos tienen el mismo impacto</span>
                     </div>
                     <div class="feedback">
-                        <strong>Fundamentación:</strong> <span class="feedback-text"></span>
+                        <strong>📚 Fundamentación:</strong> <span class="feedback-text"></span>
                     </div>
                 </div>
 
                 <div class="navigation">
-                    <button class="btn" style="visibility: hidden;">Anterior</button>
-                    <button class="btn" id="next1" disabled>Siguiente</button>
+                    <button class="btn" style="visibility: hidden;"><span>Anterior</span></button>
+                    <button class="btn" id="next1" disabled><span>Siguiente →</span></button>
                 </div>
             </div>
 
             <!-- Sección 2: Inteligencia y Distinciones -->
             <div class="section" id="section2">
                 <div class="illustration">🧠</div>
-                <h2 style="text-align: center; margin-bottom: 20px;">La Inteligencia como Capacidad de Distinción</h2>
+                <h2 style="text-align: center; margin-bottom: 30px; color: #FF8C00; font-size: 2.2em;">La Inteligencia como Capacidad de Distinción</h2>
                 
                 <div class="info-card">
                     <h3>Las Cuatro Fases del Aprendizaje</h3>
                     <div class="list-item">
-                        <strong>1. Ignorancia:</strong> No saber que no se sabe (Inconscientemente incompetente)
+                        <strong>1️⃣ Ignorancia:</strong> No saber que no se sabe (Inconscientemente incompetente)
                     </div>
                     <div class="list-item">
-                        <strong>2. Información:</strong> Saber que no se sabe (Conscientemente incompetente)
+                        <strong>2️⃣ Información:</strong> Saber que no se sabe (Conscientemente incompetente)
                     </div>
                     <div class="list-item">
-                        <strong>3. Conocimiento:</strong> Saber que se sabe (Conscientemente competente)
+                        <strong>3️⃣ Conocimiento:</strong> Saber que se sabe (Conscientemente competente)
                     </div>
                     <div class="list-item">
-                        <strong>4. Sabiduría:</strong> No necesitar prestar atención para aplicar lo sabido (Inconscientemente competente)
+                        <strong>4️⃣ Sabiduría:</strong> No necesitar prestar atención para aplicar lo sabido (Inconscientemente competente)
                     </div>
                 </div>
 
-                <div class="info-card">
-                    <p style="font-style: italic; font-size: 1.1em;">
-                        "El conocimiento es poder en potencia; solo se convierte en realidad cuando es comunicado al Universo y transformado en acción."
+                <div class="info-card" style="background: linear-gradient(135deg, #e6ffe6 0%, #ccffcc 100%); border-left-color: #32CD32;">
+                    <p style="font-style: italic; font-size: 1.2em; text-align: center; color: #228B22;">
+                        💡 "El conocimiento es poder en potencia; solo se convierte en realidad cuando es comunicado al Universo y transformado en acción."
                     </p>
                 </div>
 
@@ -378,48 +661,48 @@
                         <span>Sabiduría - Inconscientemente competente</span>
                     </div>
                     <div class="feedback">
-                        <strong>Fundamentación:</strong> <span class="feedback-text"></span>
+                        <strong>📚 Fundamentación:</strong> <span class="feedback-text"></span>
                     </div>
                 </div>
 
                 <div class="navigation">
-                    <button class="btn" id="prev2">Anterior</button>
-                    <button class="btn" id="next2" disabled>Siguiente</button>
+                    <button class="btn" id="prev2"><span>← Anterior</span></button>
+                    <button class="btn" id="next2" disabled><span>Siguiente →</span></button>
                 </div>
             </div>
 
             <!-- Sección 3: Actos del Lenguaje -->
             <div class="section" id="section3">
                 <div class="illustration">🗣️</div>
-                <h2 style="text-align: center; margin-bottom: 20px;">Los 5 Actos Básicos del Lenguaje</h2>
+                <h2 style="text-align: center; margin-bottom: 30px; color: #FF8C00; font-size: 2.2em;">Los 5 Actos Básicos del Lenguaje</h2>
                 
-                <div class="info-card">
-                    <h3>El lenguaje no describe la realidad, la CREA</h3>
-                    <p>A través de nuestras palabras generamos nuevas posibilidades y transformamos el mundo.</p>
+                <div class="info-card" style="background: linear-gradient(135deg, #e6ffe6 0%, #ccffcc 100%); border-left-color: #32CD32;">
+                    <h3 style="color: #228B22;">El lenguaje no describe la realidad, la CREA ✨</h3>
+                    <p style="font-size: 1.1em; line-height: 1.8;">A través de nuestras palabras generamos nuevas posibilidades y transformamos el mundo.</p>
                 </div>
 
                 <div class="stat-grid">
                     <div class="stat-card">
-                        <div style="font-size: 2em; margin-bottom: 10px;">🙏</div>
-                        <strong>Petición</strong>
-                        <p style="margin-top: 8px; font-size: 0.9em;">Quien no sabe pedir, no tiene poder</p>
+                        <div style="font-size: 2.5em; margin-bottom: 15px;">🙏</div>
+                        <strong style="font-size: 1.2em;">Petición</strong>
+                        <p style="margin-top: 10px; font-size: 0.95em;">Quien no sabe pedir, no tiene poder</p>
                     </div>
                     <div class="stat-card">
-                        <div style="font-size: 2em; margin-bottom: 10px;">🎁</div>
-                        <strong>Ofrecimiento</strong>
-                        <p style="margin-top: 8px; font-size: 0.9em;">El primer paso de la persona inteligente</p>
+                        <div style="font-size: 2.5em; margin-bottom: 15px;">🎁</div>
+                        <strong style="font-size: 1.2em;">Ofrecimiento</strong>
+                        <p style="margin-top: 10px; font-size: 0.95em;">El primer paso de la persona inteligente</p>
                     </div>
                     <div class="stat-card">
-                        <div style="font-size: 2em; margin-bottom: 10px;">🤝</div>
-                        <strong>Promesa</strong>
-                        <p style="margin-top: 8px; font-size: 0.9em;">Manifiesta tu esencia</p>
+                        <div style="font-size: 2.5em; margin-bottom: 15px;">🤝</div>
+                        <strong style="font-size: 1.2em;">Promesa</strong>
+                        <p style="margin-top: 10px; font-size: 0.95em;">Manifiesta tu esencia</p>
                     </div>
                 </div>
 
                 <div class="info-card">
-                    <p style="font-style: italic; font-size: 1.1em; text-align: center;">
+                    <p style="font-style: italic; font-size: 1.2em; text-align: center;">
                         <span class="highlight">"El mapa no es el territorio"</span><br>
-                        Cada persona actúa según su propia percepción de la realidad
+                        <span style="margin-top: 10px; display: block;">Cada persona actúa según su propia percepción de la realidad</span>
                     </p>
                 </div>
 
@@ -442,49 +725,49 @@
                         <span>Hacer afirmaciones claras</span>
                     </div>
                     <div class="feedback">
-                        <strong>Fundamentación:</strong> <span class="feedback-text"></span>
+                        <strong>📚 Fundamentación:</strong> <span class="feedback-text"></span>
                     </div>
                 </div>
 
                 <div class="navigation">
-                    <button class="btn" id="prev3">Anterior</button>
-                    <button class="btn" id="next3" disabled>Siguiente</button>
+                    <button class="btn" id="prev3"><span>← Anterior</span></button>
+                    <button class="btn" id="next3" disabled><span>Siguiente →</span></button>
                 </div>
             </div>
 
             <!-- Sección 4: Contexto Psicológico -->
             <div class="section" id="section4">
                 <div class="illustration">🎭</div>
-                <h2 style="text-align: center; margin-bottom: 20px;">Factores de Influencia</h2>
+                <h2 style="text-align: center; margin-bottom: 30px; color: #FF8C00; font-size: 2.2em;">Factores de Influencia</h2>
                 
                 <div class="info-card">
                     <h3>La Confianza se construye sobre tres pilares:</h3>
                     <div class="list-item">
-                        <strong>Sinceridad:</strong> Coherencia entre lo que se piensa, se dice y se hace
+                        <strong>✅ Sinceridad:</strong> Coherencia entre lo que se piensa, se dice y se hace
                     </div>
                     <div class="list-item">
-                        <strong>Competencia:</strong> Capacidad reconocida de ejecutar una tarea
+                        <strong>🎯 Competencia:</strong> Capacidad reconocida de ejecutar una tarea
                     </div>
                     <div class="list-item">
-                        <strong>Historia Anterior:</strong> Antecedentes de actuación
+                        <strong>📜 Historia Anterior:</strong> Antecedentes de actuación
                     </div>
                 </div>
 
                 <div class="stat-grid">
                     <div class="stat-card">
-                        <div style="font-size: 2em; margin-bottom: 10px;">🔄</div>
-                        <strong>Reciprocidad</strong>
-                        <p style="margin-top: 8px; font-size: 0.9em;">Devolver favores</p>
+                        <div style="font-size: 2.5em; margin-bottom: 15px;">🔄</div>
+                        <strong style="font-size: 1.2em;">Reciprocidad</strong>
+                        <p style="margin-top: 10px; font-size: 0.95em;">Devolver favores</p>
                     </div>
                     <div class="stat-card">
-                        <div style="font-size: 2em; margin-bottom: 10px;">💎</div>
-                        <strong>Escasez</strong>
-                        <p style="margin-top: 8px; font-size: 0.9em;">Lo limitado vale más</p>
+                        <div style="font-size: 2.5em; margin-bottom: 15px;">💎</div>
+                        <strong style="font-size: 1.2em;">Escasez</strong>
+                        <p style="margin-top: 10px; font-size: 0.95em;">Lo limitado vale más</p>
                     </div>
                     <div class="stat-card">
-                        <div style="font-size: 2em; margin-bottom: 10px;">👔</div>
-                        <strong>Autoridad</strong>
-                        <p style="margin-top: 8px; font-size: 0.9em;">Conocimiento y experiencia</p>
+                        <div style="font-size: 2.5em; margin-bottom: 15px;">👔</div>
+                        <strong style="font-size: 1.2em;">Autoridad</strong>
+                        <p style="margin-top: 10px; font-size: 0.95em;">Conocimiento y experiencia</p>
                     </div>
                 </div>
 
@@ -507,20 +790,20 @@
                         <span>Historia Anterior</span>
                     </div>
                     <div class="feedback">
-                        <strong>Fundamentación:</strong> <span class="feedback-text"></span>
+                        <strong>📚 Fundamentación:</strong> <span class="feedback-text"></span>
                     </div>
                 </div>
 
                 <div class="navigation">
-                    <button class="btn" id="prev4">Anterior</button>
-                    <button class="btn" id="next4" disabled>Siguiente</button>
+                    <button class="btn" id="prev4"><span>← Anterior</span></button>
+                    <button class="btn" id="next4" disabled><span>Siguiente →</span></button>
                 </div>
             </div>
 
             <!-- Sección 5: PNL y Rapport -->
             <div class="section" id="section5">
                 <div class="illustration">👁️</div>
-                <h2 style="text-align: center; margin-bottom: 20px;">Técnicas de PNL y Rapport</h2>
+                <h2 style="text-align: center; margin-bottom: 30px; color: #FF8C00; font-size: 2.2em;">Técnicas de PNL y Rapport</h2>
                 
                 <div class="info-card">
                     <h3>Los Tres Canales Sensoriales</h3>
@@ -535,9 +818,9 @@
                     </div>
                 </div>
 
-                <div class="info-card">
-                    <h3>Rapport: Entrar en el mundo del otro</h3>
-                    <p>La técnica más poderosa es la <span class="highlight">simetría corporal (espejo)</span>: adoptar una postura física, tono de voz y ritmo respiratorio similares al interlocutor. Esto genera confianza inconsciente.</p>
+                <div class="info-card" style="background: linear-gradient(135deg, #e6ffe6 0%, #ccffcc 100%); border-left-color: #32CD32;">
+                    <h3 style="color: #228B22;">🤝 Rapport: Entrar en el mundo del otro</h3>
+                    <p style="font-size: 1.1em; line-height: 1.8;">La técnica más poderosa es la <span class="highlight">simetría corporal (espejo)</span>: adoptar una postura física, tono de voz y ritmo respiratorio similares al interlocutor. Esto genera confianza inconsciente.</p>
                 </div>
 
                 <div class="question-box">
@@ -559,40 +842,40 @@
                         <span>No hay forma de saberlo</span>
                     </div>
                     <div class="feedback">
-                        <strong>Fundamentación:</strong> <span class="feedback-text"></span>
+                        <strong>📚 Fundamentación:</strong> <span class="feedback-text"></span>
                     </div>
                 </div>
 
                 <div class="navigation">
-                    <button class="btn" id="prev5">Anterior</button>
-                    <button class="btn" id="next5" disabled>Siguiente</button>
+                    <button class="btn" id="prev5"><span>← Anterior</span></button>
+                    <button class="btn" id="next5" disabled><span>Siguiente →</span></button>
                 </div>
             </div>
 
             <!-- Sección 6: Método Socrático -->
             <div class="section" id="section6">
                 <div class="illustration">🎯</div>
-                <h2 style="text-align: center; margin-bottom: 20px;">Comunicación Efectiva</h2>
+                <h2 style="text-align: center; margin-bottom: 30px; color: #FF8C00; font-size: 2.2em;">Comunicación Efectiva</h2>
                 
                 <div class="info-card">
                     <h3>El Método Socrático</h3>
-                    <p style="font-size: 1.1em; margin-bottom: 15px;">
+                    <p style="font-size: 1.2em; margin-bottom: 20px;">
                         <span class="highlight">"Quien controla una conversación no es quien habla, sino quien escucha"</span>
                     </p>
-                    <p>Las preguntas abiertas permiten obtener información valiosa, hacer que el otro se sienta valorado y persuadir sin imponer.</p>
+                    <p style="font-size: 1.1em; line-height: 1.8;">Las preguntas abiertas permiten obtener información valiosa, hacer que el otro se sienta valorado y persuadir sin imponer.</p>
                 </div>
 
                 <div class="stat-grid">
-                    <div class="stat-card">
-                        <div style="font-size: 2em; margin-bottom: 10px;">😰</div>
-                        <strong>Evitar el Sufrimiento</strong>
+                    <div class="stat-card" style="background: linear-gradient(135deg, #FFB84D 0%, #FF8C00 100%);">
+                        <div style="font-size: 3em; margin-bottom: 15px;">😰</div>
+                        <strong style="font-size: 1.2em;">Evitar el Sufrimiento</strong>
                     </div>
-                    <div class="stat-card">
-                        <div style="font-size: 2em; margin-bottom: 10px;">😊</div>
-                        <strong>Buscar el Placer</strong>
+                    <div class="stat-card" style="background: linear-gradient(135deg, #43cea2 0%, #32CD32 100%);">
+                        <div style="font-size: 3em; margin-bottom: 15px;">😊</div>
+                        <strong style="font-size: 1.2em;">Buscar el Placer</strong>
                     </div>
                 </div>
-                <p style="text-align: center; margin-top: 15px; font-style: italic;">
+                <p style="text-align: center; margin-top: 20px; font-style: italic; font-size: 1.1em; color: #666;">
                     Todo acto humano está motivado por una de estas dos razones fundamentales
                 </p>
 
@@ -615,49 +898,50 @@
                         <span>Quien inicia la conversación</span>
                     </div>
                     <div class="feedback">
-                        <strong>Fundamentación:</strong> <span class="feedback-text"></span>
+                        <strong>📚 Fundamentación:</strong> <span class="feedback-text"></span>
                     </div>
                 </div>
 
                 <div class="navigation">
-                    <button class="btn" id="prev6">Anterior</button>
-                    <button class="btn" id="next6" disabled>Siguiente</button>
+                    <button class="btn" id="prev6"><span>← Anterior</span></button>
+                    <button class="btn" id="next6" disabled><span>Siguiente →</span></button>
                 </div>
             </div>
 
             <!-- Sección Final: Resultados -->
             <div class="section" id="section7">
-                <div class="illustration">🏆</div>
-                <h2 style="text-align: center; margin-bottom: 20px;">¡Felicitaciones!</h2>
+                <div class="illustration trophy-animation">🏆</div>
+                <h2 style="text-align: center; margin-bottom: 30px; color: #FF8C00; font-size: 2.5em;">¡Felicitaciones!</h2>
                 
                 <div class="score-display">
-                    <p>Tu puntuación final:</p>
+                    <p style="font-size: 1.3em; margin-bottom: 20px;">Tu puntuación final:</p>
                     <div class="score-number"><span id="finalScore">0</span>/6</div>
+                    <p style="margin-top: 20px; font-size: 1.1em; color: #666;" id="scoreMessage"></p>
                 </div>
 
                 <div class="info-card">
-                    <h3>Conclusiones Clave</h3>
+                    <h3>🎓 Conclusiones Clave</h3>
                     <div class="list-item">
-                        <strong>Ser - Hacer - Tener:</strong> Primero se debe SER (estado mental), para luego HACER (acción) y finalmente TENER (resultados)
+                        <strong>🔄 Ser - Hacer - Tener:</strong> Primero se debe SER (estado mental), para luego HACER (acción) y finalmente TENER (resultados)
                     </div>
                     <div class="list-item">
-                        <strong>La Intencionalidad:</strong> La comunicación debe buscar el "ganar-ganar"
+                        <strong>🤝 La Intencionalidad:</strong> La comunicación debe buscar el "ganar-ganar"
                     </div>
                     <div class="list-item">
-                        <strong>La Acción es Poder:</strong> El poder es la capacidad de generar acción
+                        <strong>⚡ La Acción es Poder:</strong> El poder es la capacidad de generar acción
                     </div>
                 </div>
 
-                <div class="info-card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
-                    <h3 style="color: white;">💡 Recuerda</h3>
-                    <p style="font-size: 1.1em;">
+                <div class="info-card" style="background: linear-gradient(135deg, #FFD700 0%, #FFA500 50%, #32CD32 100%); color: white; border: none;">
+                    <h3 style="color: white; font-size: 1.6em;">💡 Recuerda</h3>
+                    <p style="font-size: 1.2em; line-height: 1.8;">
                         "El conocimiento es poder en potencia; solo se convierte en realidad cuando es comunicado al Universo y transformado en acción."
                     </p>
                 </div>
 
                 <div class="navigation">
-                    <button class="btn" id="prev7">Anterior</button>
-                    <button class="btn" onclick="location.reload()">Reiniciar</button>
+                    <button class="btn" id="prev7"><span>← Anterior</span></button>
+                    <button class="btn" onclick="location.reload()"><span>🔄 Reiniciar</span></button>
                 </div>
             </div>
         </div>
@@ -707,18 +991,14 @@
 
                 options.forEach(option => {
                     option.addEventListener('click', function() {
-                        if (answers[questionNum]) return; // Ya respondió
+                        if (answers[questionNum]) return;
 
-                        // Remover selección previa
                         options.forEach(opt => opt.classList.remove('selected'));
-                        
-                        // Marcar como seleccionada
                         this.classList.add('selected');
                         
                         const isCorrect = this.dataset.answer === 'correct';
                         answers[questionNum] = isCorrect;
 
-                        // Mostrar resultado
                         if (isCorrect) {
                             this.classList.add('correct');
                             feedback.classList.add('show', 'correct');
@@ -729,7 +1009,6 @@
                             feedback.classList.add('show', 'incorrect');
                             feedbackText.textContent = feedbackTexts[questionNum].incorrect;
                             
-                            // Mostrar respuesta correcta
                             options.forEach(opt => {
                                 if (opt.dataset.answer === 'correct') {
                                     opt.classList.add('correct');
@@ -737,10 +1016,8 @@
                             });
                         }
 
-                        // Habilitar botón siguiente
                         nextBtn.disabled = false;
 
-                        // Deshabilitar otras opciones
                         options.forEach(opt => {
                             if (opt !== this) {
                                 opt.style.cursor = 'not-allowed';
@@ -752,7 +1029,6 @@
             }
         });
 
-        // Función para cambiar sección
         function goToSection(num) {
             document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
             document.getElementById('section' + num).classList.add('active');
@@ -760,19 +1036,31 @@
             updateProgress();
             window.scrollTo(0, 0);
 
-            // Actualizar puntuación final
             if (num === 7) {
                 document.getElementById('finalScore').textContent = score;
+                const scoreMessage = document.getElementById('scoreMessage');
+                
+                if (score === 6) {
+                    scoreMessage.textContent = "🌟 ¡Perfecto! Eres un maestro de la comunicación eficaz";
+                    scoreMessage.style.color = "#32CD32";
+                } else if (score >= 4) {
+                    scoreMessage.textContent = "👏 ¡Muy bien! Dominas los conceptos clave";
+                    scoreMessage.style.color = "#FFB84D";
+                } else if (score >= 3) {
+                    scoreMessage.textContent = "👍 Buen trabajo, sigue practicando";
+                    scoreMessage.style.color = "#FFA500";
+                } else {
+                    scoreMessage.textContent = "💪 Sigue aprendiendo, cada paso cuenta";
+                    scoreMessage.style.color = "#FF8C00";
+                }
             }
         }
 
-        // Actualizar barra de progreso
         function updateProgress() {
             const progress = ((currentSection - 1) / (totalSections - 1)) * 100;
             document.getElementById('progressBar').style.width = progress + '%';
         }
 
-        // Navegación
         document.getElementById('next1').addEventListener('click', () => goToSection(2));
         document.getElementById('prev2').addEventListener('click', () => goToSection(1));
         document.getElementById('next2').addEventListener('click', () => goToSection(3));
@@ -786,5 +1074,7 @@
         document.getElementById('next6').addEventListener('click', () => goToSection(7));
         document.getElementById('prev7').addEventListener('click', () => goToSection(6));
 
-        // Inicializar
         updateProgress();
+    </script>
+</body>
+</html>
