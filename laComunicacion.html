@@ -927,7 +927,88 @@
                     </p>
                 </div>
 
-                <div class="navigation">
+                <!-- Resumen Completo -->
+                <div class="info-card" style="background: white; border: 3px solid #FFB84D; margin-top: 40px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h3 style="color: #FF8C00; margin: 0;">📄 Resumen Completo del Documento</h3>
+                        <button class="btn" style="padding: 10px 25px; font-size: 0.9em;" onclick="descargarResumen()">
+                            <span>⬇️ Descargar PDF</span>
+                        </button>
+                    </div>
+                    
+                    <div id="resumenCompleto" style="max-height: 400px; overflow-y: auto; padding: 20px; background: #f9f9f9; border-radius: 10px; font-size: 0.95em; line-height: 1.7;">
+                        <h4 style="color: #FF8C00; margin-top: 0;">Resumen Ejecutivo</h4>
+                        <p>La comunicación eficaz no se limita al intercambio de información, sino que constituye una herramienta de transformación personal y profesional capaz de generar realidades y movilizar la acción. Basado en los principios de la Programación Neurolingüística (PNL) y la inteligencia interpersonal, este análisis sostiene que la eficacia comunicativa depende menos de las palabras (7%) que del tono de voz (38%) y el lenguaje corporal (55%). La premisa central es que "el lenguaje crea la realidad" y que el éxito en la comunicación radica en la capacidad de realizar distinciones en el entorno, establecer rapport (sintonía) con el interlocutor y gestionar adecuadamente el contexto psicológico.</p>
+
+                        <h4 style="color: #FF8C00; margin-top: 25px;">1. Los Componentes de la Comunicación Humana</h4>
+                        <p>La capacidad de influir en los demás está determinada por tres elementos fundamentales:</p>
+                        <ul style="margin-left: 20px;">
+                            <li><strong>El Lenguaje Corporal (55%):</strong> Incluye la postura, gestos, expresiones faciales y contacto visual.</li>
+                            <li><strong>El Tono de Voz (38%):</strong> Volumen, velocidad, ritmo y entonación.</li>
+                            <li><strong>La Palabra (7%):</strong> El contenido verbal específico.</li>
+                        </ul>
+                        <p><em>Analogía esencial:</em> Las palabras son como la sal en la comida; aunque su proporción es mínima, su ausencia o exceso altera completamente el resultado.</p>
+
+                        <h4 style="color: #FF8C00; margin-top: 25px;">2. La Inteligencia como Capacidad de Distinción</h4>
+                        <p>La inteligencia se redefine no como un factor genético, sino como la capacidad de hacer distinciones en un contexto determinado. El proceso de adquisición de sabiduría atraviesa cuatro fases críticas:</p>
+                        <ol style="margin-left: 20px;">
+                            <li><strong>Ignorancia:</strong> No saber que no se sabe (Inconscientemente incompetente)</li>
+                            <li><strong>Información:</strong> Saber que no se sabe (Conscientemente incompetente)</li>
+                            <li><strong>Conocimiento:</strong> Saber que se sabe (Conscientemente competente)</li>
+                            <li><strong>Sabiduría:</strong> No necesitar prestar atención para aplicar lo sabido (Inconscientemente competente)</li>
+                        </ol>
+
+                        <h4 style="color: #FF8C00; margin-top: 25px;">3. Actos Básicos del Lenguaje y Creación de Realidad</h4>
+                        <p>El lenguaje no describe una realidad preexistente, sino que la genera a través de cinco actos básicos:</p>
+                        <ol style="margin-left: 20px;">
+                            <li><strong>Petición:</strong> Quien no sabe pedir, no tiene poder.</li>
+                            <li><strong>Ofrecimiento:</strong> El primer paso de la persona inteligente. Dar primero suele resultar en recibir el doble después.</li>
+                            <li><strong>Promesa:</strong> Un compromiso que manifiesta la esencia de la persona.</li>
+                            <li><strong>Aserción (Afirmación):</strong> Declaraciones que pueden ser verdaderas o falsas según las evidencias.</li>
+                            <li><strong>Evaluación (Juicio):</strong> No son verdaderos ni falsos, sino válidos o inválidos.</li>
+                        </ol>
+                        <p style="font-style: italic; color: #666; margin-top: 15px;">"El mapa no es el territorio". Cada persona actúa según su propia percepción de la realidad, no según la realidad misma.</p>
+
+                        <h4 style="color: #FF8C00; margin-top: 25px;">4. El Contexto Psicológico y Factores de Influencia</h4>
+                        <p><strong>La Confianza</strong> se construye sobre tres dimensiones:</p>
+                        <ul style="margin-left: 20px;">
+                            <li><strong>Sinceridad:</strong> Coherencia entre lo que se piensa, se dice y se hace.</li>
+                            <li><strong>Competencia:</strong> La capacidad reconocida de ejecutar una tarea productivamente.</li>
+                            <li><strong>Historia Anterior:</strong> Los antecedentes de actuación del individuo.</li>
+                        </ul>
+                        <p style="margin-top: 15px;"><strong>Factores de Influencia Adicionales:</strong></p>
+                        <ul style="margin-left: 20px;">
+                            <li><strong>Reciprocidad:</strong> La tendencia humana a devolver favores.</li>
+                            <li><strong>Escasez:</strong> Los objetos y la información aumentan su valor cuando son percibidos como limitados.</li>
+                            <li><strong>Autoridad:</strong> Se basa en el conocimiento, la experiencia y los antecedentes.</li>
+                            <li><strong>Consenso:</strong> La inclinación social a seguir lo que la mayoría aprueba.</li>
+                            <li><strong>Compromiso:</strong> Lograr que el interlocutor se sienta vinculado emocional o simbólicamente.</li>
+                        </ul>
+
+                        <h4 style="color: #FF8C00; margin-top: 25px;">5. Técnicas de Programación Neurolingüística (PNL)</h4>
+                        <p><strong>Canales Sensoriales de Percepción:</strong></p>
+                        <ul style="margin-left: 20px;">
+                            <li><strong>Visual:</strong> Personas que hablan rápido y usan términos relacionados con la vista ("Ya veo a qué se refiere").</li>
+                            <li><strong>Auditivo:</strong> Prefieren el ritmo y las palabras relacionadas con el sonido ("Eso me suena bien").</li>
+                            <li><strong>Cinestésico:</strong> Enfocados en las sensaciones táctiles, olfativas y emocionales ("Tengo la sensación de que funcionará").</li>
+                        </ul>
+                        <p style="margin-top: 15px;"><strong>Rapport y Simetría Corporal:</strong> El rapport consiste en entrar en el mundo de la otra persona. La técnica más poderosa es la simetría corporal (espejo): adoptar una postura física, tono de voz y ritmo respiratorio similares a los del interlocutor.</p>
+
+                        <h4 style="color: #FF8C00; margin-top: 25px;">6. Dinámicas de la Comunicación Efectiva</h4>
+                        <p><strong>El Método Socrático:</strong> "Quien controla una conversación no es quien habla, sino quien escucha". El uso de preguntas abiertas permite obtener información valiosa, hacer que el otro se sienta escuchado y persuadir sin imponer.</p>
+                        <p style="margin-top: 15px;"><strong>Motivación Humana:</strong> Todo acto humano está motivado por dos razones fundamentales: evitar el sufrimiento o buscar el placer.</p>
+                        <p style="margin-top: 15px;"><strong>La Zona de Comodidad:</strong> El aprendizaje y el crecimiento solo ocurren fuera de la zona de comodidad.</p>
+
+                        <h4 style="color: #FF8C00; margin-top: 25px;">Conclusiones Finales</h4>
+                        <ul style="margin-left: 20px;">
+                            <li><strong>Ser - Hacer - Tener:</strong> El modelo eficaz es primero SER (estado mental), para luego HACER (acción) y finalmente TENER (resultados).</li>
+                            <li><strong>La Intencionalidad:</strong> La comunicación debe buscar el "ganar-ganar".</li>
+                            <li><strong>La Acción es Poder:</strong> Cuanto mayor sea la capacidad de pedir y de influir positivamente en los demás, mayor será el éxito personal y profesional.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="navigation" style="margin-top: 30px;">
                     <button class="btn" id="prev7"><span>← Anterior</span></button>
                     <button class="btn" onclick="location.reload()"><span>🔄 Reiniciar</span></button>
                 </div>
@@ -1063,6 +1144,63 @@
         document.getElementById('prev7').addEventListener('click', () => goToSection(6));
 
         updateProgress();
+
+        // Función para descargar el resumen como PDF (simulado con impresión)
+        function descargarResumen() {
+            const resumen = document.getElementById('resumenCompleto').innerHTML;
+            const ventana = window.open('', '_blank');
+            ventana.document.write(`
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>Resumen - Comunicación Eficaz</title>
+                    <style>
+                        body {
+                            font-family: Arial, sans-serif;
+                            max-width: 800px;
+                            margin: 40px auto;
+                            padding: 20px;
+                            line-height: 1.6;
+                            color: #333;
+                        }
+                        h1 {
+                            color: #FF8C00;
+                            text-align: center;
+                            border-bottom: 3px solid #FFD700;
+                            padding-bottom: 10px;
+                        }
+                        h4 {
+                            color: #FF8C00;
+                            margin-top: 25px;
+                        }
+                        ul, ol {
+                            margin-left: 20px;
+                        }
+                        li {
+                            margin-bottom: 8px;
+                        }
+                        @media print {
+                            body {
+                                margin: 0;
+                                padding: 20px;
+                            }
+                        }
+                    </style>
+                </head>
+                <body>
+                    <h1>📚 Comunicación Eficaz: Resumen Completo</h1>
+                    ${resumen}
+                    <div style="text-align: center; margin-top: 40px; padding-top: 20px; border-top: 2px solid #f0f0f0; color: #666;">
+                        <p>Generado desde la plataforma interactiva de Comunicación Eficaz</p>
+                    </div>
+                </body>
+                </html>
+            `);
+            
+            setTimeout(() => {
+                ventana.print();
+            }, 500);
+        }
     </script>
 </body>
 </html>
