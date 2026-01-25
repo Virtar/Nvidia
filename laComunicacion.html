@@ -687,4 +687,104 @@
                 incorrect: "Los tres pilares de la confianza son: Sinceridad (coherencia entre pensar, decir y hacer), Competencia (capacidad reconocida) e Historia Anterior (antecedentes). El carisma no es uno de estos pilares fundamentales."
             },
             5: {
-                correct: "¡Exacto! Las personas cinestésicas se enfocan en sensaciones táctiles, olfativas y emocionales. Usan expresiones como 'tengo la sensación', 'me huele
+                correct: "¡Exacto! Las personas cinestésicas se enfocan en sensaciones táctiles, olfativas y emocionales. Usan expresiones como 'tengo la sensación', 'me huele bien', o 'siento que'. Son personas muy conectadas con sus emociones.",
+                incorrect: "Las personas cinestésicas usan lenguaje relacionado con sensaciones y emociones. Dicen cosas como 'tengo la sensación' o 'siento que'. Los visuales dicen 'veo' y los auditivos 'me suena'."
+            },
+            6: {
+                correct: "¡Perfecto! Según el método socrático, quien controla la conversación es quien escucha y hace las preguntas adecuadas. Esto permite obtener información valiosa, hacer que el otro se sienta valorado y persuadir sin imponer.",
+                incorrect: "Quien controla una conversación no es quien más habla, sino quien escucha activamente y hace preguntas. Las preguntas abiertas permiten guiar la conversación y obtener información valiosa para influir positivamente."
+            }
+        };
+
+        // Manejar selección de opciones
+        document.querySelectorAll('.section').forEach((section, idx) => {
+            const questionNum = idx + 1;
+            if (questionNum <= 6) {
+                const options = section.querySelectorAll('.option');
+                const feedback = section.querySelector('.feedback');
+                const feedbackText = section.querySelector('.feedback-text');
+                const nextBtn = section.querySelector('[id^="next"]');
+
+                options.forEach(option => {
+                    option.addEventListener('click', function() {
+                        if (answers[questionNum]) return; // Ya respondió
+
+                        // Remover selección previa
+                        options.forEach(opt => opt.classList.remove('selected'));
+                        
+                        // Marcar como seleccionada
+                        this.classList.add('selected');
+                        
+                        const isCorrect = this.dataset.answer === 'correct';
+                        answers[questionNum] = isCorrect;
+
+                        // Mostrar resultado
+                        if (isCorrect) {
+                            this.classList.add('correct');
+                            feedback.classList.add('show', 'correct');
+                            feedbackText.textContent = feedbackTexts[questionNum].correct;
+                            score++;
+                        } else {
+                            this.classList.add('incorrect');
+                            feedback.classList.add('show', 'incorrect');
+                            feedbackText.textContent = feedbackTexts[questionNum].incorrect;
+                            
+                            // Mostrar respuesta correcta
+                            options.forEach(opt => {
+                                if (opt.dataset.answer === 'correct') {
+                                    opt.classList.add('correct');
+                                }
+                            });
+                        }
+
+                        // Habilitar botón siguiente
+                        nextBtn.disabled = false;
+
+                        // Deshabilitar otras opciones
+                        options.forEach(opt => {
+                            if (opt !== this) {
+                                opt.style.cursor = 'not-allowed';
+                                opt.style.opacity = '0.7';
+                            }
+                        });
+                    });
+                });
+            }
+        });
+
+        // Función para cambiar sección
+        function goToSection(num) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.getElementById('section' + num).classList.add('active');
+            currentSection = num;
+            updateProgress();
+            window.scrollTo(0, 0);
+
+            // Actualizar puntuación final
+            if (num === 7) {
+                document.getElementById('finalScore').textContent = score;
+            }
+        }
+
+        // Actualizar barra de progreso
+        function updateProgress() {
+            const progress = ((currentSection - 1) / (totalSections - 1)) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+        }
+
+        // Navegación
+        document.getElementById('next1').addEventListener('click', () => goToSection(2));
+        document.getElementById('prev2').addEventListener('click', () => goToSection(1));
+        document.getElementById('next2').addEventListener('click', () => goToSection(3));
+        document.getElementById('prev3').addEventListener('click', () => goToSection(2));
+        document.getElementById('next3').addEventListener('click', () => goToSection(4));
+        document.getElementById('prev4').addEventListener('click', () => goToSection(3));
+        document.getElementById('next4').addEventListener('click', () => goToSection(5));
+        document.getElementById('prev5').addEventListener('click', () => goToSection(4));
+        document.getElementById('next5').addEventListener('click', () => goToSection(6));
+        document.getElementById('prev6').addEventListener('click', () => goToSection(5));
+        document.getElementById('next6').addEventListener('click', () => goToSection(7));
+        document.getElementById('prev7').addEventListener('click', () => goToSection(6));
+
+        // Inicializar
+        updateProgress();
