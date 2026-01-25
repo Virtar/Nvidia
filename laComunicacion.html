@@ -313,8 +313,7 @@
             margin: 15px 0;
             cursor: pointer;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            display: flex;
-            align-items: center;
+            display: block;
             position: relative;
             overflow: hidden;
         }
@@ -338,6 +337,11 @@
             border-color: #FFB84D;
             transform: translateX(10px);
             box-shadow: 0 5px 20px rgba(255, 184, 77, 0.3);
+        }
+
+        .option span {
+            display: block;
+            line-height: 1.6;
         }
 
         .option.selected {
@@ -376,23 +380,7 @@
         }
 
         .option-label {
-            display: inline-block;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
-            color: white;
-            text-align: center;
-            line-height: 40px;
-            margin-right: 20px;
-            font-weight: bold;
-            font-size: 1.1em;
-            box-shadow: 0 4px 10px rgba(255, 165, 0, 0.3);
-            transition: transform 0.3s ease;
-        }
-
-        .option:hover .option-label {
-            transform: rotate(360deg);
+            display: none;
         }
 
         .feedback {
