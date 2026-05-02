@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sistema Biblioteca — Explorador de Conceptos OOP</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --purple: #534AB7; --purple-light: #EEEDFE; --purple-dark: #3C3489;
+    --green:  #0F6E56; --green-light:  #E1F5EE; --green-dark:  #085041;
+    --red:    #993C1D; --red-light:    #FAECE7; --red-dark:    #712B13;
+    --blue:   #185FA5; --blue-light:   #E6F1FB;
+    --bg:     #f8f7f4; --bg2: #ffffff; --border: #e2e0d8;
+    --text:   #1a1a18; --text2: #5f5e5a; --text3: #888780;
+    --mono: 'Courier New', monospace;
+    --sans: 'Segoe UI', system-ui, sans-serif;
+  }
+
+  body {
+    font-family: var(--sans);
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 24px 16px 48px;
+  }
+
+  header {
+    text-align: center;
+    margin-bottom: 28px;
+  }
+  header h1 {
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 6px;
+  }
+  header p {
+    font-size: 13px;
+    color: var(--text2);
+  }
+  .personas {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 10px;
+    flex-wrap: wrap;
+  }
+  .persona-badge {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+    color: #fff;
+  }
+
+  .container { max-width: 780px; margin: 0 auto; }
+
+  /* TABS */
+  .tabs {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+  }
+  .tab {
+    padding: 8px 18px;
+    border-radius: 20px;
+    border: 1.5px solid var(--border);
+    font-size: 13px;
+    cursor: pointer;
+    font-family: var(--sans);
+    font-weight: 500;
+    background: var(--bg2);
+    color: var(--text2);
+    transition: all .2s;
+  }
+  .tab:hover { border-color: #aaa; color: var(--text); }
+  .tab[data-t="libro"].active    { background: var(--red);    border-color: var(--red);    color: #fff; }
+  .tab[data-t="lector"].active   { background: var(--green);  border-color: var(--green);  color: #fff; }
+  .tab[data-t="biblioteca"].active { background: var(--purple); border-color: var(--purple); color: #fff; }
+  .tab[data-t="flujo"].active    { background: var(--blue);   border-color: var(--blue);   color: #fff; }
+
+  /* PANELS */
+  .panel { display: none; }
+  .panel.active { display: block; }
+
+  .class-header {
+    padding: 13px 18px;
+    border-radius: 8px 8px 0 0;
+    color: #fff;
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+  }
+  .libro-h     { background: var(--red); }
+  .lector-h    { background: var(--green); }
+  .biblioteca-h{ background: var(--purple); }
+  .flujo-h     { background: var(--blue); }
+
+  /* CONCEPT CARDS */
+  .concepts { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
+
+  .concept-card {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    background: var(--bg2);
+    transition: box-shadow .2s;
+  }
+  .concept-card:hover { box-shadow: 0 2px 10px rgba(0,0,0,.08); }
+
+  .concept-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 11px 14px;
+    cursor: pointer;
+    background: var(--bg2);
+    user-select: none;
+  }
+  .concept-badge {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 600; color: #fff;
+    flex-shrink: 0;
+  }
+  .concept-title { font-size: 13px; font-weight: 500; color: var(--text); flex: 1; }
+  .concept-arrow { font-size: 11px; color: var(--text3); transition: transform .2s; }
+  .concept-card.open .concept-arrow { transform: rotate(90deg); }
+
+  .concept-body {
+    display: none;
+    padding: 14px 16px;
+    font-size: 13px;
+    color: var(--text2);
+    line-height: 1.65;
+    border-top: 1px solid var(--border);
+    background: var(--bg2);
+  }
+  .concept-card.open .concept-body { display: block; }
+
+  .code-snippet {
+    background: #1e1e2e;
+    color: #cdd6f4;
+    border-radius: 6px;
+    padding: 12px 14px;
+    font-family: var(--mono);
+    font-size: 12px;
+    margin-top: 10px;
+    line-height: 1.7;
+    overflow-x: auto;
+    white-space: pre;
+  }
+  .kw  { color: #cba6f7; }
+  .st  { color: #a6e3a1; }
+  .cm  { color: #6c7086; font-style: italic; }
+  .nb  { color: #89b4fa; }
+  .op  { color: #fab387; }
+
+  .why {
+    margin-top: 10px;
+    padding: 9px 12px;
+    border-left: 3px solid;
+    border-radius: 0 6px 6px 0;
+    font-size: 12px;
+    line-height: 1.55;
+  }
+  .why-libro      { border-color: var(--red);    background: var(--red-light);    color: var(--red-dark); }
+  .why-lector     { border-color: var(--green);  background: var(--green-light);  color: var(--green-dark); }
+  .why-biblioteca { border-color: var(--purple); background: var(--purple-light); color: var(--purple-dark); }
+
+  /* FLUJO */
+  .flujo { margin-top: 12px; }
+  .step-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 6px;
+    cursor: pointer;
+    transition: opacity .2s;
+  }
+  .step-row:hover .step-content { box-shadow: 0 2px 8px rgba(0,0,0,.1); }
+  .step-circle {
+    width: 34px; height: 34px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 600;
+    flex-shrink: 0;
+    transition: transform .15s;
+  }
+  .step-row:hover .step-circle { transform: scale(1.1); }
+  .step-content {
+    flex: 1;
+    padding: 9px 13px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--bg2);
+    transition: box-shadow .2s;
+  }
+  .step-content h4 { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 3px; }
+  .step-content p  { font-size: 12px; color: var(--text2); line-height: 1.5; }
+  .step-connector  { width: 2px; height: 14px; background: var(--border); margin-left: 16px; }
+
+  .result-ok  { background: var(--green-light)  !important; border-color: var(--green)  !important; }
+  .result-ok h4  { color: var(--green-dark) !important; }
+  .result-err { background: var(--red-light)    !important; border-color: var(--red)    !important; }
+  .result-err h4 { color: var(--red-dark)   !important; }
+
+  /* SIMULADOR */
+  .sim {
+    margin-top: 18px;
+    padding: 16px;
+    border: 1.5px solid var(--purple);
+    border-radius: 10px;
+    background: var(--purple-light);
+  }
+  .sim h3 { font-size: 14px; font-weight: 600; color: var(--purple-dark); margin-bottom: 12px; }
+  .sim-row { display: flex; gap: 8px; margin-bottom: 8px; flex-wrap: wrap; }
+  .sim-input {
+    flex: 1; min-width: 130px;
+    padding: 8px 11px;
+    border-radius: 7px;
+    border: 1px solid #c5c3e0;
+    font-family: var(--sans);
+    font-size: 13px;
+    background: #fff;
+    color: var(--text);
+    outline: none;
+  }
+  .sim-input:focus { border-color: var(--purple); box-shadow: 0 0 0 3px rgba(83,74,183,.12); }
+  .sim-btn {
+    padding: 8px 16px;
+    border-radius: 7px;
+    border: none;
+    background: var(--purple);
+    color: #fff;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    font-family: var(--sans);
+    transition: background .2s;
+  }
+  .sim-btn:hover { background: var(--purple-dark); }
+  .sim-result {
+    margin-top: 10px;
+    padding: 9px 13px;
+    border-radius: 7px;
+    font-size: 13px;
+    font-weight: 500;
+    display: none;
+  }
+  .sim-result.ok  { background: var(--green-light); color: var(--green-dark); border: 1px solid var(--green); display: block; }
+  .sim-result.err { background: var(--red-light);   color: var(--red-dark);   border: 1px solid var(--red);   display: block; }
+
+  /* UML mini */
+  .uml-mini {
+    display: flex;
+    gap: 12px;
+    margin-top: 14px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .uml-box {
+    border-radius: 7px;
+    overflow: hidden;
+    border: 1.5px solid;
+    min-width: 160px;
+    flex: 1;
+    max-width: 220px;
+    font-size: 11px;
+    font-family: var(--mono);
+  }
+  .uml-box-head { padding: 6px 10px; color: #fff; font-weight: 600; font-size: 12px; font-family: var(--sans); }
+  .uml-box-body { padding: 7px 10px; background: #fff; line-height: 1.8; }
+  .uml-box-body .priv { color: var(--red); }
+  .uml-box-body .pub  { color: var(--green); }
+  .uml-box-body .pmeth{ color: var(--purple); }
+  .uml-sep { border-top: 1px solid var(--border); margin: 4px 0; }
+
+  footer {
+    text-align: center;
+    margin-top: 40px;
+    font-size: 11px;
+    color: var(--text3);
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <header>
+    <h1>Sistema de Biblioteca — Explorador de Conceptos OOP</h1>
+    <p>Programación Orientada a Objetos con Colecciones en C# · Hacé clic en cada concepto para expandirlo</p>
+    <div class="personas">
+      <span class="persona-badge" style="background:var(--red)">Persona 1 — Libro.cs</span>
+      <span class="persona-badge" style="background:var(--green)">Persona 2 — Lector.cs</span>
+      <span class="persona-badge" style="background:var(--purple)">Persona 3 — Biblioteca.cs</span>
+    </div>
+  </header>
+
+  <!-- UML mini overview -->
+  <div class="uml-mini">
+    <div class="uml-box" style="border-color:var(--purple)">
+      <div class="uml-box-head" style="background:var(--purple)">Biblioteca</div>
+      <div class="uml-box-body">
+        <div class="priv">- libros : List&lt;Libro&gt;</div>
+        <div class="priv">- lectores : List&lt;Lector&gt;</div>
+        <div class="uml-sep"></div>
+        <div class="pub">+ registrarLibro()</div>
+        <div class="pub">+ altaLector()</div>
+        <div class="pub">+ prestarLibro()</div>
+        <div class="pmeth">- buscarLibro()</div>
+        <div class="pmeth">- buscarLector()</div>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-size:11px;color:var(--text3);padding-top:20px">
+      <span>→ 0..n</span>
+      <span style="font-size:9px">lectores / libros</span>
+      <span style="margin-top:8px">→ 0..n</span>
+      <span style="font-size:9px">librosPrestados</span>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px;flex:1;min-width:160px;max-width:220px">
+      <div class="uml-box" style="border-color:var(--green)">
+        <div class="uml-box-head" style="background:var(--green)">Lector</div>
+        <div class="uml-box-body">
+          <div class="priv">- nombre : string</div>
+          <div class="priv">- dni : int</div>
+          <div class="priv">- librosPrestados</div>
+          <div class="uml-sep"></div>
+          <div class="pub">+ getDni()</div>
+          <div class="pub">+ CantidadLibros</div>
+          <div class="pub">+ AgregarLibro()</div>
+        </div>
+      </div>
+      <div class="uml-box" style="border-color:var(--red)">
+        <div class="uml-box-head" style="background:var(--red)">Libro</div>
+        <div class="uml-box-body">
+          <div class="priv">- titulo : string</div>
+          <div class="priv">- autor : string</div>
+          <div class="priv">- editorial : string</div>
+          <div class="uml-sep"></div>
+          <div class="pub">+ getTitulo()</div>
+          <div class="pub">+ ToString()</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <br>
+
+  <!-- TABS -->
+  <div class="tabs">
+    <button class="tab active" data-t="libro"       onclick="switchTab('libro')">📕 Libro.cs — P1</button>
+    <button class="tab"        data-t="lector"      onclick="switchTab('lector')">📗 Lector.cs — P2</button>
+    <button class="tab"        data-t="biblioteca"  onclick="switchTab('biblioteca')">📘 Biblioteca.cs — P3</button>
+    <button class="tab"        data-t="flujo"       onclick="switchTab('flujo')">⚙️ Flujo prestarLibro()</button>
+  </div>
+
+  <!-- ══ PANEL LIBRO ══ -->
+  <div class="panel active" id="panel-libro">
+    <div class="class-header libro-h">Libro.cs &nbsp;·&nbsp; Persona 1 &nbsp;·&nbsp; Concepto: Encapsulamiento</div>
+    <div class="concepts">
+
+      <div class="concept-card">
+        <div class="concept-head" onclick="toggle(this.parentElement)">
+          <div class="concept-badge" style="background:var(--red)">1</div>
+          <span class="concept-title">Encapsulamiento — atributos private</span>
+          <span class="concept-arrow">▶</span>
+        </div>
+        <div class="concept-body">
+          Todos los campos (<code>titulo</code>, <code>autor</code>, <code>editorial</code>) son <code>private</code>. Ninguna clase externa puede modificarlos directamente, protegiendo la integridad del objeto.
+          <div class="code-snippet"><span class="cm">// Nadie fuera de Libro puede hacer libro.titulo = "otro"</span>
+<span class="kw">private</span> <span class="nb">string</span> titulo;
+<span class="kw">private</span> <span class="nb">string</span> autor;
+<span class="kw">private</span> <span class="nb">string</span> editorial;</div>
+          <div class="why why-libro"><strong>¿Por qué importa?</strong> Si fueran <code>public</code>, cualquier parte del programa podría corromper los datos del libro sin que nadie se entere. El encapsulamiento es la primera barrera de calidad.</div>
+        </div>
+      </div>
+
+      <div class="concept-card">
+        <div class="concept-head" onclick="toggle(this.parentElement)">
+          <div class="concept-badge" style="background:var(--red)">2</div>
+          <span class="concept-title">Constructor con parámetros obligatorios</span>
+          <span class="concept-arrow">▶</span>
+        </div>
+        <div class="concept-body">
+          El constructor exige los tres datos. No existe forma de crear un <code>Libro</code> incompleto — el compilador lo rechaza en tiempo de compilación.
+          <div class="code-snippet"><span class="kw">public</span> <span class="op">Libro</span>(<span class="nb">string</span> titulo, <span class="nb">string</span> autor, <span class="nb">string</span> editorial)
+{
+    <span class="kw">this</span>.titulo    = titulo;
+    <span class="kw">this</span>.autor     = autor;
+    <span class="kw">this</span>.editorial = editorial;
+}</div>
+          <div class="why why-libro"><strong>¿Por qué importa?</strong> Elimina una categoría entera de errores: objetos a mitad de inicializar. Un libro sin título no debería poder existir nunca.</div>
+        </div>
+      </div>
+
+      <div class="concept-card">
+        <div class="concept-head" onclick="toggle(this.parentElement)">
+          <div class="concept-badge" style="background:var(--red)">3</div>
+          <span class="concept-title">Polimorfismo — override ToString()</span>
+          <span class="concept-arrow">▶</span>
+        </div>
+        <div class="concept-body">
+          Se sobrescribe el método <code>ToString()</code> heredado de <code>object</code>. Permite mostrar un libro con <code>Console.WriteLine(libro)</code> sin código adicional.
+          <div class="code-snippet"><span class="kw">public override</span> <span class="nb">string</span> <span class="op">ToString</span>()
+{
+    <span class="kw">return</span> <span class="st">$"Título: {titulo} | Autor: {autor} | Editorial: {editorial}"</span>;
+}</div>
+          <div class="why why-libro"><strong>¿Por qué importa?</strong> Es una convención del lenguaje. Cualquier herramienta que imprima objetos usará esta versión automáticamente. Mejora la depuración y los tests.</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══ PANEL LECTOR ══ -->
+  <div class="panel" id="panel-lector">
+    <div class="class-header lector-h">Lector.cs &nbsp;·&nbsp; Persona 2 &nbsp;·&nbsp; Concepto: Asociación + Colecciones</div>
+    <div class="concepts">
+
+      <div class="concept-card">
+        <div class="concept-head" onclick="toggle(this.parentElement)">
+          <div class="concept-badge" style="background:var(--green)">4</div>
+          <span class="concept-title">Asociación — List&lt;Libro&gt; en memoria</span>
+          <span class="concept-arrow">▶</span>
+        </div>
+        <div class="concept-body">
+          El lector guarda objetos <code>Libro</code> completos, no solo IDs. Esto es una asociación real en memoria: el lector "posee" sus libros prestados.
+          <div class="code-snippet"><span class="cm">// Asociación: el lector tiene libros prestados</span>
+<span class="kw">private</span> List&lt;<span class="nb">Libro</span>&gt; librosPrestados;</div>
+          <div class="why why-lector"><strong>¿Por qué importa?</strong> Con el objeto completo podemos acceder a título, autor, etc., sin buscar en otra estructura. Más eficiente y natural que guardar solo un ID.</div>
+        </div>
+      </div>
+
+      <div class="concept-card">
+        <div class="concept-head" onclick="toggle(this.parentElement)">
+          <div class="concept-badge" style="background:var(--green)">5</div>
+          <span class="concept-title">Inicialización defensiva en el constructor</span>
+          <span class="concept-arrow">▶</span>
+        </div>
+        <div class="concept-body">
+          La lista se inicializa en el constructor. Si quedara en <code>null</code>, cualquier llamada a <code>.Add()</code> lanzaría <code>NullReferenceException</code>.
+          <div class="code-snippet"><span class="kw">public</span> <span class="op">Lector</span>(<span class="nb">string</span> nombre, <span class="nb">int</span> dni)
+{
+    <span class="kw">this</span>.nombre = nombre;
+    <span class="kw">this</span>.dni    = dni;
+    <span class="cm">// Lista vacía, nunca nula. Lista para usar desde el primer momento.</span>
+    <span class="kw">this</span>.librosPrestados = <span class="kw">new</span> List&lt;<span class="nb">Libro</span>&gt;();
+}</div>
+          <div class="why why-lector"><strong>¿Por qué importa?</strong> Programación defensiva: el objeto nace listo para operar. Evita el error más común en OOP con colecciones: el NullReferenceException.</div>
+        </div>
+      </div>
+
+      <div class="concept-card">
+        <div class="concept-head" onclick="toggle(this.parentElement)">
+          <div class="concept-badge" style="background:var(--green)">6</div>
+          <span class="concept-title">Propiedad calculada — CantidadLibros</span>
+          <span class="concept-arrow">▶</span>
+        </div>
+        <div class="concept-body">
+          En vez de exponer la lista (que permitiría manipularla desde afuera), se expone solo el conteo. Biblioteca puede verificar el límite sin romper el encapsulamiento.
+          <div class="code-snippet"><span class="cm">// Solo lectura. Delega en List.Count.</span>
+<span class="kw">public int</span> CantidadLibros => librosPrestados.Count;
+
+<span class="cm">// En Biblioteca:</span>
+<span class="kw">if</span> (lector.CantidadLibros >= <span class="op">3</span>) <span class="kw">return</span> <span class="st">"TOPE DE PRESTAMO ALCANZADO"</span>;</div>
+          <div class="why why-lector"><strong>¿Por qué importa?</strong> Si el límite cambia de 3 a 5, solo se modifica Biblioteca. Lector no cambia. Alta cohesión, bajo acoplamiento — pilares de calidad del software.</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══ PANEL BIBLIOTECA ══ -->
+  <div class="panel" id="panel-biblioteca">
+    <div class="class-header biblioteca-h">Biblioteca.cs &nbsp;·&nbsp; Persona 3 &nbsp;·&nbsp; Concepto: Controlador + DRY + Fail Fast</div>
+    <div class="concepts">
+
+      <div class="concept-card">
+        <div class="concept-head" onclick="toggle(this.parentElement)">
+          <div class="concept-badge" style="background:var(--purple)">7</div>
+          <span class="concept-title">Colecciones genéricas — List&lt;T&gt;</span>
+          <span class="concept-arrow">▶</span>
+        </div>
+        <div class="concept-body">
+          Se usan <code>List&lt;Libro&gt;</code> y <code>List&lt;Lector&gt;</code> en lugar de <code>ArrayList</code>. El parámetro de tipo garantiza que solo entren los objetos correctos.
+          <div class="code-snippet"><span class="kw">private</span> List&lt;<span class="nb">Libro</span>&gt;   libros   = <span class="kw">new</span> List&lt;<span class="nb">Libro</span>&gt;();
+<span class="kw">private</span> List&lt;<span class="nb">Lector</span>&gt;  lectores = <span class="kw">new</span> List&lt;<span class="nb">Lector</span>&gt;();</div>
+          <div class="why why-biblioteca"><strong>¿Por qué importa?</strong> Type-safety en tiempo de compilación. Es imposible agregar un Lector a la lista de Libros. ArrayList permitiría eso y el error aparecería recién en tiempo de ejecución.</div>
+        </div>
+      </div>
+
+      <div class="concept-card">
+        <div class="concept-head" onclick="toggle(this.parentElement)">
+          <div class="concept-badge" style="background:var(--purple)">8</div>
+          <span class="concept-title">Principio DRY — métodos privados auxiliares</span>
+          <span class="concept-arrow">▶</span>
+        </div>
+        <div class="concept-body">
+          La lógica de búsqueda está centralizada en métodos privados. No se repite <code>Find()</code> en cada método público que lo necesite.
+          <div class="code-snippet"><span class="cm">// DRY: la lógica de búsqueda en un solo lugar</span>
+<span class="kw">private</span> <span class="nb">Libro</span>  <span class="op">buscarLibro</span> (<span class="nb">string</span> t) =>
+    libros.Find(l => l.getTitulo()
+        .Equals(t, StringComparison.OrdinalIgnoreCase));
+
+<span class="kw">private</span> <span class="nb">Lector</span> <span class="op">buscarLector</span>(<span class="nb">int</span> d) =>
+    lectores.Find(l => l.getDni() == d);</div>
+          <div class="why why-biblioteca"><strong>¿Por qué importa?</strong> DRY = Don't Repeat Yourself. Si cambia la lógica de búsqueda, se modifica en un solo lugar. Mantenimiento más simple y menos errores.</div>
+        </div>
+      </div>
+
+      <div class="concept-card">
+        <div class="concept-head" onclick="toggle(this.parentElement)">
+          <div class="concept-badge" style="background:var(--purple)">9</div>
+          <span class="concept-title">Validaciones jerárquicas — patrón Fail Fast</span>
+          <span class="concept-arrow">▶</span>
+        </div>
+        <div class="concept-body">
+          Las tres validaciones están en orden deliberado. Si algo falla, se retorna inmediatamente sin trabajo innecesario.
+          <div class="code-snippet"><span class="cm">// Orden: actor → su límite → el recurso</span>
+<span class="kw">if</span> (lector == <span class="kw">null</span>) <span class="kw">return</span> <span class="st">"LECTOR INEXISTENTE"</span>;
+<span class="kw">if</span> (lector.CantidadLibros >= <span class="op">3</span>) <span class="kw">return</span> <span class="st">"TOPE DE PRESTAMO ALCANZADO"</span>;
+<span class="kw">if</span> (libro  == <span class="kw">null</span>) <span class="kw">return</span> <span class="st">"LIBRO INEXISTENTE"</span>;</div>
+          <div class="why why-biblioteca"><strong>¿Por qué importa?</strong> Detectar errores lo antes posible ahorra trabajo y da mensajes precisos al usuario. Si el lector no existe, no tiene sentido buscar el libro.</div>
+        </div>
+      </div>
+
+      <div class="concept-card">
+        <div class="concept-head" onclick="toggle(this.parentElement)">
+          <div class="concept-badge" style="background:var(--purple)">10</div>
+          <span class="concept-title">Transferencia real del objeto en memoria</span>
+          <span class="concept-arrow">▶</span>
+        </div>
+        <div class="concept-body">
+          El mismo objeto <code>Libro</code> se quita del stock y se entrega al lector. Modela fielmente la realidad: un libro prestado ya no está en la estantería.
+          <div class="code-snippet"><span class="cm">// El libro sale del stock de la biblioteca...</span>
+libros.<span class="op">Remove</span>(libro);
+<span class="cm">// ...y entra a la colección del lector.</span>
+lector.<span class="op">AgregarLibroAPrestamo</span>(libro);</div>
+          <div class="why why-biblioteca"><strong>¿Por qué importa?</strong> Sin el <code>Remove()</code>, el libro podría prestarse dos veces. La consistencia del estado del sistema es responsabilidad exclusiva de Biblioteca.</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══ PANEL FLUJO ══ -->
+  <div class="panel" id="panel-flujo">
+    <div class="class-header flujo-h">Flujo de prestarLibro() — 7 pasos con validaciones jerárquicas</div>
+
+    <div class="flujo" style="margin-top:14px">
+
+      <div class="step-row" onclick="highlightStep(this)">
+        <div class="step-circle" style="background:var(--purple);color:#fff">1</div>
+        <div class="step-content">
+          <h4>Recibir parámetros: titulo (string) + dni (int)</h4>
+          <p>El método público acepta el título del libro y el DNI del lector que quiere tomarlo prestado.</p>
+        </div>
+      </div>
+      <div class="step-connector"></div>
+
+      <div class="step-row" onclick="highlightStep(this)">
+        <div class="step-circle" style="background:var(--purple);color:#fff">2</div>
+        <div class="step-content">
+          <h4>buscarLector(dni) → ¿existe en el sistema?</h4>
+          <p>Se llama al método privado auxiliar. Recorre la lista con Find(). Devuelve null si no lo encuentra.</p>
+        </div>
+      </div>
+      <div class="step-connector"></div>
+
+      <div class="step-row" onclick="highlightStep(this)">
+        <div class="step-circle" style="background:var(--red);color:#fff">✗</div>
+        <div class="step-content result-err">
+          <h4>Lector null → return "LECTOR INEXISTENTE"</h4>
+          <p>Retorno inmediato. Fail Fast: no tiene sentido continuar si el actor no está registrado.</p>
+        </div>
+      </div>
+      <div class="step-connector"></div>
+
+      <div class="step-row" onclick="highlightStep(this)">
+        <div class="step-circle" style="background:var(--purple);color:#fff">3</div>
+        <div class="step-content">
+          <h4>lector.CantidadLibros >= 3 → ¿alcanzó el tope?</h4>
+          <p>Se consulta la propiedad calculada de Lector. Regla de negocio: máximo 3 préstamos simultáneos.</p>
+        </div>
+      </div>
+      <div class="step-connector"></div>
+
+      <div class="step-row" onclick="highlightStep(this)">
+        <div class="step-circle" style="background:var(--red);color:#fff">✗</div>
+        <div class="step-content result-err">
+          <h4>Tope alcanzado → return "TOPE DE PRESTAMO ALCANZADO"</h4>
+          <p>El lector existe pero ya tiene el máximo. No se busca el libro: más ahorro de trabajo.</p>
+        </div>
+      </div>
+      <div class="step-connector"></div>
+
+      <div class="step-row" onclick="highlightStep(this)">
+        <div class="step-circle" style="background:var(--purple);color:#fff">4</div>
+        <div class="step-content">
+          <h4>buscarLibro(titulo) → ¿existe en el stock?</h4>
+          <p>Busca en la lista con OrdinalIgnoreCase. "Clean Code" y "clean code" se tratan igual.</p>
+        </div>
+      </div>
+      <div class="step-connector"></div>
+
+      <div class="step-row" onclick="highlightStep(this)">
+        <div class="step-circle" style="background:var(--red);color:#fff">✗</div>
+        <div class="step-content result-err">
+          <h4>Libro null → return "LIBRO INEXISTENTE"</h4>
+          <p>No está en stock: ya fue prestado, no fue registrado, o hay un error de tipeo en el título.</p>
+        </div>
+      </div>
+      <div class="step-connector"></div>
+
+      <div class="step-row" onclick="highlightStep(this)">
+        <div class="step-circle" style="background:var(--green);color:#fff">✓</div>
+        <div class="step-content result-ok">
+          <h4>Transferencia → return "PRESTAMO EXITOSO"</h4>
+          <p>libros.Remove(libro) lo saca del stock. lector.AgregarLibroAPrestamo(libro) lo entrega. El objeto cambia de mano.</p>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Simulador -->
+    <div class="sim">
+      <h3>⚙ Simulador de préstamo en vivo</h3>
+      <div class="sim-row">
+        <input class="sim-input" id="sim-dni"    type="number" placeholder="DNI del lector (ej: 12345678)">
+        <input class="sim-input" id="sim-titulo" type="text"   placeholder="Título del libro">
+      </div>
+      <div class="sim-row">
+        <input class="sim-input" id="sim-cant"   type="number" placeholder="Libros que ya tiene (0–4)" min="0" max="4">
+        <button class="sim-btn" onclick="simular()">Simular préstamo</button>
+      </div>
+      <div class="sim-result" id="sim-result"></div>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  Sistema de Biblioteca · Colecciones en C# · OOP · 2025
+</footer>
+
+<script>
+function switchTab(t) {
+  document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
+  document.querySelector('.tab[data-t="' + t + '"]').classList.add('active');
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('panel-' + t).classList.add('active');
+}
+
+function toggle(card) {
+  card.classList.toggle('open');
+}
+
+function highlightStep(row) {
+  document.querySelectorAll('.step-row').forEach(r => r.style.opacity = '0.45');
+  row.style.opacity = '1';
+  setTimeout(() => {
+    document.querySelectorAll('.step-row').forEach(r => r.style.opacity = '1');
+  }, 2000);
+}
+
+function simular() {
+  const dni    = document.getElementById('sim-dni').value.trim();
+  const titulo = document.getElementById('sim-titulo').value.trim();
+  const cant   = parseInt(document.getElementById('sim-cant').value) || 0;
+  const res    = document.getElementById('sim-result');
+  res.className = 'sim-result';
+
+  if (!dni) {
+    res.className = 'sim-result err';
+    res.textContent = '✗  LECTOR INEXISTENTE — DNI vacío, no está registrado en el sistema.';
+    return;
+  }
+  if (cant >= 3) {
+    res.className = 'sim-result err';
+    res.textContent = '✗  TOPE DE PRESTAMO ALCANZADO — el lector ya tiene ' + cant + ' libros prestados (máximo: 3).';
+    return;
+  }
+  if (!titulo) {
+    res.className = 'sim-result err';
+    res.textContent = '✗  LIBRO INEXISTENTE — título vacío o no encontrado en el stock de la biblioteca.';
+    return;
+  }
+  res.className = 'sim-result ok';
+  res.textContent = '✓  PRESTAMO EXITOSO — "' + titulo + '" fue transferido al lector con DNI ' + dni + '. El libro ya no está en el stock.';
+}
+</script>
+
+</body>
+</html>
