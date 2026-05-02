@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Simulador — Sistema de Biblioteca</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --purple:#534AB7;--purple-l:#EEEDFE;--purple-d:#3C3489;
+  --green:#0F6E56;--green-l:#E1F5EE;--green-d:#085041;
+  --red:#993C1D;--red-l:#FAECE7;--red-d:#712B13;
+  --amber:#92600A;--amber-l:#FEF3CD;--amber-d:#6B4508;
+  --bg:#f5f4f0;--bg2:#ffffff;--border:#e0ddd5;
+  --text:#1a1918;--text2:#5c5b57;--text3:#9b9892;
+  --mono:'Courier New',monospace;
+  --sans:'Segoe UI',system-ui,sans-serif;
+  --radius:8px;
+}
+body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:100vh;padding:20px 14px 48px}
+h1{font-size:20px;font-weight:700;color:var(--text);margin-bottom:4px}
+.subtitle{font-size:12px;color:var(--text3);margin-bottom:18px}
+
+.layout{display:grid;grid-template-columns:1fr 1fr;gap:14px;max-width:900px;margin:0 auto}
+@media(max-width:640px){.layout{grid-template-columns:1fr}}
+
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.card-head{padding:10px 14px;font-size:13px;font-weight:600;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--border);background:var(--bg)}
+.card-head .dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.card-body{padding:12px 14px}
+
+/* ACCION */
+.accion-card{max-width:900px;margin:0 auto 14px;background:var(--bg2);border:2px solid var(--purple);border-radius:var(--radius)}
+.accion-head{padding:11px 16px;background:var(--purple);color:#fff;font-size:14px;font-weight:600;display:flex;align-items:center;gap:8px}
+.accion-body{padding:14px 16px}
+.fields{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.field{display:flex;flex-direction:column;gap:4px;flex:1;min-width:140px}
+label{font-size:11px;font-weight:500;color:var(--text2);text-transform:uppercase;letter-spacing:.04em}
+select,input[type=text],input[type=number]{
+  padding:8px 10px;border-radius:6px;border:1px solid var(--border);
+  font-size:13px;font-family:var(--sans);background:#fff;color:var(--text);
+  outline:none;transition:border-color .15s,box-shadow .15s;width:100%
+}
+select:focus,input:focus{border-color:var(--purple);box-shadow:0 0 0 3px rgba(83,74,183,.12)}
+.btn-prestar{width:100%;padding:10px;border-radius:6px;border:none;background:var(--purple);color:#fff;font-size:14px;font-weight:600;cursor:pointer;font-family:var(--sans);transition:background .2s}
+.btn-prestar:hover{background:var(--purple-d)}
+
+/* RESULTADO */
+.resultado{margin-top:12px;padding:11px 14px;border-radius:6px;font-size:13px;font-weight:600;display:none;align-items:center;gap:10px}
+.resultado.show{display:flex}
+.resultado.ok  {background:var(--green-l);color:var(--green-d);border:1px solid var(--green)}
+.resultado.err {background:var(--red-l);  color:var(--red-d);  border:1px solid var(--red)}
+.resultado.warn{background:var(--amber-l);color:var(--amber-d);border:1px solid #D4960F}
+.resultado-icon{font-size:18px;flex-shrink:0}
+.resultado-text{line-height:1.4}
+.resultado-text small{display:block;font-weight:400;font-size:11px;margin-top:2px;opacity:.8}
+
+/* LISTAS */
+.list-empty{font-size:12px;color:var(--text3);text-align:center;padding:16px 0;font-style:italic}
+.libro-item{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--border);font-size:12px}
+.libro-item:last-child{border-bottom:none}
+.libro-icon{font-size:16px;flex-shrink:0}
+.libro-info{flex:1}
+.libro-titulo{font-weight:500;color:var(--text);font-size:13px}
+.libro-autor{color:var(--text3);font-size:11px}
+.libro-badge{padding:2px 8px;border-radius:10px;font-size:10px;font-weight:600}
+.badge-stock{background:var(--green-l);color:var(--green-d)}
+.badge-prestado{background:var(--red-l);color:var(--red-d)}
+
+.lector-item{padding:8px 10px;border-radius:6px;border:1px solid var(--border);margin-bottom:8px;cursor:pointer;transition:border-color .15s,background .15s}
+.lector-item:last-child{margin-bottom:0}
+.lector-item:hover{border-color:var(--purple);background:var(--purple-l)}
+.lector-item.seleccionado{border-color:var(--purple);background:var(--purple-l)}
+.lector-nombre{font-size:13px;font-weight:500;color:var(--text)}
+.lector-dni{font-size:11px;color:var(--text3);margin-bottom:4px}
+.lector-libros{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px}
+.lector-libro-tag{background:var(--purple-l);color:var(--purple-d);border-radius:10px;padding:2px 8px;font-size:10px;font-weight:500}
+.barra-prestamos{display:flex;gap:3px;margin-top:6px;align-items:center}
+.barra-seg{width:28px;height:6px;border-radius:3px;background:var(--border)}
+.barra-seg.lleno{background:var(--purple)}
+.barra-label{font-size:10px;color:var(--text3);margin-left:4px}
+
+/* LOG */
+.log-item{display:flex;gap:8px;padding:6px 0;border-bottom:1px solid var(--border);font-size:12px;align-items:flex-start}
+.log-item:last-child{border-bottom:none}
+.log-icon{font-size:14px;flex-shrink:0;margin-top:1px}
+.log-msg{color:var(--text2);line-height:1.4;flex:1}
+.log-time{color:var(--text3);font-size:10px;white-space:nowrap}
+
+/* RESET */
+.btn-reset{margin-top:10px;padding:6px 12px;border-radius:6px;border:1px solid var(--border);background:var(--bg);color:var(--text2);font-size:12px;cursor:pointer;font-family:var(--sans)}
+.btn-reset:hover{border-color:#999;color:var(--text)}
+
+.header-area{max-width:900px;margin:0 auto 16px}
+.tag-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+.tag{padding:3px 10px;border-radius:10px;font-size:11px;font-weight:500;color:#fff}
+</style>
+</head>
+<body>
+
+<div class="header-area">
+  <h1>📚 Simulador — Sistema de Biblioteca</h1>
+  <div class="subtitle">Estado real en memoria · Reproduce exactamente la lógica de prestarLibro() en C#</div>
+  <div class="tag-row">
+    <span class="tag" style="background:var(--red)">Libro.cs — P1</span>
+    <span class="tag" style="background:var(--green)">Lector.cs — P2</span>
+    <span class="tag" style="background:var(--purple)">Biblioteca.cs — P3</span>
+  </div>
+</div>
+
+<!-- ACCIÓN PRINCIPAL -->
+<div class="accion-card">
+  <div class="accion-head">⚙ prestarLibro(titulo, dni)</div>
+  <div class="accion-body">
+    <div class="fields">
+      <div class="field">
+        <label>Lector (DNI)</label>
+        <select id="sel-lector">
+          <option value="">— Seleccioná un lector —</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Libro (título)</label>
+        <select id="sel-libro">
+          <option value="">— Seleccioná un libro —</option>
+        </select>
+      </div>
+    </div>
+    <button class="btn-prestar" onclick="ejecutarPrestamo()">▶ Ejecutar prestarLibro()</button>
+    <div class="resultado" id="resultado">
+      <span class="resultado-icon" id="res-icon"></span>
+      <div class="resultado-text" id="res-text"></div>
+    </div>
+
+    <!-- Código ejecutado -->
+    <div id="codigo-bloque" style="display:none;margin-top:14px">
+      <div style="font-size:11px;color:var(--text3);margin-bottom:6px;text-transform:uppercase;letter-spacing:.05em">Código ejecutado paso a paso</div>
+      <div id="codigo-pasos" style="background:#1e1e2e;border-radius:6px;padding:12px 14px;font-family:var(--mono);font-size:11.5px;line-height:2;color:#cdd6f4;overflow-x:auto"></div>
+    </div>
+  </div>
+</div>
+
+<!-- GRILLA -->
+<div class="layout">
+
+  <!-- STOCK -->
+  <div class="card">
+    <div class="card-head">
+      <div class="dot" style="background:var(--red)"></div>
+      Stock de Biblioteca &nbsp;<span id="stock-count" style="font-size:11px;color:var(--text3);font-weight:400"></span>
+    </div>
+    <div class="card-body" id="lista-stock"></div>
+  </div>
+
+  <!-- LECTORES -->
+  <div class="card">
+    <div class="card-head">
+      <div class="dot" style="background:var(--green)"></div>
+      Lectores registrados
+    </div>
+    <div class="card-body" id="lista-lectores"></div>
+  </div>
+
+</div>
+
+<!-- LOG -->
+<div class="card" style="max-width:900px;margin:14px auto 0">
+  <div class="card-head">
+    <div class="dot" style="background:var(--purple)"></div>
+    Log de operaciones
+    <button class="btn-reset" onclick="resetearSistema()" style="margin-left:auto">↺ Reiniciar sistema</button>
+  </div>
+  <div class="card-body" id="log-lista">
+    <div class="list-empty">Aún no se ejecutó ninguna operación.</div>
+  </div>
+</div>
+
+<script>
+// ─────────────────────────────────────────────────────────────
+//  ESTADO DEL SISTEMA (equivalente a los campos privados de Biblioteca.cs)
+// ─────────────────────────────────────────────────────────────
+
+const ESTADO_INICIAL = {
+  libros: [
+    { id:1, titulo:"Clean Code",               autor:"Robert C. Martin",  editorial:"Prentice Hall" },
+    { id:2, titulo:"El Programador Pragmático", autor:"Hunt & Thomas",     editorial:"Addison-Wesley" },
+    { id:3, titulo:"Diseño de Software",        autor:"Eric Evans",        editorial:"Addison-Wesley" },
+    { id:4, titulo:"Introducción a C#",         autor:"Albahari & Albahari",editorial:"O'Reilly" },
+    { id:5, titulo:"Patrones de Diseño",        autor:"Gang of Four",      editorial:"Addison-Wesley" },
+    { id:6, titulo:"Código Limpio en .NET",     autor:"Dino Esposito",     editorial:"Microsoft Press" },
+  ],
+  lectores: [
+    { dni:12345678, nombre:"Ana García",    prestamos:[] },
+    { dni:23456789, nombre:"Bruno Medina",  prestamos:[] },
+    { dni:34567890, nombre:"Carla Romero",  prestamos:[] },
+    { dni:45678901, nombre:"Diego López",   prestamos:[] },
+  ]
+};
+
+let libros   = [];
+let lectores = [];
+let log      = [];
+
+function clonarEstado() {
+  libros   = ESTADO_INICIAL.libros.map(l => ({...l}));
+  lectores = ESTADO_INICIAL.lectores.map(l => ({...l, prestamos: [...l.prestamos]}));
+}
+
+// ─────────────────────────────────────────────────────────────
+//  LÓGICA: replica exacta de Biblioteca.cs
+// ─────────────────────────────────────────────────────────────
+
+function buscarLector(dni) {
+  return lectores.find(l => l.dni === parseInt(dni)) || null;
+}
+
+function buscarLibro(titulo) {
+  return libros.find(l => l.titulo.toLowerCase() === titulo.toLowerCase()) || null;
+}
+
+function prestarLibro(titulo, dni) {
+  const pasos = [];
+
+  // Paso 1: buscar lector
+  const lector = buscarLector(dni);
+  pasos.push({ ok: lector !== null,
+    linea: `Lector lector = buscarLector(${dni});`,
+    result: lector ? `→ Encontrado: "${lector.nombre}"` : `→ null` });
+
+  if (!lector) {
+    pasos.push({ ok:false, linea:`if (lector == null) return "LECTOR INEXISTENTE";`, result:`→ ✗ Retorno inmediato` });
+    return { mensaje:"LECTOR INEXISTENTE", tipo:"err", pasos, icono:"🚫" };
+  }
+
+  // Paso 2: verificar tope
+  const cantActual = lector.prestamos.length;
+  pasos.push({ ok: cantActual < 3,
+    linea: `if (lector.CantidadLibros >= 3)  // CantidadLibros = ${cantActual}`,
+    result: cantActual >= 3 ? `→ ✗ Tope alcanzado` : `→ OK (${cantActual} de 3)` });
+
+  if (cantActual >= 3) {
+    pasos.push({ ok:false, linea:`return "TOPE DE PRESTAMO ALCANZADO";`, result:`→ ✗ Retorno inmediato` });
+    return { mensaje:"TOPE DE PRESTAMO ALCANZADO", tipo:"warn", pasos, icono:"⚠️" };
+  }
+
+  // Paso 3: buscar libro
+  const libro = buscarLibro(titulo);
+  pasos.push({ ok: libro !== null,
+    linea: `Libro libro = buscarLibro("${titulo}");`,
+    result: libro ? `→ Encontrado en stock` : `→ null (no está en stock)` });
+
+  if (!libro) {
+    pasos.push({ ok:false, linea:`if (libro == null) return "LIBRO INEXISTENTE";`, result:`→ ✗ Retorno inmediato` });
+    return { mensaje:"LIBRO INEXISTENTE", tipo:"err", pasos, icono:"❌" };
+  }
+
+  // Paso 4: transferencia
+  libros = libros.filter(l => l.id !== libro.id);
+  lector.prestamos.push(libro);
+  pasos.push({ ok:true, linea:`libros.Remove(libro);`, result:`→ "${libro.titulo}" sale del stock` });
+  pasos.push({ ok:true, linea:`lector.AgregarLibroAPrestamo(libro);`, result:`→ Se agrega a "${lector.nombre}"` });
+  pasos.push({ ok:true, linea:`return "PRESTAMO EXITOSO";`, result:`→ ✓ Operación completada` });
+
+  return { mensaje:"PRESTAMO EXITOSO", tipo:"ok", pasos, icono:"✅",
+           detalle:`"${libro.titulo}" → ${lector.nombre}` };
+}
+
+// ─────────────────────────────────────────────────────────────
+//  UI
+// ─────────────────────────────────────────────────────────────
+
+function renderStock() {
+  const el = document.getElementById('lista-stock');
+  document.getElementById('stock-count').textContent = `(${libros.length} disponibles)`;
+  const sel = document.getElementById('sel-libro');
+  sel.innerHTML = '<option value="">— Seleccioná un libro —</option>';
+
+  if (libros.length === 0) {
+    el.innerHTML = '<div class="list-empty">No quedan libros en stock.</div>';
+    return;
+  }
+  el.innerHTML = libros.map(l => `
+    <div class="libro-item">
+      <span class="libro-icon">📗</span>
+      <div class="libro-info">
+        <div class="libro-titulo">${l.titulo}</div>
+        <div class="libro-autor">${l.autor} · ${l.editorial}</div>
+      </div>
+      <span class="libro-badge badge-stock">en stock</span>
+    </div>`).join('');
+
+  libros.forEach(l => {
+    const opt = document.createElement('option');
+    opt.value = l.titulo;
+    opt.textContent = l.titulo;
+    sel.appendChild(opt);
+  });
+}
+
+function renderLectores() {
+  const el = document.getElementById('lista-lectores');
+  const sel = document.getElementById('sel-lector');
+  sel.innerHTML = '<option value="">— Seleccioná un lector —</option>';
+
+  el.innerHTML = lectores.map(l => {
+    const cant = l.prestamos.length;
+    const segs = [0,1,2].map(i =>
+      `<div class="barra-seg ${i < cant ? 'lleno' : ''}"></div>`).join('');
+    const tags = l.prestamos.map(p =>
+      `<span class="lector-libro-tag">📗 ${p.titulo}</span>`).join('');
+    return `
+    <div class="lector-item" id="lector-${l.dni}">
+      <div class="lector-nombre">${l.nombre}</div>
+      <div class="lector-dni">DNI: ${l.dni}</div>
+      <div class="barra-prestamos">${segs}
+        <span class="barra-label">${cant}/3 préstamos</span>
+      </div>
+      ${tags ? `<div class="lector-libros">${tags}</div>` : ''}
+    </div>`;
+  }).join('');
+
+  lectores.forEach(l => {
+    const opt = document.createElement('option');
+    opt.value = l.dni;
+    opt.textContent = `${l.nombre} (DNI: ${l.dni})`;
+    sel.appendChild(opt);
+  });
+}
+
+function renderLog() {
+  const el = document.getElementById('log-lista');
+  if (log.length === 0) {
+    el.innerHTML = '<div class="list-empty">Aún no se ejecutó ninguna operación.</div>';
+    return;
+  }
+  el.innerHTML = log.slice().reverse().map(e => `
+    <div class="log-item">
+      <span class="log-icon">${e.icono}</span>
+      <div class="log-msg"><strong>${e.mensaje}</strong>${e.detalle ? ' · ' + e.detalle : ''}
+        ${e.params ? `<br><span style="color:var(--text3);font-size:11px">prestarLibro("${e.params.titulo}", ${e.params.dni})</span>` : ''}
+      </div>
+      <span class="log-time">${e.hora}</span>
+    </div>`).join('');
+}
+
+function mostrarCodigo(pasos) {
+  const bloque = document.getElementById('codigo-bloque');
+  const cont   = document.getElementById('codigo-pasos');
+  bloque.style.display = 'block';
+  cont.innerHTML = pasos.map(p => {
+    const col  = p.ok ? '#a6e3a1' : '#f38ba8';
+    const rcol = p.ok ? '#6c7086' : '#f38ba8';
+    return `<span style="color:${col}">${escapeHtml(p.linea)}</span>  <span style="color:${rcol};font-style:italic">${escapeHtml(p.result)}</span>`;
+  }).join('\n');
+}
+
+function escapeHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function ejecutarPrestamo() {
+  const dniVal    = document.getElementById('sel-lector').value;
+  const tituloVal = document.getElementById('sel-libro').value;
+  const resEl     = document.getElementById('resultado');
+
+  // Quitar selección previa
+  document.querySelectorAll('.lector-item').forEach(e => e.classList.remove('seleccionado'));
+
+  if (!dniVal || !tituloVal) {
+    resEl.className = 'resultado show warn';
+    document.getElementById('res-icon').textContent = '⚠️';
+    document.getElementById('res-text').innerHTML = 'Seleccioná un lector y un libro para ejecutar el préstamo.';
+    document.getElementById('codigo-bloque').style.display = 'none';
+    return;
+  }
+
+  const resultado = prestarLibro(tituloVal, dniVal);
+
+  // Resultado visual
+  resEl.className = `resultado show ${resultado.tipo}`;
+  document.getElementById('res-icon').textContent = resultado.icono;
+  document.getElementById('res-text').innerHTML =
+    `<strong>${resultado.mensaje}</strong>` +
+    (resultado.detalle ? `<small>${resultado.detalle}</small>` : '');
+
+  // Código
+  mostrarCodigo(resultado.pasos);
+
+  // Log
+  const ahora = new Date();
+  const hora  = ahora.toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  log.push({ ...resultado, hora, params:{ titulo:tituloVal, dni:dniVal } });
+
+  // Resaltar lector
+  const lItem = document.getElementById(`lector-${dniVal}`);
+
+  // Re-render
+  renderStock();
+  renderLectores();
+  renderLog();
+
+  // Resaltar lector luego del render
+  setTimeout(() => {
+    const lEl = document.getElementById(`lector-${dniVal}`);
+    if (lEl) lEl.classList.add('seleccionado');
+  }, 50);
+}
+
+function resetearSistema() {
+  clonarEstado();
+  log = [];
+  document.getElementById('resultado').className = 'resultado';
+  document.getElementById('codigo-bloque').style.display = 'none';
+  document.getElementById('sel-lector').value = '';
+  document.getElementById('sel-libro').value  = '';
+  renderStock();
+  renderLectores();
+  renderLog();
+}
+
+// ─── INIT ───
+clonarEstado();
+renderStock();
+renderLectores();
+renderLog();
+</script>
+</body>
+</html>
