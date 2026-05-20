@@ -128,7 +128,7 @@
   }
   .hstat-lbl { font-size: 11px; color: var(--text3); letter-spacing: 0.05em; line-height: 1.5; }
 
-  /* ── NAV ── */
+  /* ── NAV MODIFICADO PARA MÓVILES ── */
   .sticky-nav {
     position: sticky;
     top: 0;
@@ -138,16 +138,46 @@
     border-bottom: 1px solid var(--border);
   }
 
+  /* Checkbox invisible que maneja el estado del menú desplegable */
+  .menu-checkbox {
+    display: none;
+  }
+
+  /* Botón hamburguesa oculto por defecto en PC */
+  .hamburger-button {
+    display: none;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 24px;
+    height: 18px;
+    cursor: pointer;
+    padding: 0;
+    background: transparent;
+    border: none;
+  }
+
+  .hamburger-button span {
+    display: block;
+    width: 100%;
+    height: 2px;
+    background-color: var(--text);
+    transition: transform 0.3s ease, opacity 0.3s ease;
+  }
+
   .nav-inner {
     max-width: 980px;
     margin: 0 auto;
     padding: 0 32px;
     display: flex;
-    gap: 4px;
-    overflow-x: auto;
-    scrollbar-width: none;
+    justify-content: space-between;
+    align-items: center;
   }
-  .nav-inner::-webkit-scrollbar { display: none; }
+
+  .nav-menu {
+    display: flex;
+    gap: 4px;
+    width: 100%;
+  }
 
   .nav-btn {
     font-family: var(--font-mono);
@@ -165,6 +195,60 @@
   }
   .nav-btn:hover { color: var(--text2); }
   .nav-btn.active { color: var(--text); border-bottom-color: var(--coral); }
+
+  /* ── MEDIA QUERY PARA PANTALLAS CHICAS (MÓVILES) ── */
+  @media (max-width: 768px) {
+    .nav-inner {
+      padding: 12px 32px;
+    }
+
+    .hamburger-button {
+      display: flex; /* Muestra las 3 rayitas */
+      margin-left: auto; /* Lo tira hacia la derecha */
+    }
+
+    .nav-menu {
+      display: none; /* Oculta los botones en móvil por defecto */
+      flex-direction: column;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      width: 100%;
+      background: rgba(17,17,20,0.98);
+      border-bottom: 1px solid var(--border);
+      padding: 10px 0;
+      gap: 0;
+    }
+
+    .nav-btn {
+      width: 100%;
+      text-align: left;
+      padding: 16px 32px;
+      border-bottom: none;
+      border-left: 3px solid transparent;
+    }
+    .nav-btn.active {
+      border-bottom-color: transparent;
+      border-left-color: var(--coral);
+      background: rgba(255,255,255,0.02);
+    }
+
+    /* Muestra el menú cuando el checkbox ficticio está activo (:checked) */
+    .menu-checkbox:checked ~ .nav-menu {
+      display: flex;
+    }
+
+    /* Transformación de hamburguesa a cruz (X) */
+    .menu-checkbox:checked ~ .hamburger-button span:nth-child(1) {
+      transform: translateY(8px) rotate(45deg);
+    }
+    .menu-checkbox:checked ~ .hamburger-button span:nth-child(2) {
+      opacity: 0;
+    }
+    .menu-checkbox:checked ~ .hamburger-button span:nth-child(3) {
+      transform: translateY(-8px) rotate(-45deg);
+    }
+  }
 
   /* ── MAIN ── */
   main { max-width: 980px; margin: 0 auto; padding: 0 32px 80px; }
@@ -582,22 +666,30 @@
 
 <nav class="sticky-nav" aria-label="Secciones principales">
   <div class="nav-inner">
-    <button class="nav-btn active" onclick="showSection('timeline', this)">01 · Línea de tiempo</button>
-    <button class="nav-btn" onclick="showSection('info', this)">02 · Paradoja informacional</button>
-    <button class="nav-btn" onclick="showSection('generaciones', this)">03 · Generaciones digitales</button>
-    <button class="nav-btn" onclick="showSection('desafios', this)">04 · Desafíos críticos</button>
+    <input type="checkbox" id="nav-toggle" class="menu-checkbox">
+    
+    <label for="nav-toggle" class="hamburger-button">
+      <span></span>
+      <span></span>
+      <span></span>
+    </label>
+
+    <div class="nav-menu">
+      <button class="nav-btn active" onclick="showSection('timeline', this)">01 · Línea de tiempo</button>
+      <button class="nav-btn" onclick="showSection('info', this)">02 · Paradoja informacional</button>
+      <button class="nav-btn" onclick="showSection('generaciones', this)">03 · Generaciones digitales</button>
+      <button class="nav-btn" onclick="showSection('desafios', this)">04 · Desafíos críticos</button>
+    </div>
   </div>
 </nav>
 
 <main>
 
-  <!-- ══ SECCIÓN 01: TIMELINE ══ -->
   <section id="sec-timeline" class="section visible" aria-label="Línea de tiempo 2025-2055">
 
     <h2 class="section-headline">Tres eras de<br>transformación</h2>
     <p class="section-lead">Cada una llega antes de que la anterior haya sido digerida. La aceleración no espera comprensión.</p>
 
-    <!-- Era 1 -->
     <div class="era" id="era1">
       <button class="era-toggle" onclick="toggleEra('era1')" aria-expanded="false">
         <span class="era-year" style="background: rgba(46,123,232,0.12); color: var(--blue2);">2025 – 2030</span>
@@ -632,7 +724,6 @@
       </div>
     </div>
 
-    <!-- Era 2 -->
     <div class="era" id="era2" style="margin-top: 2px;">
       <button class="era-toggle" onclick="toggleEra('era2')" aria-expanded="false">
         <span class="era-year" style="background: rgba(29,184,138,0.12); color: var(--teal2);">2030 – 2040</span>
@@ -667,7 +758,6 @@
       </div>
     </div>
 
-    <!-- Era 3 -->
     <div class="era" id="era3" style="margin-top: 2px;">
       <button class="era-toggle" onclick="toggleEra('era3')" aria-expanded="false">
         <span class="era-year" style="background: rgba(232,92,46,0.12); color: var(--coral2);">2040 – 2055</span>
@@ -684,7 +774,7 @@
         <div class="era-cards">
           <div class="ecard">
             <div class="ecard-title">Interfaces neurales</div>
-            <div class="ecard-text">Primeras interfaces cerebro-computadora de consumo masivo. Lectura y escritura de memoria como debate político.</div>
+            <div class="ecard-text">Primeras interfaces cerebro-computadora de consumo masivo. Lectura y escritura de memory como debate político.</div>
           </div>
           <div class="ecard">
             <div class="ecard-title">Clima + IA</div>
@@ -711,7 +801,6 @@
 
   </section>
 
-  <!-- ══ SECCIÓN 02: INFORMACIÓN ══ -->
   <section id="sec-info" class="section" aria-label="Paradoja de la información">
 
     <h2 class="section-headline">¿Más información<br>= más eficiencia?</h2>
@@ -762,310 +851,4 @@
           <span class="paradox-arrow">▾</span>
         </button>
         <div class="paradox-body">
-          <p class="paradox-long">Estudios de Betsy Sparrow (Columbia, 2011) mostraron algo perturbador: cuando sabemos que podemos buscar algo, directamente no lo memorizamos. El cerebro delega en el dispositivo. A nivel individual parece eficiente; a nivel sociedad, implica una atrofia cognitiva colectiva. El conocimiento encarnado —el que construye intuición, criterio y creatividad— requiere tiempo de asimilación que el scroll no da.</p>
-        </div>
-      </div>
-
-      <div class="paradox" id="p3">
-        <button class="paradox-toggle" onclick="toggleParadox('p3')">
-          <span class="paradox-num">03</span>
-          <div class="paradox-info">
-            <div class="paradox-title">Velocidad vs. profundidad</div>
-            <div class="paradox-short">Leer más no es aprender más.</div>
-          </div>
-          <span class="paradox-arrow">▾</span>
-        </button>
-        <div class="paradox-body">
-          <p class="paradox-long">Las plataformas digitales están diseñadas para el consumo horizontal: mucho, rápido, superficial. El aprendizaje profundo requiere el opuesto: lento, lineal, con fricción. Cuando todo compite por la atención simultáneamente, el pensamiento abstracto, la memoria episódica y la reflexión sostenida quedan fuera de la ecuación. La eficiencia que mide la tecnología no es la misma que mide el desarrollo humano.</p>
-        </div>
-      </div>
-
-      <div class="paradox" id="p4">
-        <button class="paradox-toggle" onclick="toggleParadox('p4')">
-          <span class="paradox-num">04</span>
-          <div class="paradox-info">
-            <div class="paradox-title">Las burbujas algorítmicas</div>
-            <div class="paradox-short">Toda la información disponible, solo la tuya visible.</div>
-          </div>
-          <span class="paradox-arrow">▾</span>
-        </button>
-        <div class="paradox-body">
-          <p class="paradox-long">Los algoritmos de recomendación no buscan informarte: buscan mantenerte. Están optimizados para el engagement, no para la comprensión. El resultado: cada persona vive en un ecosistema informacional distinto, con el mismo evento produciendo diez versiones incompatibles. La hiperpersonalización produce fragmentación epistémica: perdemos el piso común de hechos desde el cual se puede debatir. Sin ese piso, la democracia como conversación colectiva se vuelve imposible.</p>
-        </div>
-      </div>
-
-      <div class="paradox" id="p5">
-        <button class="paradox-toggle" onclick="toggleParadox('p5')">
-          <span class="paradox-num">05</span>
-          <div class="paradox-info">
-            <div class="paradox-title">La ilusión de conocimiento</div>
-            <div class="paradox-short">Acceder a información no es lo mismo que entenderla.</div>
-          </div>
-          <span class="paradox-arrow">▾</span>
-        </button>
-        <div class="paradox-body">
-          <p class="paradox-long">Estudios sobre el llamado "efecto de fluency" muestran que cuando algo se lee con facilidad —texto bien formateado, prosa clara, contenido breve— el cerebro confunde facilidad de lectura con comprensión real. Las plataformas digitales maximizan la fluency. El resultado es una población que se siente más informada que nunca, pero que raramente ha procesado los argumentos con suficiente profundidad como para resistir la desinformación o generar criterio propio.</p>
-        </div>
-      </div>
-
-    </div>
-
-    <div class="big-quote" style="margin-top: 60px;">
-      <blockquote>
-        No es que tengamos demasiada información. Es que tenemos demasiada información que nunca pedimos y demasiado poco tiempo para procesar la que necesitamos.
-        <cite>— Síntesis del problema central</cite>
-      </blockquote>
-    </div>
-
-  </section>
-
-  <!-- ══ SECCIÓN 03: GENERACIONES ══ -->
-  <section id="sec-generaciones" class="section" aria-label="Generaciones digitales">
-
-    <h2 class="section-headline">Los niños que<br>nacieron adentro</h2>
-    <p class="section-lead">No conocen el mundo antes de internet. No es que hayan adoptado la tecnología: nacieron dentro de ella. ¿Qué implica eso realmente?</p>
-
-    <div class="gen-split">
-      <div class="gen-card">
-        <span class="gen-badge" style="background: rgba(46,123,232,0.12); color: var(--blue2);">Generación Alpha</span>
-        <div class="gen-name" style="color: var(--blue2);">Los primeros verdaderamente nativos</div>
-        <div class="gen-years">Nacidos 2013 – 2025</div>
-        <ul class="gen-list">
-          <li>Aprendizaje por video antes que por texto</li>
-          <li>Interfaces táctiles antes que palabras escritas</li>
-          <li>Alta frustración ante la espera y la fricción</li>
-          <li>Procesamiento paralelo de múltiples estímulos</li>
-          <li>Aburrimiento estructural en entornos no digitales</li>
-          <li>Vocabulario digital antes que vocabulario social</li>
-        </ul>
-      </div>
-      <div class="gen-card">
-        <span class="gen-badge" style="background: rgba(123,110,232,0.12); color: var(--purple2);">Generación Z</span>
-        <div class="gen-name" style="color: var(--purple2);">Los primeros en sufrir las consecuencias</div>
-        <div class="gen-years">Nacidos 1997 – 2012</div>
-        <ul class="gen-list">
-          <li>Ansiedad social estadísticamente más elevada</li>
-          <li>Pragmatismo extremo ante la incertidumbre</li>
-          <li>Desconfianza estructural en instituciones</li>
-          <li>Fluidez entre identidades online y offline</li>
-          <li>Primeros en reportar burnout digital masivo</li>
-          <li>Lideran los movimientos de "digital detox"</li>
-        </ul>
-      </div>
-    </div>
-
-    <div class="tension-section">
-      <div class="tension-label">Lo que ganan // Lo que dejan sin desarrollar</div>
-      <div class="tension-grid">
-        <div class="tension-row">
-          <div class="t-side">
-            <div class="t-side-title" style="color: var(--teal);">Ganan</div>
-            <div class="t-side-text">Acceso instantáneo a toda la cultura humana. Aprendizaje autodidacta sin precedentes históricos.</div>
-          </div>
-          <div class="t-vs">vs</div>
-          <div class="t-side">
-            <div class="t-side-title" style="color: var(--coral);">Pierden</div>
-            <div class="t-side-text">Tiempo no estructurado. Aburrimiento creativo. Tolerancia real a la frustración.</div>
-          </div>
-        </div>
-        <div class="tension-row">
-          <div class="t-side">
-            <div class="t-side-title" style="color: var(--teal);">Conectividad</div>
-            <div class="t-side-text">Red global de pares. Comunidades de nicho que los hacen sentir vistos y comprendidos.</div>
-          </div>
-          <div class="t-vs">vs</div>
-          <div class="t-side">
-            <div class="t-side-title" style="color: var(--coral);">Presencia</div>
-            <div class="t-side-text">Dificultad para sostener conversaciones largas, cara a cara, sin distracciones.</div>
-          </div>
-        </div>
-        <div class="tension-row">
-          <div class="t-side">
-            <div class="t-side-title" style="color: var(--teal);">Velocidad</div>
-            <div class="t-side-text">Procesamiento paralelo. Mayor velocidad de respuesta ante múltiples inputs simultáneos.</div>
-          </div>
-          <div class="t-vs">vs</div>
-          <div class="t-side">
-            <div class="t-side-title" style="color: var(--coral);">Profundidad</div>
-            <div class="t-side-text">Dificultad para sostener foco en una sola tarea durante períodos prolongados.</div>
-          </div>
-        </div>
-        <div class="tension-row">
-          <div class="t-side">
-            <div class="t-side-title" style="color: var(--teal);">Autoexpresión</div>
-            <div class="t-side-text">Herramientas sin precedente para crear, publicar y ser escuchados a escala global.</div>
-          </div>
-          <div class="t-vs">vs</div>
-          <div class="t-side">
-            <div class="t-side-title" style="color: var(--coral);">Identidad</div>
-            <div class="t-side-text">Construcción del yo mediada por métricas externas: likes, seguidores, visualizaciones.</div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="evidence-box" style="margin-top: 32px;">
-      <div class="evidence-kicker">Lo que dice la neurociencia del desarrollo</div>
-      <p class="evidence-text">El cortex prefrontal —responsable del juicio, la planificación y la empatía— se desarrolla hasta los 25 años. Las pantallas durante infancia temprana interfieren con ese proceso si desplazan el juego libre, la narrativa oral, el aburrimiento productivo y el vínculo cara a cara sostenido. No es que lo digital sea intrínsecamente dañino: es que el cerebro en desarrollo necesita variedad de experiencias, y la sobre-representación de lo digital empobrece el repertorio. La dopamina de la validación digital compite con sistemas de recompensa más lentos y profundos que sostienen la motivación intrínseca.</p>
-    </div>
-
-  </section>
-
-  <!-- ══ SECCIÓN 04: DESAFÍOS ══ -->
-  <section id="sec-desafios" class="section" aria-label="Desafíos críticos">
-
-    <h2 class="section-headline">Lo que nadie<br>quiere mirar</h2>
-    <p class="section-lead">Más allá del optimismo tecnológico: los desafíos estructurales que la aceleración deja sin resolver.</p>
-
-    <div class="challenge-list">
-
-      <div class="challenge">
-        <div class="challenge-icon" style="background: rgba(232,92,46,0.1);">⚖️</div>
-        <div class="challenge-content">
-          <div class="challenge-title">La brecha digital se convierte en brecha de destino</div>
-          <div class="challenge-text">Quien no tiene acceso a las herramientas de IA no solo es menos productivo: queda estructuralmente excluido de la economía del siglo XXI. La desigualdad de oportunidades se acelera con cada ciclo tecnológico. En América Latina, la penetración de IA avanzada está concentrada en el 15% más alto por ingresos.</div>
-          <div class="challenge-bar"><div class="challenge-bar-fill" style="width: 88%; background: var(--coral);"></div></div>
-        </div>
-        <div class="challenge-urgency">
-          <div class="urgency-label">Urgencia</div>
-          <div class="urgency-val" style="color: var(--coral);">88</div>
-        </div>
-      </div>
-
-      <div class="challenge">
-        <div class="challenge-icon" style="background: rgba(123,110,232,0.1);">🧠</div>
-        <div class="challenge-content">
-          <div class="challenge-title">Soberanía cognitiva en riesgo</div>
-          <div class="challenge-text">Cuando los algoritmos deciden qué vemos, con quién hablamos y qué consumimos, la agencia individual se vuelve progresivamente ilusoria. El libre albedrío informacional requiere regulación que ningún gobierno ha podido implementar con eficacia real hasta ahora.</div>
-          <div class="challenge-bar"><div class="challenge-bar-fill" style="width: 75%; background: var(--purple);"></div></div>
-        </div>
-        <div class="challenge-urgency">
-          <div class="urgency-label">Urgencia</div>
-          <div class="urgency-val" style="color: var(--purple2);">75</div>
-        </div>
-      </div>
-
-      <div class="challenge">
-        <div class="challenge-icon" style="background: rgba(212,144,10,0.1);">💔</div>
-        <div class="challenge-content">
-          <div class="challenge-title">Crisis de salud mental como pandemia silenciosa</div>
-          <div class="challenge-text">Ansiedad, depresión y soledad en adultos jóvenes han aumentado 30-40% en la última década en países con alta penetración digital. La infraestructura de salud mental no escala al mismo ritmo que los daños. El volumen de personas que necesitan ayuda supera ampliamente la capacidad de atención disponible.</div>
-          <div class="challenge-bar"><div class="challenge-bar-fill" style="width: 82%; background: var(--amber);"></div></div>
-        </div>
-        <div class="challenge-urgency">
-          <div class="urgency-label">Urgencia</div>
-          <div class="urgency-val" style="color: var(--amber2);">82</div>
-        </div>
-      </div>
-
-      <div class="challenge">
-        <div class="challenge-icon" style="background: rgba(29,184,138,0.1);">🌍</div>
-        <div class="challenge-content">
-          <div class="challenge-title">Huella ambiental de la computación masiva</div>
-          <div class="challenge-text">Entrenar un modelo de IA grande emite más CO₂ que un automóvil durante toda su vida útil. Los centros de datos consumen ya el 1-2% de la electricidad global, con proyecciones de 8-10% para 2030. La "nube" tiene peso real. La promesa verde de la digitalización no cierra si no se resuelve el consumo energético de la computación.</div>
-          <div class="challenge-bar"><div class="challenge-bar-fill" style="width: 65%; background: var(--teal);"></div></div>
-        </div>
-        <div class="challenge-urgency">
-          <div class="urgency-label">Urgencia</div>
-          <div class="urgency-val" style="color: var(--teal2);">65</div>
-        </div>
-      </div>
-
-      <div class="challenge">
-        <div class="challenge-icon" style="background: rgba(46,123,232,0.1);">🏛️</div>
-        <div class="challenge-content">
-          <div class="challenge-title">Las instituciones del siglo XX no gobiernan el siglo XXI</div>
-          <div class="challenge-text">Los sistemas legales, educativos, democráticos y laborales fueron diseñados para un mundo con ciclos de cambio de décadas. La tecnología avanza en meses. El abismo entre innovación y regulación crea zonas de impunidad donde se toman decisiones que afectan a millones sin accountability ni contrapeso democrático.</div>
-          <div class="challenge-bar"><div class="challenge-bar-fill" style="width: 92%; background: var(--blue);"></div></div>
-        </div>
-        <div class="challenge-urgency">
-          <div class="urgency-label">Urgencia</div>
-          <div class="urgency-val" style="color: var(--blue2);">92</div>
-        </div>
-      </div>
-
-      <div class="challenge">
-        <div class="challenge-icon" style="background: rgba(212,83,126,0.1);">❤️</div>
-        <div class="challenge-content">
-          <div class="challenge-title">¿Qué queda de lo humano?</div>
-          <div class="challenge-text">No como pregunta filosófica abstracta, sino urgentemente práctica: cuando las máquinas hacen mejor casi todo lo que antes era exclusivamente humano —crear, decidir, acompañar, cuidar— ¿dónde radica el valor, el propósito, la dignidad? Las respuestas a esta pregunta definirán la civilización del siglo XXI.</div>
-          <div class="challenge-bar"><div class="challenge-bar-fill" style="width: 100%; background: #D4537E;"></div></div>
-        </div>
-        <div class="challenge-urgency">
-          <div class="urgency-label">Urgencia</div>
-          <div class="urgency-val" style="color: #ED93B1;">∞</div>
-        </div>
-      </div>
-
-    </div>
-
-    <div class="closing">
-      <h3 class="closing-title">La tecnología avanza. La sabiduría, si acaso, camina.</h3>
-      <p class="closing-text">
-        La aceleración tecnológica es real e irreversible. La pregunta no es si adoptarla o rechazarla: esa opción ya no existe. La pregunta es si somos capaces —como individuos, como sociedades— de cultivar lo que las máquinas no pueden reemplazar: la capacidad de estar presentes, de pensar lento cuando hace falta, de vincularnos con otros desde la vulnerabilidad real, y de encontrar significado más allá de la productividad.
-      </p>
-      <p class="closing-text" style="margin-top: 16px;">
-        El reto no es tecnológico. Es humano. Siempre lo fue.
-      </p>
-    </div>
-
-  </section>
-
-</main>
-
-<footer>
-  <span class="footer-left">Proyección prospectiva · 2025–2055</span>
-  <span class="footer-right">Generado con Claude · Anthropic</span>
-</footer>
-
-<script>
-  function showSection(id, btn) {
-    document.querySelectorAll('.section').forEach(s => s.classList.remove('visible'));
-    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-    document.getElementById('sec-' + id).classList.add('visible');
-    btn.classList.add('active');
-    window.scrollTo({ top: document.querySelector('.sticky-nav').offsetTop - 1, behavior: 'smooth' });
-  }
-
-  function toggleEra(id) {
-    const el = document.getElementById(id);
-    const isOpen = el.classList.toggle('open');
-    el.querySelector('.era-toggle').setAttribute('aria-expanded', isOpen);
-  }
-
-  function toggleParadox(id) {
-    document.getElementById(id).classList.toggle('open');
-  }
-
-  // Animate bar fills when challenges section becomes visible
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.querySelectorAll('.challenge-bar-fill').forEach(bar => {
-          const w = bar.style.width;
-          bar.style.width = '0';
-          setTimeout(() => { bar.style.width = w; }, 100);
-        });
-        observer.unobserve(entry.target);
-      }
-    });
-  }, { threshold: 0.2 });
-
-  const desafios = document.getElementById('sec-desafios');
-  if (desafios) observer.observe(desafios);
-
-  // Header entrance animation
-  document.querySelectorAll('header > *').forEach((el, i) => {
-    el.style.opacity = '0';
-    el.style.transform = 'translateY(20px)';
-    el.style.transition = `opacity 0.5s ease ${i * 0.1}s, transform 0.5s ease ${i * 0.1}s`;
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        el.style.opacity = '1';
-        el.style.transform = 'translateY(0)';
-      });
-    });
-  });
-</script>
-</body>
-</html>
+          <p
