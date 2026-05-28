@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Resonancia & Relatividad</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inconsolata:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #020810;
+  --panel: #060d1a;
+  --border: #0f1f35;
+  --amber: #f59e0b;
+  --teal: #06b6d4;
+  --lime: #84cc16;
+  --pink: #ec4899;
+  --blue: #3b82f6;
+  --white: #e2e8f0;
+  --muted: #475569;
+  --font-head: 'Orbitron', monospace;
+  --font-body: 'Inconsolata', monospace;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: var(--bg);
+  color: var(--white);
+  font-family: var(--font-body);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* COSMIC BG */
+#cosmos {
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background: radial-gradient(ellipse at 20% 50%, #0a1628 0%, transparent 60%),
+              radial-gradient(ellipse at 80% 20%, #0d1525 0%, transparent 50%),
+              var(--bg);
+}
+.star2 {
+  position: absolute; border-radius: 50%; background: #fff;
+  animation: tw2 var(--d) infinite alternate ease-in-out;
+}
+@keyframes tw2 {
+  from { opacity: var(--lo); } to { opacity: var(--hi); }
+}
+
+/* NAV */
+nav {
+  position: sticky; top: 0; z-index: 50;
+  background: rgba(2,8,16,0.95);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 4px;
+  padding: 0 16px; height: 50px;
+  overflow-x: auto;
+}
+.nb {
+  font-family: var(--font-head);
+  font-size: 9px; letter-spacing: 0.12em;
+  padding: 5px 13px; border-radius: 4px;
+  border: 1px solid transparent;
+  background: transparent; color: var(--muted);
+  cursor: pointer; white-space: nowrap;
+  transition: all 0.2s; text-transform: uppercase;
+}
+.nb:hover { color: var(--white); border-color: var(--border); }
+.nb.on { background: var(--ac, var(--teal)); color: #000; font-weight: 700; border-color: transparent; }
+
+/* SECTIONS */
+section {
+  display: none; position: relative; z-index: 1;
+  min-height: calc(100vh - 50px);
+  max-width: 800px; margin: 0 auto;
+  padding: 36px 18px 60px;
+}
+section.on { display: block; }
+
+h1 {
+  font-family: var(--font-head);
+  font-size: clamp(20px,4.5vw,32px);
+  letter-spacing: 0.1em; margin-bottom: 6px;
+}
+.sub {
+  font-size: 10px; letter-spacing: 0.25em;
+  text-transform: uppercase; color: var(--muted);
+  margin-bottom: 26px;
+}
+
+.card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 12px; padding: 18px;
+  margin-bottom: 14px;
+}
+.clabel {
+  font-size: 9px; letter-spacing: 0.2em;
+  text-transform: uppercase; color: var(--muted);
+  margin-bottom: 10px;
+}
+
+canvas { width: 100%; display: block; border-radius: 6px; background: #030912; }
+
+.insight {
+  border-radius: 8px; padding: 14px 16px;
+  font-size: 12px; line-height: 1.75;
+  color: #94a3b8; margin: 12px 0;
+  border-left: 3px solid var(--ac, var(--teal));
+  background: rgba(6,182,212,0.04);
+}
+.insight.amber { --ac:var(--amber); background: rgba(245,158,11,0.04); }
+.insight.lime  { --ac:var(--lime);  background: rgba(132,204,22,0.04); }
+.insight.pink  { --ac:var(--pink);  background: rgba(236,72,153,0.04); }
+.insight.blue  { --ac:var(--blue);  background: rgba(59,130,246,0.04); }
+
+.btn {
+  font-family: var(--font-head); font-size: 9px;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  padding: 8px 18px; border-radius: 5px;
+  border: none; cursor: pointer; transition: all 0.18s;
+}
+.btn-t { background: var(--teal); color: #000; font-weight: 700; }
+.btn-a { background: var(--amber); color: #000; font-weight: 700; }
+.btn-l { background: var(--lime); color: #000; font-weight: 700; }
+.btn-p { background: var(--pink); color: #fff; font-weight: 700; }
+.btn-g { background: transparent; color: var(--muted); border: 1px solid var(--border); }
+.btn:hover { filter: brightness(1.2); }
+.row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+
+.pill2 {
+  font-family: var(--font-body); font-size: 11px;
+  padding: 5px 14px; border-radius: 20px;
+  border: 1px solid var(--border);
+  background: transparent; color: var(--muted);
+  cursor: pointer; transition: all 0.2s;
+}
+.pill2.on { border-color: var(--ac2, var(--teal)); color: var(--ac2, var(--teal)); }
+
+.slab {
+  background: #040b16; border: 1px solid var(--border);
+  border-radius: 8px; padding: 12px 14px; text-align: center;
+}
+.sval { font-family: var(--font-head); font-size: 20px; color: #fff; }
+.slbl { font-size: 9px; color: var(--muted); margin-top: 3px; letter-spacing: 0.1em; }
+
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.grid3 { display: grid; grid-template-columns: repeat(auto-fit,minmax(120px,1fr)); gap: 10px; }
+
+input[type=range] { accent-color: var(--teal); cursor: pointer; }
+.sl-row { display: flex; align-items: center; gap: 12px; margin: 8px 0; }
+.sl-row label { font-size: 11px; color: var(--muted); min-width: 110px; }
+.sl-row .sv { font-size: 13px; color: #fff; min-width: 50px; text-align: right; }
+
+@keyframes fadeUp { from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none} }
+.fu { animation: fadeUp 0.35s ease forwards; }
+
+/* GPS clock */
+.clock-box {
+  display: flex; flex-direction: column; align-items: center;
+  background: #030912; border-radius: 10px; padding: 16px;
+  border: 1px solid var(--border); flex: 1;
+}
+.clock-face {
+  width: 80px; height: 80px; border-radius: 50%;
+  border: 2px solid var(--c, var(--teal));
+  position: relative; margin-bottom: 8px;
+  box-shadow: 0 0 16px var(--c, var(--teal))44;
+}
+.clock-hand {
+  position: absolute; bottom: 50%; left: 50%;
+  transform-origin: bottom center;
+  background: var(--c, var(--teal));
+  border-radius: 2px;
+}
+</style>
+</head>
+<body>
+<div id="cosmos"></div>
+
+<nav>
+  <button class="nb on" data-s="gps" style="--ac:var(--amber)">⏱ GPS</button>
+  <button class="nb" data-s="ligo" style="--ac:var(--teal)">〰 LIGO</button>
+  <button class="nb" data-s="blackhole" style="--ac:var(--pink)">◉ Agujero Negro</button>
+  <button class="nb" data-s="particulas" style="--ac:var(--lime)">⬡ Partículas</button>
+  <button class="nb" data-s="unificacion" style="--ac:var(--blue)">∞ Unificación</button>
+</nav>
+
+<!-- ══════════════════ GPS ══════════════════ -->
+<section id="gps" class="on">
+  <div class="sub">Relatividad aplicada · Resonancia atómica</div>
+  <h1 style="color:var(--amber)">GPS & Relojes Atómicos</h1>
+
+  <div class="insight amber">
+    <span style="color:var(--amber);font-weight:700">El paradox del GPS:</span>
+    Los satélites GPS usan relojes de resonancia atómica de cesio.
+    Pero la relatividad los hace correr a distinta velocidad que en la Tierra.
+    Sin corregirlo: <strong style="color:#fff">11 km de error por día</strong>.
+  </div>
+
+  <div class="card">
+    <div class="clabel">Los dos efectos relativistas que se oponen</div>
+    <div class="grid2" style="margin-bottom:14px">
+      <div class="slab">
+        <div class="sval" style="color:var(--blue)">−7 μs</div>
+        <div class="slbl">Rel. Especial<br>velocidad orbital → reloj lento</div>
+      </div>
+      <div class="slab">
+        <div class="sval" style="color:var(--lime)">+45 μs</div>
+        <div class="slbl">Rel. General<br>menos gravedad → reloj rápido</div>
+      </div>
+    </div>
+    <div class="slab" style="border-color:var(--amber)44">
+      <div class="sval" style="color:var(--amber)">+38 μs / día</div>
+      <div class="slbl">Error neto sin corrección</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="clabel">Simulación de relojes — ¿cuánto se desvían?</div>
+    <div style="display:flex;gap:16px;align-items:center;flex-wrap:wrap">
+      <div class="clock-box" style="--c:var(--teal)">
+        <div class="clock-face" id="cf-tierra">
+          <div class="clock-hand" id="ch-tierra-s" style="width:2px;height:28px;left:calc(50% - 1px)"></div>
+          <div class="clock-hand" id="ch-tierra-m" style="width:3px;height:22px;left:calc(50% - 1.5px)"></div>
+        </div>
+        <div style="font-size:10px;color:var(--teal)">🌍 TIERRA</div>
+        <div id="t-tierra" style="font-family:var(--font-head);font-size:14px;margin-top:4px">00:00:00.000</div>
+      </div>
+      <div style="flex:1;min-width:160px">
+        <canvas id="c-gps-drift" height="100"></canvas>
+        <div style="font-size:10px;color:var(--muted);margin-top:6px;text-align:center">Deriva acumulada del satélite (μs)</div>
+      </div>
+      <div class="clock-box" style="--c:var(--amber)">
+        <div class="clock-face" id="cf-sat">
+          <div class="clock-hand" id="ch-sat-s" style="width:2px;height:28px;left:calc(50% - 1px)"></div>
+          <div class="clock-hand" id="ch-sat-m" style="width:3px;height:22px;left:calc(50% - 1.5px)"></div>
+        </div>
+        <div style="font-size:10px;color:var(--amber)">🛰 SATÉLITE</div>
+        <div id="t-sat" style="font-family:var(--font-head);font-size:14px;margin-top:4px">00:00:00.000</div>
+      </div>
+    </div>
+    <div class="row">
+      <button class="btn btn-a" id="btn-gps-start">▶ Iniciar</button>
+      <button class="btn btn-g" id="btn-gps-stop">■ Parar</button>
+      <button class="btn btn-g" id="btn-gps-reset">↺ Reset</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="clabel">Resonancia atómica del cesio-133</div>
+    <canvas id="c-cesium" height="110"></canvas>
+    <div class="insight amber" style="margin-top:10px;margin-bottom:0">
+      <span style="color:var(--amber);font-weight:700">¿Cómo funciona?</span>
+      Los átomos de cesio-133 resuenan exactamente a
+      <strong style="color:#fff">9,192,631,770 Hz</strong> — esa vibración
+      define el segundo. La relatividad altera esa frecuencia según la velocidad y la gravedad.
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════ LIGO ══════════════════ -->
+<section id="ligo">
+  <div class="sub">Ondas gravitacionales · Interferometría láser</div>
+  <h1 style="color:var(--teal)">LIGO — El Detector</h1>
+
+  <div class="insight">
+    <span style="color:var(--teal);font-weight:700">La paradoja hermosa:</span>
+    Einstein predijo las ondas gravitacionales en 1916. Pero nadie pudo detectarlas
+    hasta 2015 — usando <em>resonancia de luz láser</em> para medir
+    una deformación de 1/10000 del diámetro de un protón.
+  </div>
+
+  <div class="card">
+    <div class="clabel">Simulación del interferómetro LIGO</div>
+    <canvas id="c-ligo" height="220"></canvas>
+    <div class="row">
+      <button class="btn btn-t" id="btn-ligo-signal">📡 Inyectar señal</button>
+      <button class="btn btn-g" id="btn-ligo-noise">〰 Solo ruido</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="clabel">¿Cómo funciona la resonancia óptica?</div>
+    <canvas id="c-fabry" height="130"></canvas>
+    <div style="font-size:11px;color:var(--muted);margin-top:8px;line-height:1.6">
+      Las cavidades Fabry-Pérot amplifican el láser <strong style="color:#fff">280 veces</strong>
+      por resonancia óptica. La luz rebota miles de veces antes de salir —
+      como una nota musical en una caja de resonancia. Eso multiplica la sensibilidad.
+    </div>
+  </div>
+
+  <div class="grid2" style="margin-bottom:14px">
+    <div class="slab">
+      <div class="sval" style="color:var(--teal)">4 km</div>
+      <div class="slbl">Longitud de cada brazo</div>
+    </div>
+    <div class="slab">
+      <div class="sval" style="color:var(--lime)">10⁻¹⁹ m</div>
+      <div class="slbl">Sensibilidad mínima</div>
+    </div>
+    <div class="slab">
+      <div class="sval" style="color:var(--amber)">2015</div>
+      <div class="slbl">Primera detección</div>
+    </div>
+    <div class="slab">
+      <div class="sval" style="color:var(--pink)">1.3B años</div>
+      <div class="slbl">Distancia al evento</div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════ AGUJERO NEGRO ══════════════════ -->
+<section id="blackhole">
+  <div class="sub">Ringdown · Modos cuasinormales</div>
+  <h1 style="color:var(--pink)">El Universo como Campana</h1>
+
+  <div class="insight pink">
+    <span style="color:var(--pink);font-weight:700">El ringdown:</span>
+    Cuando dos agujeros negros se fusionan, el resultado vibra antes de estabilizarse.
+    El espacio-tiempo curvo <em>resuena</em> igual que una campana golpeada.
+    Esas vibraciones se llaman <strong style="color:#fff">modos cuasinormales</strong>.
+  </div>
+
+  <div class="card">
+    <div class="clabel">Simulación de fusión — señal gravitacional GW150914</div>
+    <canvas id="c-merger" height="220"></canvas>
+    <div class="row">
+      <button class="btn btn-p" id="btn-merger">▶ Simular fusión</button>
+      <button class="btn btn-g" id="btn-merger-stop">■ Parar</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="clabel">Fase del ringdown — la campana del espacio-tiempo</div>
+    <canvas id="c-ringdown" height="150"></canvas>
+    <div class="sl-row" style="margin-top:12px">
+      <label style="color:var(--pink)">Masa agujero negro</label>
+      <input type="range" id="bh-mass" min="10" max="100" value="30" style="flex:1;accent-color:var(--pink)">
+      <span class="sv" id="bh-mass-val">30 M☉</span>
+    </div>
+    <div style="font-size:10px;color:var(--muted);margin-top:4px">
+      Mayor masa → menor frecuencia de resonancia (como una campana más grande)
+    </div>
+  </div>
+
+  <div class="insight pink">
+    <span style="color:var(--pink);font-weight:700">Conectado a Fourier:</span>
+    El espectro de frecuencias del ringdown revela la masa y el spin del agujero negro —
+    exactamente como Fourier extrae frecuencias de cualquier señal compleja.
+    Es física forense del espacio-tiempo.
+  </div>
+</section>
+
+<!-- ══════════════════ PARTÍCULAS ══════════════════ -->
+<section id="particulas">
+  <div class="sub">Resonancias cuánticas · Campo de Higgs</div>
+  <h1 style="color:var(--lime)">Partículas = Resonancias</h1>
+
+  <div class="insight lime">
+    <span style="color:var(--lime);font-weight:700">La idea radical:</span>
+    Las partículas subatómicas no son objetos sólidos —
+    son <em>modos de resonancia</em> de campos cuánticos relativistas.
+    El bosón de Higgs se detectó como un pico de resonancia en el espectro de colisiones.
+  </div>
+
+  <div class="card">
+    <div class="clabel">Espectro de masa invariante — buscá la resonancia</div>
+    <canvas id="c-higgs" height="200"></canvas>
+    <div class="row" id="particle-pills">
+      <span class="pill2 on" data-p="higgs" style="--ac2:var(--lime)">Bosón de Higgs</span>
+      <span class="pill2" data-p="z" style="--ac2:var(--teal)">Bosón Z</span>
+      <span class="pill2" data-p="top" style="--ac2:var(--amber)">Quark Top</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="clabel">Ancho de resonancia — principio de incertidumbre de Heisenberg</div>
+    <canvas id="c-breit" height="150"></canvas>
+    <div class="insight lime" style="margin-top:10px;margin-bottom:0">
+      <span style="color:var(--lime);font-weight:700">Conexión con Heisenberg:</span>
+      El ancho del pico de resonancia ΔE está relacionado con la vida media τ de la partícula:
+      <strong style="color:#fff">ΔE · τ ≥ ℏ/2</strong>.
+      Una partícula muy inestable (vida corta) tiene un pico ancho — incertidumbre en energía.
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════ UNIFICACIÓN ══════════════════ -->
+<section id="unificacion">
+  <div class="sub">El hilo profundo</div>
+  <h1 style="color:var(--blue)">Resonancia = Geometría que Vibra</h1>
+
+  <div class="insight blue">
+    <span style="color:var(--blue);font-weight:700">La síntesis:</span>
+    La relatividad describe la <em>geometría</em> del universo —
+    cómo el espacio-tiempo se curva con masa y velocidad.
+    La resonancia es <em>cómo esa geometría vibra</em>.
+    Son la misma realidad vista desde dos ángulos.
+  </div>
+
+  <div class="card">
+    <div class="clabel">Mapa conceptual — todo conectado</div>
+    <canvas id="c-mapa" height="280"></canvas>
+  </div>
+
+  <div class="card">
+    <div class="clabel">La tabla definitiva</div>
+    <div style="font-size:11px;display:grid;grid-template-columns:1.2fr 1fr 1fr;gap:8px">
+      <div style="color:var(--muted);font-size:9px;letter-spacing:0.1em;text-transform:uppercase">Fenómeno</div>
+      <div style="color:var(--muted);font-size:9px;letter-spacing:0.1em;text-transform:uppercase">Relatividad</div>
+      <div style="color:var(--muted);font-size:9px;letter-spacing:0.1em;text-transform:uppercase">Resonancia</div>
+
+      <div style="color:var(--amber)">GPS</div>
+      <div>Dilata el tiempo según velocidad/gravedad</div>
+      <div>Reloj de cesio mide esa dilatación</div>
+
+      <div style="color:var(--teal)">LIGO</div>
+      <div>Ondas gravitacionales curvan el espacio</div>
+      <div>Láser resonante las detecta</div>
+
+      <div style="color:var(--pink)">Agujero Negro</div>
+      <div>Geometría extrema del espacio-tiempo</div>
+      <div>Esa geometría tiene modos propios</div>
+
+      <div style="color:var(--lime)">Partículas</div>
+      <div>Masa = energía (E=mc²)</div>
+      <div>Partícula = resonancia de campo</div>
+
+      <div style="color:var(--blue)">Universo</div>
+      <div>Geometría dinámica y curva</div>
+      <div>Esa geometría puede oscilar</div>
+    </div>
+  </div>
+
+  <div class="insight blue" style="font-size:13px;line-height:1.9">
+    <span style="color:var(--blue);font-weight:700">La pregunta final:</span><br>
+    Si el universo es geometría que vibra,<br>
+    y las partículas son resonancias de campos,<br>
+    y el cerebro detecta resonancias electromagnéticas,<br>
+    y la consciencia podría ser un patrón de resonancia cuántica...<br>
+    <span style="color:#fff">¿El universo se conoce a sí mismo a través de sus propias resonancias?</span>
+  </div>
+</section>
+
+<script>
+// STARS
+(()=>{
+  const c=document.getElementById('cosmos');
+  for(let i=0;i<150;i++){
+    const s=document.createElement('div'); s.className='star2';
+    const sz=Math.random()*1.8+0.3;
+    s.style.cssText=`width:${sz}px;height:${sz}px;left:${Math.random()*100}%;top:${Math.random()*100}%;--lo:${(Math.random()*0.2+0.03).toFixed(2)};--hi:${(Math.random()*0.5+0.3).toFixed(2)};--d:${(Math.random()*5+2).toFixed(1)}s;animation-delay:${(Math.random()*5).toFixed(1)}s`;
+    c.appendChild(s);
+  }
+})();
+
+// NAV
+document.querySelectorAll('.nb').forEach(b=>{
+  b.addEventListener('click',()=>{
+    document.querySelectorAll('.nb').forEach(x=>x.classList.remove('on'));
+    document.querySelectorAll('section').forEach(x=>x.classList.remove('on'));
+    b.classList.add('on');
+    const sec=document.getElementById(b.dataset.s);
+    sec.classList.add('on');
+    // init section
+    ({gps:initGPS,ligo:initLIGO,blackhole:initBH,particulas:initParticulas,unificacion:initUnif})[b.dataset.s]?.();
+  });
+});
+
+function resC(id,h){
+  const canvas=document.getElementById(id);
+  if(!canvas)return null;
+  const w=canvas.parentElement.getBoundingClientRect().width-36;
+  canvas.width=Math.min(w,760);
+  if(h)canvas.height=h;
+  return canvas;
+}
+function bg(ctx,w,h){ctx.fillStyle='#030912';ctx.fillRect(0,0,w,h);}
+function grid(ctx,w,h,col='#0a1525'){
+  ctx.strokeStyle=col;ctx.lineWidth=1;
+  for(let i=0;i<=8;i++){const x=(w/8)*i;ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,h);ctx.stroke();}
+  for(let i=0;i<=4;i++){const y=(h/4)*i;ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(w,y);ctx.stroke();}
+}
+function axis(ctx,w,h){ctx.strokeStyle='#1a2a3a';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(0,h/2);ctx.lineTo(w,h/2);ctx.stroke();}
+
+// ═══════════════ GPS ═══════════════
+let gpsRunning=false,gpsT=0,gpsId=null;
+let driftData=[];
+
+function drawCesium(){
+  const canvas=resC('c-cesium');if(!canvas)return;
+  const {width:w,height:h}=canvas,ctx=canvas.getContext('2d');
+  bg(ctx,w,h);grid(ctx,w,h);
+  const freq=9.192631770;
+  ctx.strokeStyle='#f59e0b';ctx.lineWidth=2;
+  ctx.shadowBlur=8;ctx.shadowColor='#f59e0b';
+  ctx.beginPath();
+  for(let i=0;i<w;i++){
+    const t=i/w*4;
+    const y=h/2-Math.sin(freq*t*2)*((h/2)-12);
+    i===0?ctx.moveTo(i,y):ctx.lineTo(i,y);
+  }
+  ctx.stroke();ctx.shadowBlur=0;
+  ctx.fillStyle='#f59e0b88';ctx.font='10px Inconsolata';
+  ctx.fillText('Cs-133: 9,192,631,770 Hz → define el segundo',10,h-8);
+}
+
+function drawGPSDrift(){
+  const canvas=resC('c-gps-drift');if(!canvas)return;
+  const {width:w,height:h}=canvas,ctx=canvas.getContext('2d');
+  bg(ctx,w,h);grid(ctx,w,h);
+  if(driftData.length<2)return;
+  ctx.strokeStyle='#f59e0b';ctx.lineWidth=2;ctx.beginPath();
+  driftData.forEach((v,i)=>{
+    const x=(i/(driftData.length-1))*w;
+    const y=h-10-(v/40)*(h-20);
+    i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+  });
+  ctx.stroke();
+}
+
+function rotateHand(id,deg){
+  const el=document.getElementById(id);
+  if(el)el.style.transform=`rotate(${deg}deg)`;
+}
+
+function fmtTime(sec){
+  const h=Math.floor(sec/3600),m=Math.floor((sec%3600)/60),s=sec%60;
+  return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s.toFixed(3)).padStart(6,'0')}`;
+}
+
+function stepGPS(){
+  gpsT+=0.1;
+  const satT=gpsT+(38e-6*gpsT/86400);
+  const earthSec=gpsT;const satSec=satT;
+  const es=earthSec%60,em=(earthSec/60)%60;
+  const ss=satSec%60,sm=(satSec/60)%60;
+  rotateHand('ch-tierra-s',es*6);rotateHand('ch-tierra-m',em*6);
+  rotateHand('ch-sat-s',ss*6);rotateHand('ch-sat-m',sm*6);
+  document.getElementById('t-tierra').textContent=fmtTime(earthSec);
+  document.getElementById('t-sat').textContent=fmtTime(satSec);
+  const drift=(satT-gpsT)*1e6;
+  driftData.push(Math.min(drift*1000,40));
+  if(driftData.length>80)driftData.shift();
+  drawGPSDrift();
+}
+
+document.getElementById('btn-gps-start').addEventListener('click',()=>{
+  if(gpsRunning)return;
+  gpsRunning=true;
+  gpsId=setInterval(stepGPS,50);
+});
+document.getElementById('btn-gps-stop').addEventListener('click',()=>{
+  gpsRunning=false;clearInterval(gpsId);
+});
+document.getElementById('btn-gps-reset').addEventListener('click',()=>{
+  gpsRunning=false;clearInterval(gpsId);
+  gpsT=0;driftData=[];
+  ['ch-tierra-s','ch-tierra-m','ch-sat-s','ch-sat-m'].forEach(id=>rotateHand(id,0));
+  document.getElementById('t-tierra').textContent='00:00:00.000';
+  document.getElementById('t-sat').textContent='00:00:00.000';
+  drawGPSDrift();
+});
+
+function initGPS(){drawCesium();drawGPSDrift();}
+initGPS();
+
+// ═══════════════ LIGO ═══════════════
+let ligoSignal=false,ligoT=0,ligoId=null;
+
+function drawLIGO(){
+  const canvas=resC('c-ligo');if(!canvas)return;
+  const {width:w,height:h}=canvas,ctx=canvas.getContext('2d');
+  bg(ctx,w,h);grid(ctx,w,h);
+
+  // Draw interferometer schematic
+  const cx=w/2,cy=h/2;
+  // Beam splitter
+  ctx.strokeStyle='#06b6d4';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(cx-10,cy-10);ctx.lineTo(cx+10,cy+10);ctx.stroke();
+
+  // Arms
+  const armL=Math.min(w*0.4,160);
+  [[cx-armL,cy,cx,cy],[cx,cy-armL*0.7,cx,cy]].forEach(([x1,y1,x2,y2])=>{
+    ctx.strokeStyle='#06b6d455';ctx.lineWidth=1.5;ctx.setLineDash([4,3]);
+    ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();
+    ctx.setLineDash([]);
+  });
+
+  // Animated laser beams
+  const t=ligoT*0.05;
+  const squeeze = ligoSignal ? Math.sin(t*2)*8 : 0;
+  ctx.shadowBlur=10;
+
+  // Horizontal arm beam
+  ctx.strokeStyle='#06b6d4';ctx.lineWidth=2;ctx.shadowColor='#06b6d4';
+  ctx.beginPath();
+  for(let i=0;i<armL;i++){
+    const x=cx-armL+i;
+    const y=cy+Math.sin(i*0.3+t)*(2+squeeze*0.5);
+    i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+  }
+  ctx.stroke();
+
+  // Vertical arm beam
+  ctx.strokeStyle='#a78bfa';ctx.shadowColor='#a78bfa';
+  ctx.beginPath();
+  for(let i=0;i<armL*0.7;i++){
+    const x=cx+Math.sin(i*0.3+t)*(2-squeeze*0.3);
+    const y=cy-armL*0.7+i;
+    i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+  }
+  ctx.stroke();
+  ctx.shadowBlur=0;
+
+  // Detector signal at bottom
+  ctx.strokeStyle=ligoSignal?'#f59e0b':'#1a3a4a';
+  ctx.lineWidth=2;
+  const sigH=40,sigY=h-sigH-10;
+  ctx.beginPath();
+  for(let i=0;i<w;i++){
+    const xt=(i/w)*20-ligoT*0.1;
+    let y;
+    if(ligoSignal){
+      const chirp=Math.exp(-Math.pow(xt-10,2)/3)*Math.sin((xt-10)*8*(1+Math.pow(Math.max(xt-8,0),1.5)));
+      y=sigY+sigH/2-chirp*sigH*0.45;
+    }else{
+      y=sigY+sigH/2+(Math.random()-0.5)*3;
+    }
+    i===0?ctx.moveTo(i,y):ctx.lineTo(i,y);
+  }
+  ctx.stroke();
+  ctx.fillStyle='#475569';ctx.font='9px Inconsolata';
+  ctx.fillText(ligoSignal?'Señal de onda gravitacional detectada':'Ruido de fondo', 10, h-6);
+
+  // Labels
+  ctx.fillStyle='#06b6d4';ctx.font='10px Inconsolata';
+  ctx.fillText('Brazo horizontal (4 km)', cx-armL, cy-8);
+  ctx.save();ctx.translate(cx+8,cy-armL*0.35);ctx.rotate(-Math.PI/2);
+  ctx.fillStyle='#a78bfa';ctx.fillText('Brazo vertical (4 km)',0,0);
+  ctx.restore();
+}
+
+function drawFabry(){
+  const canvas=resC('c-fabry');if(!canvas)return;
+  const {width:w,height:h}=canvas,ctx=canvas.getContext('2d');
+  bg(ctx,w,h);
+  // Cavity mirrors
+  const mx1=w*0.1,mx2=w*0.9,my=h/2;
+  [[mx1,'#06b6d4'],[mx2,'#06b6d4']].forEach(([x,c])=>{
+    ctx.strokeStyle=c;ctx.lineWidth=4;
+    ctx.beginPath();ctx.moveTo(x,my-30);ctx.lineTo(x,my+30);ctx.stroke();
+  });
+  // Bouncing beams
+  const t=Date.now()*0.003;
+  for(let b=0;b<6;b++){
+    const phase=b*0.5;
+    const bright=0.3+0.7*(b/5);
+    ctx.strokeStyle=`rgba(6,182,212,${bright})`;
+    ctx.lineWidth=1.5;ctx.shadowBlur=4;ctx.shadowColor='#06b6d4';
+    ctx.beginPath();
+    const bx=mx1+(mx2-mx1)*((Math.sin(t+phase)+1)/2);
+    const by=my-8+b*3;
+    ctx.moveTo(mx1+2,by);ctx.lineTo(bx,by);ctx.stroke();
+  }
+  ctx.shadowBlur=0;
+  ctx.fillStyle='#475569';ctx.font='9px Inconsolata';
+  ctx.fillText('Cavidad Fabry-Pérot: luz rebota ~280 veces → amplifica sensibilidad',10,h-6);
+}
+
+let ligoAnimId=null;
+document.getElementById('btn-ligo-signal').addEventListener('click',()=>{
+  ligoSignal=true;
+  if(!ligoAnimId)ligoAnimId=setInterval(()=>{ligoT++;drawLIGO();},40);
+});
+document.getElementById('btn-ligo-noise').addEventListener('click',()=>{
+  ligoSignal=false;
+  if(!ligoAnimId)ligoAnimId=setInterval(()=>{ligoT++;drawLIGO();},40);
+});
+
+function initLIGO(){drawLIGO();drawFabry();}
+
+// ═══════════════ BLACK HOLE ═══════════════
+let mergerT=0,mergerRunning=false,mergerAnimId=null;
+
+function drawMerger(){
+  const canvas=resC('c-merger');if(!canvas)return;
+  const {width:w,height:h}=canvas,ctx=canvas.getContext('2d');
+  bg(ctx,w,h);grid(ctx,w,h);axis(ctx,w,h);
+
+  const t=mergerT;
+  ctx.strokeStyle='#ec4899';ctx.lineWidth=2;
+  ctx.shadowBlur=8;ctx.shadowColor='#ec4899';
+  ctx.beginPath();
+  for(let i=0;i<w;i++){
+    const x=i/w*30-t*0.05;
+    // Chirp signal approximation
+    const env=Math.max(0,1-Math.abs(x-15)/12);
+    const freqMod=1+Math.pow(Math.max(0,x-10),2)*0.3;
+    const ring=x>15?Math.exp(-(x-15)*0.4):0;
+    const y=h/2-(env*Math.sin(x*freqMod*1.5)+ring*Math.sin(x*3)*0.4)*(h/2-14);
+    i===0?ctx.moveTo(i,y):ctx.lineTo(i,y);
+  }
+  ctx.stroke();ctx.shadowBlur=0;
+
+  // Phase labels
+  ctx.font='9px Inconsolata';
+  [['Inspiral',0.15],['Merger',0.55],['Ringdown',0.8]].forEach(([lbl,px])=>{
+    ctx.fillStyle='#ec489988';
+    ctx.fillText(lbl,px*w,14);
+  });
+}
+
+function drawRingdown(){
+  const canvas=resC('c-ringdown');if(!canvas)return;
+  const {width:w,height:h}=canvas,ctx=canvas.getContext('2d');
+  bg(ctx,w,h);grid(ctx,w,h);axis(ctx,w,h);
+  const mass=parseInt(document.getElementById('bh-mass')?.value||30);
+  const freq=500/mass; // lower mass = higher freq
+  const decay=0.08;
+  ctx.strokeStyle='#ec4899';ctx.lineWidth=2;
+  ctx.shadowBlur=8;ctx.shadowColor='#ec4899';
+  ctx.beginPath();
+  for(let i=0;i<w;i++){
+    const t=i/w*20;
+    const y=h/2-Math.exp(-decay*t)*Math.sin(freq*t)*(h/2-12);
+    i===0?ctx.moveTo(i,y):ctx.lineTo(i,y);
+  }
+  ctx.stroke();ctx.shadowBlur=0;
+  ctx.fillStyle='#ec489988';ctx.font='9px Inconsolata';
+  ctx.fillText(`Frecuencia: ~${(freq*10).toFixed(0)} Hz | Masa: ${mass} M☉`,10,h-6);
+}
+
+document.getElementById('btn-merger').addEventListener('click',()=>{
+  mergerRunning=true;
+  clearInterval(mergerAnimId);
+  mergerAnimId=setInterval(()=>{mergerT+=0.5;drawMerger();},40);
+});
+document.getElementById('btn-merger-stop').addEventListener('click',()=>{
+  mergerRunning=false;clearInterval(mergerAnimId);
+});
+document.getElementById('bh-mass')?.addEventListener('input',function(){
+  document.getElementById('bh-mass-val').textContent=this.value+' M☉';
+  drawRingdown();
+});
+
+function initBH(){drawMerger();drawRingdown();}
+
+// ═══════════════ PARTÍCULAS ═══════════════
+let currentParticle='higgs';
+const particles={
+  higgs:{mass:125,width:4,color:'#84cc16',label:'Bosón de Higgs (125 GeV)'},
+  z:    {mass:91, width:2.5,color:'#06b6d4',label:'Bosón Z (91 GeV)'},
+  top:  {mass:173,width:15,color:'#f59e0b',label:'Quark Top (173 GeV)'},
+};
+
+function breitWigner(E,M,G){
+  return (G*G/4)/((E-M)*(E-M)+(G*G/4));
+}
+
+function drawHiggs(){
+  const canvas=resC('c-higgs');if(!canvas)return;
+  const {width:w,height:h}=canvas,ctx=canvas.getContext('2d');
+  bg(ctx,w,h);grid(ctx,w,h);
+  const p=particles[currentParticle];
+  const Emin=p.mass-p.width*8,Emax=p.mass+p.width*8;
+  const N=w;
+  // Background noise
+  ctx.strokeStyle='#1a3a2a';ctx.lineWidth=1;ctx.beginPath();
+  for(let i=0;i<N;i++){
+    const x=(i/N)*w;
+    const y=h-20-(Math.random()*15+5);
+    i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+  }ctx.stroke();
+  // Signal
+  const grad=ctx.createLinearGradient(0,0,0,h);
+  grad.addColorStop(0,p.color);grad.addColorStop(1,p.color+'22');
+  ctx.fillStyle=grad;ctx.beginPath();
+  ctx.moveTo(0,h-20);
+  for(let i=0;i<N;i++){
+    const E=Emin+(i/N)*(Emax-Emin);
+    const bw=breitWigner(E,p.mass,p.width);
+    const noise=Math.random()*0.05;
+    const x=(i/N)*w;
+    const y=h-20-(bw+noise)*(h-40)*0.85;
+    ctx.lineTo(x,y);
+  }
+  ctx.lineTo(w,h-20);ctx.closePath();ctx.fill();
+  // Outline
+  ctx.strokeStyle=p.color;ctx.lineWidth=2;ctx.shadowBlur=8;ctx.shadowColor=p.color;
+  ctx.beginPath();
+  for(let i=0;i<N;i++){
+    const E=Emin+(i/N)*(Emax-Emin);
+    const bw=breitWigner(E,p.mass,p.width);
+    const x=(i/N)*w;
+    const y=h-20-bw*(h-40)*0.85;
+    i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+  }ctx.stroke();ctx.shadowBlur=0;
+  // Label
+  ctx.fillStyle=p.color;ctx.font='11px Inconsolata';
+  ctx.fillText(`↑ ${p.label}`,w/2-80,30);
+  // Axes labels
+  ctx.fillStyle='#475569';ctx.font='9px Inconsolata';
+  ctx.fillText(`${Emin.toFixed(0)} GeV`,4,h-4);
+  ctx.fillText(`${Emax.toFixed(0)} GeV`,w-50,h-4);
+  ctx.fillText('Energía de colisión (GeV)',w/2-60,h-4);
+}
+
+function drawBreitWigner(){
+  const canvas=resC('c-breit');if(!canvas)return;
+  const {width:w,height:h}=canvas,ctx=canvas.getContext('2d');
+  bg(ctx,w,h);grid(ctx,w,h);
+  const colors=['#84cc16','#06b6d4','#f59e0b'];
+  const widths=[1,4,12];
+  widths.forEach((gw,idx)=>{
+    ctx.strokeStyle=colors[idx];ctx.lineWidth=2;
+    ctx.beginPath();
+    for(let i=0;i<w;i++){
+      const E=(i/w)*40-20;
+      const bw=breitWigner(E,0,gw);
+      const x=i;const y=h-10-bw*(h-20)*gw*0.6;
+      i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+    }ctx.stroke();
+    ctx.fillStyle=colors[idx];ctx.font='9px Inconsolata';
+    ctx.fillText(['Vida larga Δ angosto','Vida media','Vida corta Δ ancho'][idx],10+idx*160,h-4);
+  });
+}
+
+document.querySelectorAll('#particle-pills .pill2').forEach(p=>{
+  p.addEventListener('click',()=>{
+    document.querySelectorAll('#particle-pills .pill2').forEach(x=>x.classList.remove('on'));
+    p.classList.add('on');
+    currentParticle=p.dataset.p;
+    drawHiggs();
+  });
+});
+
+function initParticulas(){drawHiggs();drawBreitWigner();}
+
+// ═══════════════ UNIFICACIÓN ═══════════════
+function drawMapa(){
+  const canvas=resC('c-mapa');if(!canvas)return;
+  const {width:w,height:h}=canvas,ctx=canvas.getContext('2d');
+  bg(ctx,w,h);
+
+  const nodes=[
+    {x:w/2,y:h*0.5,r:30,c:'#3b82f6',lbl:'ONDAS',bold:true},
+    {x:w*0.12,y:h*0.25,r:22,c:'#f59e0b',lbl:'GPS'},
+    {x:w*0.88,y:h*0.25,r:22,c:'#06b6d4',lbl:'LIGO'},
+    {x:w*0.15,y:h*0.78,r:22,c:'#ec4899',lbl:'Agujero\nnegro'},
+    {x:w*0.85,y:h*0.78,r:22,c:'#84cc16',lbl:'Partículas'},
+    {x:w*0.5,y:h*0.08,r:18,c:'#a78bfa',lbl:'Fourier'},
+  ];
+  const edges=[[0,1],[0,2],[0,3],[0,4],[0,5],[1,5],[2,3],[3,4],[1,2]];
+  edges.forEach(([a,b])=>{
+    const n1=nodes[a],n2=nodes[b];
+    const g=ctx.createLinearGradient(n1.x,n1.y,n2.x,n2.y);
+    g.addColorStop(0,n1.c+'66');g.addColorStop(1,n2.c+'66');
+    ctx.beginPath();ctx.strokeStyle=g;ctx.lineWidth=1.5;ctx.setLineDash([5,4]);
+    ctx.moveTo(n1.x,n1.y);ctx.lineTo(n2.x,n2.y);ctx.stroke();ctx.setLineDash([]);
+  });
+  nodes.forEach(n=>{
+    ctx.beginPath();ctx.arc(n.x,n.y,n.r,0,Math.PI*2);
+    ctx.fillStyle=n.c+'1a';ctx.fill();
+    ctx.strokeStyle=n.c;ctx.lineWidth=2;ctx.shadowBlur=14;ctx.shadowColor=n.c;
+    ctx.stroke();ctx.shadowBlur=0;
+    ctx.fillStyle=n.bold?'#fff':n.c;
+    ctx.font=`${n.bold?'bold ':''}${n.bold?13:10}px Inconsolata`;
+    ctx.textAlign='center';ctx.textBaseline='middle';
+    const lines=n.lbl.split('\n');
+    lines.forEach((l,i)=>ctx.fillText(l,n.x,n.y+(i-(lines.length-1)/2)*12));
+  });
+  ctx.textAlign='left';ctx.textBaseline='alphabetic';
+  ctx.fillStyle='#475569';ctx.font='9px Inconsolata';
+  ctx.textAlign='center';
+  ctx.fillText('La interferencia constructiva/destructiva conecta todo',w/2,h-4);
+}
+
+function initUnif(){drawMapa();}
+
+window.addEventListener('resize',()=>{
+  const active=document.querySelector('section.on')?.id;
+  ({gps:initGPS,ligo:initLIGO,blackhole:initBH,particulas:initParticulas,unificacion:initUnif})[active]?.();
+});
+</script>
+</body>
+</html>
