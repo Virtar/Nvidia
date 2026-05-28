@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Laboratorio de Atención Selectiva — Efecto Stroop</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #04040c;
+    --panel: #08081a;
+    --border: #1a1a35;
+    --cyan: #00ffc8;
+    --gold: #ffd700;
+    --rose: #ff4d6d;
+    --blue: #3b82f6;
+    --text: #c8c8e8;
+    --muted: #5a5a8a;
+    --font-mono: 'Share Tech Mono', monospace;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-mono);
+    padding: 20px;
+    max-width: 650px;
+    margin: 0 auto;
+  }
+
+  .section-sub {
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+  .section-title {
+    font-size: clamp(22px, 5vw, 32px);
+    color: #fff;
+    margin-bottom: 18px;
+    letter-spacing: 0.04em;
+  }
+
+  .insight {
+    background: #06100e;
+    border: 1px solid #00ffc822;
+    border-left: 3px solid var(--cyan);
+    border-radius: 8px;
+    padding: 14px 16px;
+    font-size: 13px;
+    color: #aac;
+    line-height: 1.6;
+    margin-bottom: 16px;
+  }
+
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 16px;
+    text-align: center;
+  }
+  .card-label {
+    font-size: 10px;
+    letting-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 12px;
+    text-align: left;
+  }
+
+  /* TEST INTERFACE */
+  #word-display {
+    font-size: 48px;
+    font-weight: 900;
+    margin: 30px 0;
+    letter-spacing: 2px;
+    min-height: 60px;
+    text-transform: uppercase;
+    text-shadow: 0 0 15px rgba(255,255,255,0.1);
+    transition: transform 0.1s ease;
+  }
+
+  .btn {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    padding: 10px 20px;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.15s;
+    text-transform: uppercase;
+    font-weight: 700;
+  }
+  .btn-start { background: var(--cyan); color: var(--bg); width: 100%; max-width: 200px; }
+  .btn-start:hover { filter: brightness(1.2); box-shadow: 0 0 12px #00ffc844; }
+
+  .color-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    max-width: 400px;
+    margin: 20px auto 10px;
+  }
+  .color-btn {
+    padding: 14px;
+    font-size: 14px;
+    color: #fff;
+    border: 1px solid var(--border);
+    background: #0d0d26;
+    border-radius: 6px;
+    cursor: pointer;
+    font-family: var(--font-mono);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    transition: all 0.2s;
+  }
+  .color-btn:hover { border-color: #444; background: #121235; }
+  
+  /* METRICS */
+  .grid-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+  .stat-box {
+    background: #0a0a18; border: 1px solid var(--border);
+    border-radius: 8px; padding: 12px; text-align: center;
+  }
+  .stat-val { font-size: 20px; font-weight: 700; color: #fff; }
+  .stat-lbl { font-size: 9px; color: var(--muted); margin-top: 3px; letter-spacing: 0.1em; }
+
+  #game-zone, #results-zone { display: none; }
+</style>
+</head>
+<body>
+
+  <div class="section-sub">Métricas Cognitivas</div>
+  <h1 class="section-title">Filtro de Interferencia Cerebral</h1>
+
+  <div class="insight">
+    <span style="color:var(--cyan); font-weight:700">El Ruido del Significado:</span>
+    Tu cerebro lee las palabras de forma automática más rápido de lo que procesa los colores. Cuando el texto y su color no coinciden, se genera una colisión de información en tu corteza prefrontal. ¡Medí tu capacidad de filtrado!
+  </div>
+
+  <div class="grid-stats">
+    <div class="stat-box">
+      <div class="stat-val" id="stat-score">0/15</div>
+      <div class="stat-lbl">Progreso</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-val" id="stat-time" style="color:var(--gold)">0.00s</div>
+      <div class="stat-lbl">Tiempo Promedio</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-val" id="stat-errors" style="color:var(--rose)">0</div>
+      <div class="stat-lbl">Errores</div>
+    </div>
+  </div>
+
+  <div class="card" style="min-height: 280px; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+    
+    <div id="lobby-zone">
+      <p style="font-size: 13px; color: var(--text); margin-bottom: 20px; line-height: 1.5;">
+        REGLA CRÍTICA:<br>
+        Presioná el botón correspondiente al <strong style="color:var(--cyan)">COLOR DE LA TINTA</strong>.<br>
+        Ignorá por completo lo que dice el texto de la palabra.
+      </p>
+      <button class="btn btn-start" id="btn-start-test">Iniciar Test</button>
+    </div>
+
+    <div id="game-zone" style="width: 100%;">
+      <div class="card-label">Identificá el color de la tinta:</div>
+      <div id="word-display">ROJO</div>
+      
+      <div class="color-grid">
+        <button class="color-btn" data-color="cyan" style="box-shadow: inset 0 0 8px rgba(0,255,200,0.15)">Cian</button>
+        <button class="color-btn" data-color="gold" style="box-shadow: inset 0 0 8px rgba(255,215,0,0.15)">Amarillo</button>
+        <button class="color-btn" data-color="rose" style="box-shadow: inset 0 0 8px rgba(255,77,109,0.15)">Rosa</button>
+        <button class="color-btn" data-color="blue" style="box-shadow: inset 0 0 8px rgba(59,130,246,0.15)">Azul</button>
+      </div>
+    </div>
+
+    <div id="results-zone">
+      <h3 style="color:var(--gold); margin-bottom: 10px;">Diagnóstico Completado</h3>
+      <p id="feedback-text" style="font-size: 13px; line-height: 1.6; color: #aac; margin-bottom: 15px;"></p>
+      <button class="btn btn-start" id="btn-restart" style="background:transparent; border: 1px solid var(--border); color:var(--text)">Reiniciar</button>
+    </div>
+
+  </div>
+
+<script>
+  // CONFIGURACIÓN DE COLORES MATRICIALES
+  const colorData = {
+    cyan: { hex: '#00ffc8', label: 'Cian' },
+    gold: { hex: '#ffd700', label: 'Amarillo' },
+    rose: { hex: '#ff4d6d', label: 'Rosa' },
+    blue: { hex: '#3b82f6', label: 'Azul' }
+  };
+  const keys = Object.keys(colorData);
+
+  // VARIABLES DE ESTADO DEL JUEGO
+  let currentStep = 0;
+  const totalSteps = 15;
+  let errorCount = 0;
+  let reactionTimes = [];
+  let lastTimestamp = 0;
+  let targetColor = '';
+
+  // ELEMENTOS DEL DOM
+  const lobbyZone = document.getElementById('lobby-zone');
+  const gameZone = document.getElementById('game-zone');
+  const resultsZone = document.getElementById('results-zone');
+  const wordDisplay = document.getElementById('word-display');
+  
+  const statScore = document.getElementById('stat-score');
+  const statTime = document.getElementById('stat-time');
+  const statErrors = document.getElementById('stat-errors');
+  const feedbackText = document.getElementById('feedback-text');
+
+  document.getElementById('btn-start-test').addEventListener('click', startTest);
+  document.getElementById('btn-restart').addEventListener('click', resetTest);
+
+  function startTest() {
+    lobbyZone.style.display = 'none';
+    resultsZone.style.display = 'none';
+    gameZone.style.display = 'block';
+    resetTestVariables();
+    nextQuestion();
+  }
+
+  function resetTestVariables() {
+    currentStep = 0;
+    errorCount = 0;
+    reactionTimes = [];
+    statErrors.textContent = '0';
+    statErrors.style.color = 'var(--muted)';
+    statTime.textContent = '0.00s';
+  }
+
+  function nextQuestion() {
+    if (currentStep >= totalSteps) {
+      endTest();
+      return;
+    }
+    
+    currentStep++;
+    statScore.textContent = `${currentStep}/${totalSteps}`;
+
+    // Generar combinaciones incongruentes (Efecto Stroop)
+    const textIndex = Math.floor(Math.random() * keys.length);
+    let colorIndex = Math.floor(Math.random() * keys.length);
+    
+    // Forzar a que la palabra y el color de la tinta casi nunca coincidan para forzar la interferencia
+    if (textIndex === colorIndex) {
+      colorIndex = (colorIndex + 1) % keys.length;
+    }
+
+    const wordText = colorData[keys[textIndex]].label;
+    targetColor = keys[colorIndex];
+    
+    // Inyectar datos en la interfaz
+    wordDisplay.textContent = wordText;
+    wordDisplay.style.color = colorData[targetColor].hex;
+    wordDisplay.style.transform = 'scale(1)';
+
+    lastTimestamp = performance.now();
+  }
+
+  // EVENTOS PARA LOS BOTONES DE RESPUESTA
+  document.querySelectorAll('.color-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const clickedColor = btn.dataset.color;
+      const now = performance.now();
+      const reactionTime = (now - lastTimestamp) / 1000; // Pasar a segundos
+
+      if (clickedColor === targetColor) {
+        reactionTimes.push(reactionTime);
+        // Pequeño efecto visual de acierto rápido
+        wordDisplay.style.transform = 'scale(0.9)';
+        
+        // Calcular promedio dinámico en tiempo real
+        const sum = reactionTimes.reduce((a, b) => a + b, 0);
+        statTime.textContent = (sum / reactionTimes.length).toFixed(2) + 's';
+        
+        setTimeout(nextQuestion, 100);
+      } else {
+        // ERROR: Penalización cognitiva
+        errorCount++;
+        statErrors.textContent = errorCount;
+        statErrors.style.color = 'var(--rose)';
+        
+        // Feedback visual de error (sacudida o parpadeo del contenedor de la palabra)
+        wordDisplay.style.transform = 'scale(1.1)';
+        setTimeout(() => { wordDisplay.style.transform = 'scale(1)'; }, 100);
+      }
+    });
+  });
+
+  function endTest() {
+    gameZone.style.display = 'none';
+    resultsZone.style.display = 'block';
+
+    const finalSum = reactionTimes.reduce((a, b) => a + b, 0);
+    const avgTime = finalSum / reactionTimes.length;
+
+    // Diagnósticos basados en el rendimiento real del usuario
+    let evaluation = '';
+    if (avgTime < 0.7 && errorCount <= 1) {
+      evaluation = "Filtro prefrontal excepcional. Tu cerebro aísla el ruido semántico con la velocidad y precisión de un procesador de alta gama. Sos inmune a la distracción visual superficial.";
+    } else if (avgTime < 1.1 && errorCount <= 3) {
+      evaluation = "Atención selectiva estable y balanceada. Lográs resolver el conflicto cognitivo en tiempos estándar de desarrollo. Tu cerebro procesa y descarta el ruido de manera eficiente.";
+    } else {
+      evaluation = "Saturación de interferencia detectada. El significado automático de las palabras está logrando quebrar tus variables de control visual. Tu cerebro está procesando el ruido de fondo por encima de la señal limpia.";
+    }
+
+    feedbackText.innerHTML = `<strong>Tiempo Promedio:</strong> ${avgTime.toFixed(2)} segundos por respuesta.<br><strong>Errores Cometidos:</strong> ${errorCount}.<br><br>${evaluation}`;
+  }
+
+  function resetTest() {
+    resultsZone.style.display = 'none';
+    lobbyZone.style.display = 'block';
+    statScore.textContent = `0/${totalSteps}`;
+    statTime.textContent = '0.00s';
+    statErrors.textContent = '0';
+  }
+</script>
+</body>
+</html>
