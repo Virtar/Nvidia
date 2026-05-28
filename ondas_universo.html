@@ -1,0 +1,1044 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>El Universo en Ondas</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #04040c;
+    --panel: #08081a;
+    --border: #1a1a35;
+    --cyan: #00ffc8;
+    --gold: #ffd700;
+    --rose: #ff4d6d;
+    --violet: #a78bfa;
+    --orange: #fb923c;
+    --text: #c8c8e8;
+    --muted: #5a5a8a;
+    --font-head: 'Cinzel', serif;
+    --font-mono: 'Share Tech Mono', monospace;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-mono);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* STARFIELD */
+  #stars {
+    position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    overflow: hidden;
+  }
+  .star {
+    position: absolute;
+    border-radius: 50%;
+    background: white;
+    animation: twinkle var(--d) infinite alternate;
+  }
+  @keyframes twinkle {
+    from { opacity: var(--lo); transform: scale(1); }
+    to   { opacity: var(--hi); transform: scale(1.4); }
+  }
+
+  /* NAV */
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(4,4,12,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 20px;
+    display: flex; align-items: center; gap: 6px;
+    height: 52px;
+    overflow-x: auto;
+  }
+  .nav-btn {
+    background: transparent;
+    border: 1px solid transparent;
+    color: var(--muted);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    padding: 5px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s;
+    text-transform: uppercase;
+  }
+  .nav-btn:hover { color: var(--text); border-color: var(--border); }
+  .nav-btn.active {
+    color: var(--bg);
+    background: var(--accent, var(--cyan));
+    border-color: var(--accent, var(--cyan));
+  }
+
+  /* SECTIONS */
+  section {
+    display: none;
+    position: relative; z-index: 1;
+    min-height: calc(100vh - 52px);
+    padding: 40px 20px;
+    max-width: 780px;
+    margin: 0 auto;
+  }
+  section.active { display: block; }
+
+  .section-title {
+    font-family: var(--font-head);
+    font-size: clamp(22px, 5vw, 36px);
+    color: #fff;
+    margin-bottom: 6px;
+    letter-spacing: 0.06em;
+  }
+  .section-sub {
+    font-size: 12px;
+    color: var(--muted);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 28px;
+  }
+
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 18px;
+    margin-bottom: 16px;
+  }
+  .card-label {
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 10px;
+  }
+
+  canvas {
+    width: 100%;
+    border-radius: 6px;
+    display: block;
+    background: #050510;
+  }
+
+  /* BUTTONS */
+  .btn {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    padding: 8px 18px;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.18s;
+    text-transform: uppercase;
+  }
+  .btn-primary { background: var(--cyan); color: var(--bg); font-weight: 700; }
+  .btn-primary:hover { filter: brightness(1.15); }
+  .btn-ghost { background: transparent; color: var(--muted); border: 1px solid var(--border); }
+  .btn-ghost:hover { color: var(--text); border-color: #333; }
+  .btn-gold { background: var(--gold); color: var(--bg); font-weight: 700; }
+  .btn-rose { background: var(--rose); color: #fff; font-weight: 700; }
+  .btn-violet { background: var(--violet); color: var(--bg); font-weight: 700; }
+
+  .row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 12px; }
+
+  .pill {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: var(--panel); border: 1px solid var(--border);
+    border-radius: 20px; padding: 4px 12px;
+    font-size: 11px; cursor: pointer; transition: all 0.2s;
+  }
+  .pill.active { border-color: var(--accent, var(--cyan)); color: var(--accent, var(--cyan)); }
+  .pill:hover { border-color: #444; }
+
+  .stat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 10px; margin-bottom: 16px;
+  }
+  .stat-box {
+    background: #0a0a18; border: 1px solid var(--border);
+    border-radius: 8px; padding: 12px; text-align: center;
+  }
+  .stat-val { font-size: 22px; font-weight: 700; color: #fff; }
+  .stat-lbl { font-size: 10px; color: var(--muted); margin-top: 3px; letter-spacing: 0.1em; }
+
+  .insight {
+    background: #06100e;
+    border: 1px solid #00ffc822;
+    border-left: 3px solid var(--cyan);
+    border-radius: 8px;
+    padding: 14px 16px;
+    font-size: 12px;
+    color: #aac;
+    line-height: 1.7;
+    margin: 14px 0;
+  }
+  .insight.gold  { background: #100e00; border-color: #ffd70022; border-left-color: var(--gold); }
+  .insight.rose  { background: #100008; border-color: #ff4d6d22; border-left-color: var(--rose); }
+  .insight.violet{ background: #0e0812; border-color: #a78bfa22; border-left-color: var(--violet); }
+
+  .tag { font-size: 10px; padding: 2px 8px; border-radius: 10px; font-weight: 700; }
+  .tag-cyan   { background: #00ffc822; color: var(--cyan); }
+  .tag-gold   { background: #ffd70022; color: var(--gold); }
+  .tag-rose   { background: #ff4d6d22; color: var(--rose); }
+  .tag-violet { background: #a78bfa22; color: var(--violet); }
+
+  /* SPECTRUM BARS */
+  #spectrum-bars {
+    display: flex; gap: 5px; align-items: flex-end;
+    height: 90px; padding: 0 4px;
+  }
+  .spec-bar-wrap { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; }
+  .spec-bar-outer { width: 100%; height: 70px; background: #0a0a18; border-radius: 3px; position: relative; overflow: hidden; }
+  .spec-bar-inner {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    transition: height 0.4s cubic-bezier(.34,1.56,.64,1);
+    border-radius: 3px 3px 0 0;
+  }
+  .spec-bar-lbl { font-size: 9px; color: var(--muted); }
+
+  /* GROVER probability display */
+  #grover-prob-display {
+    font-size: 48px; font-weight: 700; text-align: center;
+    color: var(--cyan); font-family: var(--font-mono);
+    letter-spacing: -2px; margin: 8px 0;
+    transition: color 0.3s;
+  }
+
+  /* HEISENBERG sliders */
+  .slider-wrap { display: flex; align-items: center; gap: 12px; margin: 8px 0; }
+  .slider-wrap label { font-size: 11px; color: var(--muted); min-width: 90px; }
+  input[type=range] {
+    flex: 1; accent-color: var(--cyan);
+    height: 4px; cursor: pointer;
+  }
+  .slider-val { font-size: 13px; color: #fff; min-width: 40px; text-align: right; }
+
+  /* ECM molecules */
+  .molecule-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 10px; margin: 12px 0;
+  }
+  .molecule-card {
+    background: #0a0a1a; border: 1px solid var(--border);
+    border-radius: 8px; padding: 12px; text-align: center;
+    cursor: pointer; transition: all 0.2s;
+  }
+  .molecule-card:hover, .molecule-card.active {
+    border-color: var(--mol-color, var(--cyan));
+    box-shadow: 0 0 12px var(--mol-color, var(--cyan))44;
+  }
+  .molecule-icon { font-size: 24px; margin-bottom: 6px; }
+  .molecule-name { font-size: 12px; font-weight: 700; color: #fff; margin-bottom: 3px; }
+  .molecule-desc { font-size: 10px; color: var(--muted); line-height: 1.4; }
+
+  /* CONNECTIONS map */
+  .conn-map { position: relative; }
+
+  @keyframes fadeIn { from { opacity:0; transform: translateY(12px); } to { opacity:1; transform: none; } }
+  .fade-in { animation: fadeIn 0.4s ease forwards; }
+
+  @keyframes pulse-glow {
+    0%, 100% { box-shadow: 0 0 0 0 transparent; }
+    50% { box-shadow: 0 0 20px 4px var(--glow, #00ffc844); }
+  }
+  .pulse { animation: pulse-glow 2s infinite; --glow: #00ffc844; }
+</style>
+</head>
+<body>
+
+<div id="stars"></div>
+
+<!-- NAV -->
+<nav>
+  <button class="nav-btn active" data-section="fourier" style="--accent: var(--cyan)">⟿ Fourier</button>
+  <button class="nav-btn" data-section="grover" style="--accent: var(--gold)">◈ Grover</button>
+  <button class="nav-btn" data-section="heisenberg" style="--accent: var(--violet)">≈ Heisenberg</button>
+  <button class="nav-btn" data-section="ecm" style="--accent: var(--rose)">✦ ECM · DMT</button>
+  <button class="nav-btn" data-section="conexion" style="--accent: var(--orange)">∞ Conexión</button>
+</nav>
+
+<!-- ══════════════════════════════════════════
+     SECTION 1: FOURIER
+══════════════════════════════════════════ -->
+<section id="fourier" class="active">
+  <div class="section-sub">Matemática de las ondas</div>
+  <h1 class="section-title">Transformada de Fourier</h1>
+
+  <div class="insight">
+    <span style="color:var(--cyan); font-weight:700">La idea central:</span>
+    Cualquier señal compleja del universo — sonido, luz, materia — es la <em>suma de ondas simples</em>.
+    Fourier las separa y muestra cuánto hay de cada frecuencia.
+  </div>
+
+  <div class="card">
+    <div class="card-label">Preset de señal</div>
+    <div class="row" id="fourier-presets" style="margin-top:0">
+      <span class="pill active" data-preset="0" style="--accent:var(--cyan)">Onda pura</span>
+      <span class="pill" data-preset="1" style="--accent:var(--cyan)">Dos frecuencias</span>
+      <span class="pill" data-preset="2" style="--accent:var(--cyan)">Acorde musical</span>
+      <span class="pill" data-preset="3" style="--accent:var(--cyan)">Onda cuadrada</span>
+    </div>
+    <div id="fourier-desc" style="font-size:11px;color:var(--muted);margin-top:10px">Una sola frecuencia → un solo pico en el espectro</div>
+  </div>
+
+  <div class="card">
+    <div class="card-label">Señal combinada</div>
+    <canvas id="c-signal" height="130"></canvas>
+  </div>
+
+  <div style="text-align:center; font-size:18px; color:var(--gold); letter-spacing:4px; margin:4px 0">
+    ↓ &nbsp; Transformada de Fourier &nbsp; ↓
+  </div>
+
+  <div class="card">
+    <div class="card-label">Espectro de frecuencias — cada barra es una onda simple</div>
+    <div id="spectrum-bars"></div>
+  </div>
+
+  <div class="card" style="display:grid; grid-template-columns:1fr 1fr; gap:10px">
+    <div>
+      <div style="font-size:11px; color:var(--gold); margin-bottom:4px">🎵 Audio</div>
+      <div style="font-size:11px; color:var(--muted)">Ecualizadores, compresión MP3, síntesis de voz</div>
+    </div>
+    <div>
+      <div style="font-size:11px; color:var(--violet); margin-bottom:4px">📡 WiFi / 5G</div>
+      <div style="font-size:11px; color:var(--muted)">Multiplexado de señales en frecuencias distintas</div>
+    </div>
+    <div>
+      <div style="font-size:11px; color:var(--cyan); margin-bottom:4px">🧠 Cerebro</div>
+      <div style="font-size:11px; color:var(--muted)">La cóclea hace Fourier biológico en tiempo real</div>
+    </div>
+    <div>
+      <div style="font-size:11px; color:var(--rose); margin-bottom:4px">⚛️ Cuántica</div>
+      <div style="font-size:11px; color:var(--muted)">Posición y momento son un par de Fourier</div>
+    </div>
+  </div>
+
+  <div class="row">
+    <button class="btn btn-primary" id="btn-animate-fourier">▶ Construir onda</button>
+    <button class="btn btn-ghost" id="btn-components">◈ Mostrar componentes</button>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     SECTION 2: GROVER
+══════════════════════════════════════════ -->
+<section id="grover">
+  <div class="section-sub">Búsqueda cuántica</div>
+  <h1 class="section-title" style="color:var(--gold)">Algoritmo de Grover</h1>
+
+  <div class="insight gold">
+    <span style="color:var(--gold); font-weight:700">La esencia:</span>
+    No prueba cada opción una por una.
+    Usa <em>interferencia cuántica</em> para amplificar la respuesta correcta y cancelar las incorrectas —
+    en solo √N pasos.
+  </div>
+
+  <div class="stat-grid">
+    <div class="stat-box">
+      <div class="stat-val" id="g-N" style="color:var(--gold)">1000</div>
+      <div class="stat-lbl">Cajones (N)</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-val" id="g-classic">500</div>
+      <div class="stat-lbl">Clásico (N/2)</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-val" id="g-quantum" style="color:var(--cyan)">~32</div>
+      <div class="stat-lbl">Grover (√N)</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-val" id="g-speedup" style="color:var(--rose)">16x</div>
+      <div class="stat-lbl">Ventaja</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-label">Cajones (N) — arrastrá el slider</div>
+    <div class="slider-wrap">
+      <label>N = cajones</label>
+      <input type="range" id="grover-n" min="10" max="10000" value="1000" step="10">
+      <span class="slider-val" id="grover-n-val">1000</span>
+    </div>
+    <div id="grover-prob-display">99.2%</div>
+    <div style="font-size:11px; color:var(--muted); text-align:center">Probabilidad en la ronda óptima</div>
+  </div>
+
+  <div class="card">
+    <div class="card-label">Probabilidad por ronda — la ola sinusoidal</div>
+    <canvas id="c-grover" height="200"></canvas>
+    <div class="row">
+      <button class="btn btn-gold" id="btn-grover-anim">▶ Animar búsqueda</button>
+      <button class="btn btn-ghost" id="btn-grover-stop">■ Parar</button>
+    </div>
+  </div>
+
+  <div class="insight gold">
+    <span style="color:var(--gold); font-weight:700">¿Por qué √N?</span>
+    Cada ronda rota el estado cuántico un ángulo θ ≈ 1/√N.
+    Para llegar a 90° (probabilidad máxima) necesitás exactamente 90°/θ ≈ √N pasos.
+    Si seguís más allá, la ola baja — como un péndulo al que empujás de más.
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     SECTION 3: HEISENBERG
+══════════════════════════════════════════ -->
+<section id="heisenberg">
+  <div class="section-sub">Principio de incertidumbre</div>
+  <h1 class="section-title" style="color:var(--violet)">Heisenberg</h1>
+
+  <div class="insight violet">
+    <span style="color:var(--violet); font-weight:700">La esencia:</span>
+    No podés conocer con precisión absoluta la posición Y el momento de una partícula al mismo tiempo.
+    No es un límite tecnológico — es la naturaleza de la realidad.
+    Y viene de la misma matemática que Fourier.
+  </div>
+
+  <div class="card">
+    <div class="card-label">Jugá con la incertidumbre — observá la ola</div>
+    <div class="slider-wrap">
+      <label style="color:var(--cyan)">Δx — posición</label>
+      <input type="range" id="h-pos" min="1" max="100" value="20">
+      <span class="slider-val" id="h-pos-val" style="color:var(--cyan)">20</span>
+    </div>
+    <div class="slider-wrap">
+      <label style="color:var(--rose)">Δp — momento</label>
+      <input type="range" id="h-mom" min="1" max="100" value="80" disabled style="opacity:0.5">
+      <span class="slider-val" id="h-mom-val" style="color:var(--rose)">80</span>
+    </div>
+    <div style="font-size:10px; color:var(--muted); margin-bottom:10px">
+      El momento se calcula automáticamente: Δx · Δp ≥ ℏ/2
+    </div>
+    <canvas id="c-heisenberg" height="180"></canvas>
+  </div>
+
+  <div class="card" style="display:grid; grid-template-columns:1fr 1fr; gap:16px">
+    <div>
+      <div style="color:var(--violet); font-size:12px; font-weight:700; margin-bottom:8px">Onda concentrada</div>
+      <div style="font-size:11px; color:var(--muted); line-height:1.6">
+        Posición muy precisa<br>
+        → Frecuencias dispersas<br>
+        → Momento muy incierto
+      </div>
+    </div>
+    <div>
+      <div style="color:var(--gold); font-size:12px; font-weight:700; margin-bottom:8px">Onda difusa</div>
+      <div style="font-size:11px; color:var(--muted); line-height:1.6">
+        Posición incierta<br>
+        → Una sola frecuencia<br>
+        → Momento muy preciso
+      </div>
+    </div>
+  </div>
+
+  <div class="insight violet">
+    <span style="color:var(--violet); font-weight:700">Conexión con Fourier:</span>
+    La Transformada de Fourier dice que una ola muy localizada en el tiempo requiere MUCHAS frecuencias.
+    Una sola frecuencia se extiende infinita en el tiempo.
+    Posición ↔ momento son exactamente ese par. La incertidumbre no es un error de medición — <em>es geometría de ondas.</em>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     SECTION 4: ECM / DMT
+══════════════════════════════════════════ -->
+<section id="ecm">
+  <div class="section-sub">Neurociencia extrema</div>
+  <h1 class="section-title" style="color:var(--rose)">ECM · DMT</h1>
+
+  <div class="insight rose">
+    <span style="color:var(--rose); font-weight:700">La pregunta:</span>
+    Cuando el cerebro está al borde de la muerte, libera una tormenta química extraordinaria.
+    Las experiencias resultantes son casi idénticas en personas de todo el mundo.
+    ¿El cerebro <em>genera</em> la consciencia... o la <em>recibe</em>?
+  </div>
+
+  <div class="card">
+    <div class="card-label">La química del límite — tocá cada molécula</div>
+    <div class="molecule-grid" id="molecule-grid">
+      <div class="molecule-card" data-mol="dmt" style="--mol-color:var(--rose)">
+        <div class="molecule-icon">🌀</div>
+        <div class="molecule-name">DMT</div>
+        <div class="molecule-desc">N,N-Dimetiltriptamina<br>Producida por tu propio cerebro</div>
+      </div>
+      <div class="molecule-card" data-mol="sero" style="--mol-color:var(--violet)">
+        <div class="molecule-icon">⚡</div>
+        <div class="molecule-name">Serotonina</div>
+        <div class="molecule-desc">Regula percepción y estados de consciencia</div>
+      </div>
+      <div class="molecule-card" data-mol="dopa" style="--mol-color:var(--gold)">
+        <div class="molecule-icon">✨</div>
+        <div class="molecule-name">Dopamina</div>
+        <div class="molecule-desc">Sensación de trascendencia y significado extremo</div>
+      </div>
+      <div class="molecule-card" data-mol="endo" style="--mol-color:var(--cyan)">
+        <div class="molecule-icon">🌊</div>
+        <div class="molecule-name">Endorfinas</div>
+        <div class="molecule-desc">Calma paradójica y ausencia total de dolor</div>
+      </div>
+    </div>
+    <div id="mol-detail" class="insight rose" style="display:none; font-size:12px"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-label">ECM vs DMT — similitudes y diferencias</div>
+    <canvas id="c-ecm" height="200"></canvas>
+  </div>
+
+  <div class="card">
+    <div class="card-label">Las dos interpretaciones</div>
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px">
+      <div style="background:#0d0814; border:1px solid #ff4d6d33; border-radius:8px; padding:14px">
+        <div style="color:var(--rose); font-weight:700; font-size:12px; margin-bottom:8px">🔬 Materialista</div>
+        <div style="font-size:11px; color:var(--muted); line-height:1.6">
+          El cerebro genera química extrema al morir.
+          Las ECM son alucinaciones muy sofisticadas.
+          El DMT las replica artificialmente.
+        </div>
+      </div>
+      <div style="background:#100808; border:1px solid #ffd70033; border-radius:8px; padding:14px">
+        <div style="color:var(--gold); font-weight:700; font-size:12px; margin-bottom:8px">🌌 Trascendental</div>
+        <div style="font-size:11px; color:var(--muted); line-height:1.6">
+          El DMT es la llave biológica para acceder a otra dimensión.
+          La muerte no es un apagón — es una puerta.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     SECTION 5: CONEXIÓN
+══════════════════════════════════════════ -->
+<section id="conexion">
+  <div class="section-sub">El hilo profundo</div>
+  <h1 class="section-title" style="color:var(--orange)">Todo es ondas</h1>
+
+  <div class="insight" style="border-left-color:var(--orange); background:#0e0800">
+    <span style="color:var(--orange); font-weight:700">La conexión profunda:</span>
+    Fourier, Grover, Heisenberg, el cerebro y el universo comparten una esencia:
+    son todos sistemas que <em>amplifican señales correctas y cancelan ruido.</em>
+  </div>
+
+  <canvas id="c-conexion" height="260"></canvas>
+
+  <div class="card" style="margin-top:16px">
+    <div class="card-label">La tabla de equivalencias</div>
+    <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; font-size:11px">
+      <div style="color:var(--muted)">Sistema</div>
+      <div style="color:var(--muted)">Amplifica</div>
+      <div style="color:var(--muted)">Cancela</div>
+
+      <div style="color:var(--cyan)">Fourier</div>
+      <div>Frecuencia correcta</div>
+      <div>Ruido de otras frecuencias</div>
+
+      <div style="color:var(--gold)">Grover</div>
+      <div>Respuesta correcta</div>
+      <div>Opciones incorrectas</div>
+
+      <div style="color:var(--violet)">Heisenberg</div>
+      <div>Precisión en una variable</div>
+      <div>Precisión en la otra</div>
+
+      <div style="color:var(--rose)">Cerebro</div>
+      <div>Señal relevante</div>
+      <div>99.99% del input sensorial</div>
+
+      <div style="color:var(--orange)">ECM / DMT</div>
+      <div>Todo lo filtrado normalmente</div>
+      <div>Los filtros habituales</div>
+    </div>
+  </div>
+
+  <div class="insight" style="border-left-color:var(--orange); background:#0e0800; margin-top:12px">
+    <span style="color:var(--orange); font-weight:700">La pregunta final:</span>
+    Si el universo está escrito en ondas, y la Transformada de Fourier es el idioma que las traduce,
+    y el cerebro humano hace Fourier biológico en tiempo real...
+    ¿es la consciencia la Transformada de Fourier del universo?
+  </div>
+</section>
+
+<script>
+// ══════════════════ STARS ══════════════════
+(function() {
+  const c = document.getElementById('stars');
+  for (let i = 0; i < 120; i++) {
+    const s = document.createElement('div');
+    s.className = 'star';
+    const size = Math.random() * 2 + 0.5;
+    s.style.cssText = `
+      width:${size}px; height:${size}px;
+      left:${Math.random()*100}%; top:${Math.random()*100}%;
+      --lo:${(Math.random()*0.3+0.05).toFixed(2)};
+      --hi:${(Math.random()*0.4+0.4).toFixed(2)};
+      --d:${(Math.random()*4+2).toFixed(1)}s;
+      animation-delay:${(Math.random()*4).toFixed(1)}s;
+    `;
+    c.appendChild(s);
+  }
+})();
+
+// ══════════════════ NAV ══════════════════
+document.querySelectorAll('.nav-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(btn.dataset.section).classList.add('active');
+    if (btn.dataset.section === 'conexion') drawConexion();
+    if (btn.dataset.section === 'ecm') drawECM();
+    if (btn.dataset.section === 'grover') { drawGrover(groverAnim); }
+    if (btn.dataset.section === 'heisenberg') drawHeisenberg();
+    if (btn.dataset.section === 'fourier') drawFourier();
+  });
+});
+
+// ══════════════════ HELPERS ══════════════════
+function resizeCanvas(canvas) {
+  const rect = canvas.parentElement.getBoundingClientRect();
+  const w = Math.min(rect.width - 36, 740);
+  canvas.width = w;
+  return { w, h: canvas.height };
+}
+
+function drawGrid(ctx, w, h, color='#0f0f22') {
+  ctx.strokeStyle = color; ctx.lineWidth = 1;
+  for (let i=0;i<=8;i++) { const x=(w/8)*i; ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,h); ctx.stroke(); }
+  for (let i=0;i<=4;i++) { const y=(h/4)*i; ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(w,y); ctx.stroke(); }
+}
+
+function drawAxis(ctx, w, h) {
+  ctx.strokeStyle = '#2a2a4a'; ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.moveTo(0, h/2); ctx.lineTo(w, h/2); ctx.stroke();
+}
+
+// ══════════════════ FOURIER ══════════════════
+const PRESETS = [
+  { name:'Onda pura', desc:'Una sola frecuencia → un solo pico en el espectro',
+    waves:[{f:2,a:1,c:'#00ffc8'}] },
+  { name:'Dos frecuencias', desc:'Dos ondas mezcladas → dos picos separados en Fourier',
+    waves:[{f:2,a:1,c:'#00ffc8'},{f:5,a:0.6,c:'#ff4d6d'}] },
+  { name:'Acorde musical', desc:'Como Do+Mi+Sol → tres picos distintos en el espectro',
+    waves:[{f:2,a:0.8,c:'#00ffc8'},{f:4,a:0.6,c:'#ff4d6d'},{f:6,a:0.4,c:'#ffd700'}] },
+  { name:'Onda cuadrada', desc:'Sonido de sintetizador → suma de infinitos armónicos impares',
+    waves:[{f:1,a:1,c:'#00ffc8'},{f:3,a:.33,c:'#ff4d6d'},{f:5,a:.2,c:'#ffd700'},{f:7,a:.14,c:'#a78bfa'},{f:9,a:.11,c:'#fb923c'}] },
+];
+
+let currentPreset = 0;
+let showComponents = false;
+let fourierAnimStep = -1;
+let fourierAnimId = null;
+
+function getCurrentWaves() {
+  const p = PRESETS[currentPreset];
+  if (fourierAnimStep >= 0) return p.waves.slice(0, fourierAnimStep + 1);
+  return p.waves;
+}
+
+function drawSignal() {
+  const canvas = document.getElementById('c-signal');
+  const {w,h} = resizeCanvas(canvas);
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0,0,w,h);
+  ctx.fillStyle = '#05051a'; ctx.fillRect(0,0,w,h);
+  drawGrid(ctx,w,h); drawAxis(ctx,w,h);
+
+  const waves = getCurrentWaves();
+  const N = 400;
+  const scale = h/2 - 18;
+
+  if (showComponents && waves.length > 1) {
+    waves.forEach(wave => {
+      ctx.beginPath(); ctx.strokeStyle = wave.c+'55'; ctx.lineWidth = 1;
+      for (let i=0;i<N;i++) {
+        const t = (i/N)*2*Math.PI;
+        const x = (i/N)*w;
+        const y = h/2 - wave.a * Math.sin(wave.f*t) * scale * 0.65;
+        i===0 ? ctx.moveTo(x,y) : ctx.lineTo(x,y);
+      }
+      ctx.stroke();
+    });
+  }
+
+  ctx.beginPath(); ctx.strokeStyle = '#00ffc8'; ctx.lineWidth = 2.5;
+  ctx.shadowBlur = 10; ctx.shadowColor = '#00ffc8';
+  for (let i=0;i<N;i++) {
+    const t = (i/N)*2*Math.PI;
+    const x = (i/N)*w;
+    const y = h/2 - waves.reduce((s,w2)=>s+w2.a*Math.sin(w2.f*t),0) * scale * 0.55;
+    i===0 ? ctx.moveTo(x,y) : ctx.lineTo(x,y);
+  }
+  ctx.stroke(); ctx.shadowBlur=0;
+}
+
+function drawSpectrum() {
+  const container = document.getElementById('spectrum-bars');
+  const waves = getCurrentWaves();
+  const maxF = 12;
+  container.innerHTML = '';
+  for (let f=1; f<=maxF; f++) {
+    const w = waves.find(w=>w.f===f);
+    const amp = w ? w.a : 0;
+    const color = w ? w.c : '#333';
+    const pct = amp * 100;
+    const wrap = document.createElement('div');
+    wrap.className = 'spec-bar-wrap';
+    wrap.innerHTML = `
+      <div style="font-size:9px;color:${amp>0?color:'transparent'};transition:color .3s">${amp>0?amp.toFixed(2):''}</div>
+      <div class="spec-bar-outer">
+        <div class="spec-bar-inner" style="height:${pct}%;background:linear-gradient(to top,${color},${color}88);box-shadow:${amp>0?'0 0 10px '+color+'55':'none'}"></div>
+      </div>
+      <div class="spec-bar-lbl">f=${f}</div>`;
+    container.appendChild(wrap);
+  }
+}
+
+function drawFourier() { drawSignal(); drawSpectrum(); }
+
+// Preset pills
+document.querySelectorAll('#fourier-presets .pill').forEach(pill => {
+  pill.addEventListener('click', () => {
+    document.querySelectorAll('#fourier-presets .pill').forEach(p=>p.classList.remove('active'));
+    pill.classList.add('active');
+    currentPreset = parseInt(pill.dataset.preset);
+    fourierAnimStep = -1;
+    clearInterval(fourierAnimId);
+    document.getElementById('fourier-desc').textContent = PRESETS[currentPreset].desc;
+    drawFourier();
+  });
+});
+
+document.getElementById('btn-animate-fourier').addEventListener('click', () => {
+  clearInterval(fourierAnimId);
+  fourierAnimStep = 0;
+  const total = PRESETS[currentPreset].waves.length;
+  drawFourier();
+  if (total > 1) {
+    fourierAnimId = setInterval(() => {
+      fourierAnimStep++;
+      if (fourierAnimStep >= total-1) { fourierAnimStep = -1; clearInterval(fourierAnimId); }
+      drawFourier();
+    }, 700);
+  }
+});
+
+document.getElementById('btn-components').addEventListener('click', function() {
+  showComponents = !showComponents;
+  this.style.color = showComponents ? 'var(--cyan)' : '';
+  this.style.borderColor = showComponents ? 'var(--cyan)' : '';
+  drawFourier();
+});
+
+drawFourier();
+
+// ══════════════════ GROVER ══════════════════
+let groverAnim = 0;
+let groverAnimId = null;
+let groverRunning = false;
+
+function groverProb(k, N) {
+  const theta = Math.asin(1/Math.sqrt(N));
+  return Math.pow(Math.sin((2*k+1)*theta), 2);
+}
+
+function optimalK(N) { return Math.round(Math.PI/(4*Math.asin(1/Math.sqrt(N)))-0.5); }
+
+function updateGroverStats(N) {
+  const k = optimalK(N);
+  const prob = groverProb(k, N) * 100;
+  document.getElementById('g-N').textContent = N.toLocaleString();
+  document.getElementById('g-classic').textContent = Math.round(N/2).toLocaleString();
+  document.getElementById('g-quantum').textContent = '~' + k;
+  document.getElementById('g-speedup').textContent = Math.round(N/(2*k)) + 'x';
+  document.getElementById('grover-prob-display').textContent = prob.toFixed(1)+'%';
+  const d = document.getElementById('grover-prob-display');
+  if (prob > 80) d.style.color='var(--cyan)';
+  else if (prob > 40) d.style.color='var(--gold)';
+  else d.style.color='var(--rose)';
+}
+
+function drawGrover(animK) {
+  const canvas = document.getElementById('c-grover');
+  if (!canvas) return;
+  const {w,h} = resizeCanvas(canvas);
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0,0,w,h);
+  ctx.fillStyle = '#05051a'; ctx.fillRect(0,0,w,h);
+  drawGrid(ctx,w,h);
+
+  const N = parseInt(document.getElementById('grover-n').value);
+  const kOpt = optimalK(N);
+  const maxK = Math.min(kOpt*3, 200);
+  const pts = Math.min(maxK, 200);
+
+  // Draw curve
+  const grad = ctx.createLinearGradient(0,0,w,0);
+  grad.addColorStop(0, '#ffd700');
+  grad.addColorStop(kOpt/pts, '#00ffc8');
+  grad.addColorStop(1, '#ff4d6d');
+
+  ctx.beginPath(); ctx.strokeStyle=grad; ctx.lineWidth=2.5;
+  ctx.shadowBlur=8; ctx.shadowColor='#00ffc8';
+  for (let k=0;k<=pts;k++) {
+    const x = (k/pts)*w;
+    const y = h - groverProb(k,N)*(h-20) - 10;
+    k===0 ? ctx.moveTo(x,y) : ctx.lineTo(x,y);
+  }
+  ctx.stroke(); ctx.shadowBlur=0;
+
+  // Optimal line
+  const xOpt = (kOpt/pts)*w;
+  ctx.strokeStyle='#00ffc8aa'; ctx.lineWidth=1.5; ctx.setLineDash([6,3]);
+  ctx.beginPath(); ctx.moveTo(xOpt,0); ctx.lineTo(xOpt,h); ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle='#00ffc8'; ctx.font='10px Share Tech Mono';
+  ctx.fillText(`óptimo ~${kOpt}`, xOpt+4, 14);
+
+  // Current anim position
+  if (animK >= 0) {
+    const xCur = (animK/pts)*w;
+    const yCur = h - groverProb(animK,N)*(h-20) - 10;
+    ctx.beginPath();
+    ctx.arc(xCur, yCur, 6, 0, Math.PI*2);
+    const prob = groverProb(animK,N);
+    const col = prob > 0.8 ? '#00ffc8' : prob > 0.4 ? '#ffd700' : '#ff4d6d';
+    ctx.fillStyle = col;
+    ctx.shadowBlur=12; ctx.shadowColor=col;
+    ctx.fill(); ctx.shadowBlur=0;
+
+    document.getElementById('grover-prob-display').textContent = (prob*100).toFixed(1)+'%';
+    document.getElementById('grover-prob-display').style.color = col;
+  }
+
+  // Labels
+  ctx.fillStyle='#5a5a8a'; ctx.font='10px Share Tech Mono';
+  ctx.fillText('0%', 4, h-4);
+  ctx.fillText('100%', 4, 14);
+}
+
+document.getElementById('grover-n').addEventListener('input', function() {
+  const N = parseInt(this.value);
+  document.getElementById('grover-n-val').textContent = N.toLocaleString();
+  updateGroverStats(N);
+  groverAnim = 0;
+  drawGrover(-1);
+});
+
+document.getElementById('btn-grover-anim').addEventListener('click', () => {
+  clearInterval(groverAnimId);
+  const N = parseInt(document.getElementById('grover-n').value);
+  const kOpt = optimalK(N);
+  const maxK = Math.min(kOpt*3, 200);
+  groverAnim = 0; groverRunning = true;
+  groverAnimId = setInterval(() => {
+    drawGrover(groverAnim);
+    groverAnim++;
+    if (groverAnim > maxK) { clearInterval(groverAnimId); groverRunning=false; }
+  }, 40);
+});
+
+document.getElementById('btn-grover-stop').addEventListener('click', () => {
+  clearInterval(groverAnimId); groverRunning=false;
+});
+
+updateGroverStats(1000);
+setTimeout(() => drawGrover(-1), 100);
+
+// ══════════════════ HEISENBERG ══════════════════
+function drawHeisenberg() {
+  const canvas = document.getElementById('c-heisenberg');
+  if (!canvas) return;
+  const {w,h} = resizeCanvas(canvas);
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0,0,w,h);
+  ctx.fillStyle='#05051a'; ctx.fillRect(0,0,w,h);
+  drawGrid(ctx,w,h); drawAxis(ctx,w,h);
+
+  const posVal = parseInt(document.getElementById('h-pos').value);
+  const sigma = (101-posVal)/30; // narrow pos → small sigma in position → wide in k-space
+  const N = 500;
+
+  // Wave packet (gaussian modulated)
+  const freq = 4;
+  ctx.beginPath(); ctx.strokeStyle='#a78bfa'; ctx.lineWidth=2.5;
+  ctx.shadowBlur=8; ctx.shadowColor='#a78bfa';
+  for (let i=0;i<N;i++) {
+    const t = (i/N)*4 - 2;
+    const x = (i/N)*w;
+    const envelope = Math.exp(-t*t/(2*sigma*sigma));
+    const y = h/2 - envelope * Math.sin(freq*Math.PI*t) * (h/2-16);
+    i===0 ? ctx.moveTo(x,y) : ctx.lineTo(x,y);
+  }
+  ctx.stroke(); ctx.shadowBlur=0;
+
+  // Show position uncertainty band
+  const bandW = sigma/2 * w * 0.6;
+  ctx.fillStyle='#a78bfa11';
+  ctx.fillRect(w/2-bandW, 0, bandW*2, h);
+
+  // Labels
+  ctx.fillStyle='#a78bfa'; ctx.font='10px Share Tech Mono';
+  ctx.fillText(`Δx = ${posVal}  →  Δp = ${101-posVal}`, 10, h-6);
+}
+
+const hPos = document.getElementById('h-pos');
+hPos.addEventListener('input', function() {
+  const v = parseInt(this.value);
+  document.getElementById('h-pos-val').textContent = v;
+  document.getElementById('h-mom-val').textContent = 101-v;
+  drawHeisenberg();
+});
+
+setTimeout(() => drawHeisenberg(), 100);
+
+// ══════════════════ ECM / DMT ══════════════════
+const molData = {
+  dmt:  { color:'var(--rose)',  text:'El DMT es producido naturalmente en tu cerebro. Se cree que la glándula pineal lo libera en cantidades masivas durante el sueño profundo, meditación extrema y posiblemente en el momento de la muerte. Produce experiencias casi idénticas a las ECM.' },
+  sero: { color:'var(--violet)',text:'La serotonina aumenta masivamente en hipoxia severa. Al activar receptores 5-HT2A genera visiones comparables a psicodélicos como psilocibina y DMT. Es el puente entre la química cerebral y los estados místicos.' },
+  dopa: { color:'var(--gold)',  text:'La dopamina en niveles extremos genera una sensación de significado y trascendencia sin precedentes. Cada experiencia se vuelve "cósmica". Podría explicar la sensación de "todo tiene sentido" en las ECM.' },
+  endo: { color:'var(--cyan)',  text:'Las endorfinas producen calma paradójica y eliminación del dolor. Explican por qué personas en situaciones de muerte inminente reportan paz absoluta en lugar de terror.' },
+};
+
+document.querySelectorAll('.molecule-card').forEach(card => {
+  card.addEventListener('click', () => {
+    document.querySelectorAll('.molecule-card').forEach(c=>c.classList.remove('active'));
+    card.classList.add('active');
+    const mol = molData[card.dataset.mol];
+    const d = document.getElementById('mol-detail');
+    d.style.display='block';
+    d.style.borderLeftColor = mol.color;
+    d.innerHTML = `<span style="color:${mol.color};font-weight:700">${card.querySelector('.molecule-name').textContent}:</span> ${mol.text}`;
+  });
+});
+
+function drawECM() {
+  const canvas = document.getElementById('c-ecm');
+  if (!canvas) return;
+  const {w,h} = resizeCanvas(canvas);
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0,0,w,h);
+  ctx.fillStyle='#05051a'; ctx.fillRect(0,0,w,h);
+
+  // Radar / comparison chart
+  const features = ['Salida del cuerpo','Túnel de luz','Seres / entidades','Revisión de vida','Geometrías fractales','Paz extrema'];
+  const ecmVals  = [0.85, 0.80, 0.75, 0.80, 0.10, 0.90];
+  const dmtVals  = [0.70, 0.65, 0.95, 0.05, 0.90, 0.75];
+  const n = features.length;
+  const cx=w/2, cy=h/2, r=Math.min(w,h)*0.35;
+
+  // Grid rings
+  for (let ring=1;ring<=4;ring++) {
+    ctx.beginPath(); ctx.strokeStyle='#1a1a35'; ctx.lineWidth=1;
+    for (let i=0;i<n;i++) {
+      const a = (i/n)*Math.PI*2 - Math.PI/2;
+      const d = (ring/4)*r;
+      i===0 ? ctx.moveTo(cx+d*Math.cos(a),cy+d*Math.sin(a)) : ctx.lineTo(cx+d*Math.cos(a),cy+d*Math.sin(a));
+    }
+    ctx.closePath(); ctx.stroke();
+  }
+  // Axes
+  for (let i=0;i<n;i++) {
+    const a=(i/n)*Math.PI*2-Math.PI/2;
+    ctx.beginPath(); ctx.strokeStyle='#1a1a35'; ctx.lineWidth=1;
+    ctx.moveTo(cx,cy); ctx.lineTo(cx+r*Math.cos(a),cy+r*Math.sin(a)); ctx.stroke();
+    ctx.fillStyle='#7a7aaa'; ctx.font='9px Share Tech Mono';
+    ctx.textAlign='center';
+    const lx=cx+(r+18)*Math.cos(a), ly=cy+(r+14)*Math.sin(a);
+    ctx.fillText(features[i], lx, ly);
+  }
+  ctx.textAlign='left';
+
+  function drawPolygon(vals, color, alpha) {
+    ctx.beginPath();
+    vals.forEach((v,i)=>{
+      const a=(i/n)*Math.PI*2-Math.PI/2;
+      const d=v*r;
+      i===0?ctx.moveTo(cx+d*Math.cos(a),cy+d*Math.sin(a)):ctx.lineTo(cx+d*Math.cos(a),cy+d*Math.sin(a));
+    });
+    ctx.closePath();
+    ctx.fillStyle=color+alpha; ctx.fill();
+    ctx.strokeStyle=color; ctx.lineWidth=2; ctx.stroke();
+  }
+  drawPolygon(ecmVals,'#ff4d6d','33');
+  drawPolygon(dmtVals,'#00ffc8','22');
+
+  // Legend
+  ctx.fillStyle='#ff4d6d'; ctx.fillRect(10,10,12,3);
+  ctx.fillStyle='#ccc'; ctx.font='10px Share Tech Mono'; ctx.fillText('ECM',26,14);
+  ctx.fillStyle='#00ffc8'; ctx.fillRect(10,22,12,3);
+  ctx.fillStyle='#ccc'; ctx.fillText('DMT',26,26);
+}
+
+setTimeout(()=>drawECM(),100);
+
+// ══════════════════ CONEXION ══════════════════
+function drawConexion() {
+  const canvas = document.getElementById('c-conexion');
+  if (!canvas) return;
+  const {w,h} = resizeCanvas(canvas);
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0,0,w,h);
+  ctx.fillStyle='#05051a'; ctx.fillRect(0,0,w,h);
+
+  const nodes = [
+    {x:w/2, y:h/2, r:28, c:'#fb923c', label:'ONDAS', size:13, bold:true},
+    {x:w*0.15, y:h*0.2, r:22, c:'#00ffc8', label:'Fourier', size:11},
+    {x:w*0.85, y:h*0.2, r:22, c:'#ffd700', label:'Grover', size:11},
+    {x:w*0.12, y:h*0.75, r:22, c:'#a78bfa', label:'Heisenberg', size:10},
+    {x:w*0.88, y:h*0.75, r:22, c:'#ff4d6d', label:'ECM/DMT', size:10},
+    {x:w*0.5, y:h*0.1, r:18, c:'#67e8f9', label:'Cerebro', size:10},
+  ];
+
+  // Connections
+  const edges = [[0,1],[0,2],[0,3],[0,4],[0,5],[1,3],[2,4],[1,5],[3,4]];
+  edges.forEach(([a,b]) => {
+    const n1=nodes[a], n2=nodes[b];
+    const grad=ctx.createLinearGradient(n1.x,n1.y,n2.x,n2.y);
+    grad.addColorStop(0,n1.c+'88'); grad.addColorStop(1,n2.c+'88');
+    ctx.beginPath(); ctx.strokeStyle=grad; ctx.lineWidth=1.5;
+    ctx.setLineDash([4,4]);
+    ctx.moveTo(n1.x,n1.y); ctx.lineTo(n2.x,n2.y); ctx.stroke();
+    ctx.setLineDash([]);
+  });
+
+  // Nodes
+  nodes.forEach(n => {
+    ctx.beginPath(); ctx.arc(n.x,n.y,n.r,0,Math.PI*2);
+    ctx.fillStyle=n.c+'22'; ctx.fill();
+    ctx.strokeStyle=n.c; ctx.lineWidth=2;
+    ctx.shadowBlur=12; ctx.shadowColor=n.c;
+    ctx.stroke(); ctx.shadowBlur=0;
+    ctx.fillStyle=n.bold?'#fff':n.c;
+    ctx.font=`${n.bold?'bold ':''} ${n.size}px Share Tech Mono`;
+    ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillText(n.label,n.x,n.y);
+  });
+  ctx.textAlign='left'; ctx.textBaseline='alphabetic';
+
+  // Subtitle
+  ctx.fillStyle='#5a5a8a'; ctx.font='10px Share Tech Mono';
+  ctx.textAlign='center';
+  ctx.fillText('La interferencia constructiva / destructiva es el principio común', w/2, h-8);
+}
+
+// Initial renders on visible section
+window.addEventListener('resize', () => {
+  drawFourier(); drawGrover(groverAnim);
+  if (document.getElementById('heisenberg').classList.contains('active')) drawHeisenberg();
+  if (document.getElementById('ecm').classList.contains('active')) drawECM();
+  if (document.getElementById('conexion').classList.contains('active')) drawConexion();
+});
+</script>
+</body>
+</html>
