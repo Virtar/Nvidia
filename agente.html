@@ -1,0 +1,1781 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Arquitectura de Agentes IA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,500;1,400&family=Syne:wght@400;500;600;700&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+
+<style>
+/* ─── DESIGN TOKENS ─────────────────────────────────────────────────── */
+:root {
+  --font-display: 'Syne', sans-serif;
+  --font-body:    'DM Sans', sans-serif;
+  --font-mono:    'IBM Plex Mono', monospace;
+
+  /* Palette — dark refined terminal aesthetic */
+  --bg-base:       #0E0F14;
+  --bg-surface:    #14151C;
+  --bg-elevated:   #1A1C27;
+  --bg-hover:      #21233A;
+  --bg-active:     #1F2238;
+
+  --border-subtle: rgba(255,255,255,0.06);
+  --border-mid:    rgba(255,255,255,0.10);
+  --border-strong: rgba(255,255,255,0.18);
+
+  --text-primary:   #E8EAF0;
+  --text-secondary: #8A8FA8;
+  --text-tertiary:  #555875;
+  --text-muted:     #383B52;
+
+  /* Accent colors */
+  --accent-violet: #7B6EF6;
+  --accent-teal:   #2DCCA7;
+  --accent-amber:  #F5A623;
+  --accent-coral:  #F06460;
+  --accent-blue:   #4A9EF5;
+
+  /* Semantic backgrounds (semi-transparent) */
+  --bg-violet: rgba(123,110,246,0.10);
+  --bg-teal:   rgba(45,204,167,0.10);
+  --bg-amber:  rgba(245,166,35,0.10);
+  --bg-coral:  rgba(240,100,96,0.10);
+  --bg-blue:   rgba(74,158,245,0.10);
+  --bg-green:  rgba(90,200,80,0.10);
+
+  /* Semantic text */
+  --text-violet: #7B6EF6;
+  --text-teal:   #2DCCA7;
+  --text-amber:  #F5A623;
+  --text-coral:  #F06460;
+  --text-blue:   #4A9EF5;
+  --text-green:  #5AC850;
+
+  /* Semantic borders */
+  --border-violet: rgba(123,110,246,0.35);
+  --border-teal:   rgba(45,204,167,0.35);
+  --border-amber:  rgba(245,166,35,0.35);
+  --border-coral:  rgba(240,100,96,0.35);
+  --border-blue:   rgba(74,158,245,0.35);
+
+  /* Layout */
+  --nav-width: 224px;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.4), 0 1px 2px rgba(0,0,0,0.3);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.5), 0 2px 4px rgba(0,0,0,0.3);
+  --shadow-lg: 0 8px 24px rgba(0,0,0,0.6), 0 4px 8px rgba(0,0,0,0.4);
+
+  /* Legacy compat vars (used by embedded components) */
+  --color-text-primary:   var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-tertiary:  var(--text-tertiary);
+  --color-text-success:   var(--text-teal);
+  --color-text-danger:    var(--text-coral);
+  --color-text-warning:   var(--text-amber);
+  --color-background-primary:   var(--bg-surface);
+  --color-background-secondary: var(--bg-elevated);
+  --color-background-tertiary:  var(--bg-hover);
+  --color-background-info:      var(--bg-blue);
+  --color-background-danger:    var(--bg-coral);
+  --color-background-success:   var(--bg-teal);
+  --color-background-warning:   var(--bg-amber);
+  --color-border-primary:   var(--border-strong);
+  --color-border-secondary: var(--border-mid);
+  --color-border-tertiary:  var(--border-subtle);
+  --color-border-info:      var(--border-blue);
+  --color-border-danger:    var(--border-coral);
+  --color-border-success:   var(--border-teal);
+  --color-border-warning:   var(--border-amber);
+  --border-radius-sm: var(--radius-sm);
+  --border-radius-md: var(--radius-md);
+  --border-radius-lg: var(--radius-lg);
+}
+
+/* ─── RESET & BASE ──────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 16px; -webkit-font-smoothing: antialiased; }
+body {
+  font-family: var(--font-body);
+  background: var(--bg-base);
+  color: var(--text-primary);
+  min-height: 100vh;
+  display: flex;
+  overflow-x: hidden;
+}
+
+/* ─── SIDEBAR NAV ───────────────────────────────────────────────────── */
+.sidebar {
+  width: var(--nav-width);
+  flex-shrink: 0;
+  background: var(--bg-surface);
+  border-right: 1px solid var(--border-subtle);
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 0; left: 0; bottom: 0;
+  z-index: 100;
+  transition: transform 0.25s ease;
+}
+
+.sidebar-logo {
+  padding: 22px 18px 16px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+.sidebar-logo .logo-mark {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+}
+.logo-icon {
+  width: 30px; height: 30px;
+  background: linear-gradient(135deg, var(--accent-violet), var(--accent-teal));
+  border-radius: var(--radius-sm);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 15px; color: #fff;
+  box-shadow: 0 2px 8px rgba(123,110,246,0.4);
+}
+.logo-text {
+  font-family: var(--font-display);
+  font-size: 14px; font-weight: 700;
+  letter-spacing: 0.01em;
+  color: var(--text-primary);
+  line-height: 1.2;
+}
+.logo-text span {
+  display: block;
+  font-size: 10px; font-weight: 400;
+  color: var(--text-tertiary);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-top: 1px;
+}
+
+.sidebar-nav {
+  flex: 1;
+  padding: 12px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  overflow-y: auto;
+}
+
+.nav-section-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  padding: 10px 8px 5px;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 10px;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  border: 1px solid transparent;
+  text-decoration: none;
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 400;
+  position: relative;
+}
+.nav-item:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+  border-color: var(--border-subtle);
+}
+.nav-item.active {
+  background: var(--bg-active);
+  color: var(--text-primary);
+  border-color: var(--border-mid);
+  font-weight: 500;
+}
+.nav-item.active::before {
+  content: '';
+  position: absolute;
+  left: -10px; top: 50%;
+  transform: translateY(-50%);
+  width: 3px; height: 18px;
+  border-radius: 0 3px 3px 0;
+  background: var(--accent-violet);
+}
+.nav-item i { font-size: 16px; flex-shrink: 0; }
+.nav-item .nav-pill {
+  margin-left: auto;
+  font-size: 10px;
+  padding: 2px 7px;
+  border-radius: 20px;
+  background: var(--bg-violet);
+  color: var(--accent-violet);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.nav-item[data-section="loop"] i    { color: var(--accent-violet); }
+.nav-item[data-section="usecases"] i { color: var(--accent-blue); }
+.nav-item[data-section="contracts"] i { color: var(--accent-teal); }
+.nav-item[data-section="arch"] i    { color: var(--accent-amber); }
+
+.sidebar-footer {
+  padding: 12px 14px;
+  border-top: 1px solid var(--border-subtle);
+}
+.version-chip {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-tertiary);
+  display: flex; align-items: center; gap: 6px;
+}
+.version-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent-teal); animation: pulse 2s infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+/* ─── MOBILE TOGGLE ─────────────────────────────────────────────────── */
+.menu-toggle {
+  display: none;
+  position: fixed;
+  top: 14px; left: 14px;
+  z-index: 200;
+  width: 38px; height: 38px;
+  border-radius: var(--radius-md);
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-mid);
+  color: var(--text-primary);
+  font-size: 18px;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s;
+}
+.menu-toggle:hover { background: var(--bg-hover); }
+
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 99;
+}
+
+/* ─── MAIN CONTENT ──────────────────────────────────────────────────── */
+.main {
+  flex: 1;
+  margin-left: var(--nav-width);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: rgba(14,15,20,0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border-subtle);
+  padding: 14px 28px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.topbar-breadcrumb {
+  font-family: var(--font-display);
+  font-size: 13px;
+  color: var(--text-tertiary);
+  display: flex; align-items: center; gap: 6px;
+}
+.topbar-breadcrumb .sep { color: var(--text-muted); }
+.topbar-title {
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.content-area {
+  flex: 1;
+  padding: 28px;
+  max-width: 960px;
+}
+
+/* ─── PAGE SECTIONS ─────────────────────────────────────────────────── */
+.page-section { display: none; animation: fadeIn 0.2s ease; }
+.page-section.active { display: block; }
+
+@keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+.section-header {
+  margin-bottom: 24px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+.section-header h1 {
+  font-family: var(--font-display);
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 6px;
+  letter-spacing: -0.02em;
+}
+.section-header p {
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  max-width: 640px;
+}
+.accent-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 3px 10px;
+  border-radius: 20px;
+  margin-bottom: 8px;
+}
+.tag-violet { background: var(--bg-violet); color: var(--accent-violet); border: 1px solid var(--border-violet); }
+.tag-blue   { background: var(--bg-blue);   color: var(--accent-blue);   border: 1px solid var(--border-blue); }
+.tag-teal   { background: var(--bg-teal);   color: var(--accent-teal);   border: 1px solid var(--border-teal); }
+.tag-amber  { background: var(--bg-amber);  color: var(--accent-amber);  border: 1px solid var(--border-amber); }
+
+/* ─── COMPONENT WRAPPER ─────────────────────────────────────────────── */
+.component-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-xl);
+  padding: 24px;
+  box-shadow: var(--shadow-md);
+}
+
+/* ─── SR-ONLY ───────────────────────────────────────────────────────── */
+.sr-only { position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0,0,0,0); }
+
+/* ════════════════════════════════════════════════════════════════════════
+   SECTION 1 — LOOP DE RAZONAMIENTO
+   ════════════════════════════════════════════════════════════════════════ */
+.stepper-nav {
+  display: flex;
+  gap: 0;
+  border: 1px solid var(--border-mid);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  margin-bottom: 20px;
+  box-shadow: var(--shadow-sm);
+}
+.snav-btn {
+  flex: 1;
+  padding: 9px 6px;
+  font-size: 11.5px;
+  cursor: pointer;
+  border: none;
+  border-right: 1px solid var(--border-subtle);
+  background: transparent;
+  color: var(--text-tertiary);
+  transition: all 0.15s ease;
+  text-align: center;
+  font-family: var(--font-body);
+}
+.snav-btn:last-child { border-right: none; }
+.snav-btn:hover { background: var(--bg-hover); color: var(--text-secondary); }
+.snav-btn.active { background: var(--bg-active); color: var(--text-primary); font-weight: 500; }
+
+.step-panel { display: none; }
+.step-panel.active { display: block; animation: fadeIn 0.18s ease; }
+
+.chat-window {
+  border: 1px solid var(--border-mid);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background: var(--bg-elevated);
+  margin-bottom: 14px;
+  box-shadow: var(--shadow-sm);
+}
+.chat-header {
+  padding: 9px 14px;
+  font-size: 11.5px;
+  font-family: var(--font-mono);
+  color: var(--text-tertiary);
+  border-bottom: 1px solid var(--border-subtle);
+  display: flex; justify-content: space-between; align-items: center;
+}
+.chat-body { padding: 14px; display: flex; flex-direction: column; gap: 10px; }
+
+.msg {
+  padding: 10px 13px;
+  border-radius: var(--radius-md);
+  font-size: 12px;
+  line-height: 1.65;
+  max-width: 90%;
+}
+.msg-user    { background: var(--bg-violet); border: 1px solid var(--border-violet); color: #B8B0FF; align-self: flex-end; }
+.msg-llm     { background: var(--bg-surface); border: 1px solid var(--border-subtle); color: var(--text-primary); align-self: flex-start; }
+.msg-tool-call   { background: var(--bg-amber); border: 1px solid var(--border-amber); color: #F5C56E; align-self: flex-start; font-family: var(--font-mono); }
+.msg-tool-result { background: var(--bg-teal);  border: 1px solid var(--border-teal);  color: #6DE8C8; align-self: flex-start; font-family: var(--font-mono); }
+.msg-final   { background: rgba(45,204,167,0.08); border: 1px solid rgba(45,204,167,0.2); color: var(--text-teal); align-self: flex-start; }
+
+.msg-label { font-size: 10px; font-weight: 600; opacity: 0.65; margin-bottom: 3px; text-transform: uppercase; letter-spacing: 0.06em; }
+
+.loop-indicator {
+  display: flex; align-items: center; gap: 9px;
+  padding: 9px 14px;
+  font-size: 12px;
+  color: var(--text-secondary);
+  border-top: 1px solid var(--border-subtle);
+  background: var(--bg-base);
+  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+  font-family: var(--font-mono);
+}
+.loop-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.dot-thinking { background: var(--accent-amber); box-shadow: 0 0 6px var(--accent-amber); }
+.dot-calling  { background: var(--accent-blue);  box-shadow: 0 0 6px var(--accent-blue); }
+.dot-done     { background: var(--accent-teal);  box-shadow: 0 0 6px var(--accent-teal); }
+.dot-loop     { background: var(--accent-violet); box-shadow: 0 0 6px var(--accent-violet); }
+
+.insight-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 6px; }
+.insight {
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 12px 13px;
+  background: var(--bg-elevated);
+  box-shadow: var(--shadow-sm);
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.insight:hover { border-color: var(--border-mid); box-shadow: var(--shadow-md); }
+.ins-title { font-size: 12px; font-weight: 600; color: var(--text-primary); margin-bottom: 5px; }
+.ins-body  { font-size: 12px; color: var(--text-secondary); line-height: 1.55; }
+
+.code-inline {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  background: var(--bg-hover);
+  padding: 1px 5px;
+  border-radius: 4px;
+  border: 1px solid var(--border-subtle);
+  color: var(--accent-teal);
+}
+
+.step-desc {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.65;
+  margin-bottom: 14px;
+}
+.step-desc strong { font-weight: 500; color: var(--text-primary); }
+
+.nav-row {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border-subtle);
+}
+.nav-btn {
+  padding: 7px 18px;
+  font-size: 12px;
+  cursor: pointer;
+  border: 1px solid var(--border-mid);
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: var(--text-secondary);
+  font-family: var(--font-body);
+  transition: all 0.15s ease;
+}
+.nav-btn:hover { background: var(--bg-hover); color: var(--text-primary); border-color: var(--border-strong); }
+.step-counter { font-size: 12px; color: var(--text-tertiary); font-family: var(--font-mono); }
+
+/* ════════════════════════════════════════════════════════════════════════
+   SECTION 2 — REST vs FastMCP (USE CASES)
+   ════════════════════════════════════════════════════════════════════════ */
+.section-title { font-size: 13px; font-weight: 600; color: var(--text-primary); margin: 18px 0 10px; letter-spacing: 0.01em; }
+
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 16px; }
+.card { border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow-sm); transition: box-shadow 0.2s ease; }
+.card:hover { box-shadow: var(--shadow-md); }
+.card-head { padding: 11px 14px; font-size: 13px; font-weight: 600; border-bottom: 1px solid var(--border-subtle); display: flex; align-items: center; gap: 7px; }
+.head-rest { background: var(--bg-blue); color: var(--accent-blue); }
+.head-mcp  { background: var(--bg-teal); color: var(--accent-teal); }
+.card-body { padding: 14px; display: flex; flex-direction: column; gap: 10px; background: var(--bg-elevated); }
+
+.use-item { display: flex; gap: 10px; align-items: flex-start; }
+.use-icon { flex-shrink: 0; margin-top: 1px; font-size: 16px; }
+.use-text { font-size: 12px; color: var(--text-secondary); line-height: 1.55; }
+.use-text strong { font-weight: 500; color: var(--text-primary); }
+
+.together-card { border: 1px solid var(--border-mid); border-radius: var(--radius-lg); overflow: hidden; margin-bottom: 16px; box-shadow: var(--shadow-sm); }
+.together-head { padding: 11px 14px; font-size: 13px; font-weight: 600; border-bottom: 1px solid var(--border-subtle); background: var(--bg-elevated); color: var(--text-primary); }
+.together-body {
+  padding: 18px;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr auto 1fr;
+  align-items: center;
+  gap: 10px;
+  background: var(--bg-surface);
+}
+.t-node { border: 1px solid var(--border-mid); border-radius: var(--radius-md); padding: 12px 14px; text-align: center; transition: all 0.2s ease; }
+.t-node:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+.t-label { font-size: 12px; font-weight: 600; color: var(--text-primary); margin-bottom: 3px; }
+.t-sub   { font-size: 11px; color: var(--text-secondary); font-family: var(--font-mono); }
+.t-node.blue  { border-color: var(--border-blue);  background: var(--bg-blue);  }
+.t-node.teal  { border-color: var(--border-teal);  background: var(--bg-teal);  }
+.t-node.amber { border-color: var(--border-amber); background: var(--bg-amber); }
+.t-arrow { font-size: 20px; color: var(--text-muted); text-align: center; }
+.t-arrow-label { font-size: 10px; color: var(--text-tertiary); text-align: center; display: block; font-family: var(--font-mono); margin-top: 2px; }
+
+.rule-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px,1fr)); gap: 10px; margin-bottom: 16px; }
+.rule-card { border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 12px 13px; background: var(--bg-elevated); transition: all 0.15s ease; }
+.rule-card:hover { border-color: var(--border-mid); box-shadow: var(--shadow-sm); }
+.rule-q { font-size: 12px; color: var(--text-secondary); margin-bottom: 7px; line-height: 1.45; }
+.rule-a { font-size: 12px; font-weight: 600; display: flex; align-items: center; gap: 6px; }
+.a-rest { color: var(--accent-blue); }
+.a-mcp  { color: var(--accent-teal); }
+.a-both { color: var(--accent-amber); }
+
+/* ════════════════════════════════════════════════════════════════════════
+   SECTION 3 — CONTRATOS
+   ════════════════════════════════════════════════════════════════════════ */
+.col-card { border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow-sm); transition: box-shadow 0.2s; }
+.col-card:hover { box-shadow: var(--shadow-md); }
+.col-header { padding: 11px 14px; font-size: 13px; font-weight: 600; border-bottom: 1px solid var(--border-subtle); }
+.col-header.rest { background: var(--bg-coral); color: var(--accent-coral); }
+.col-header.mcp  { background: var(--bg-teal);  color: var(--accent-teal);  }
+.col-body { padding: 14px; background: var(--bg-elevated); }
+
+.code {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  line-height: 1.8;
+  color: var(--text-primary);
+  white-space: pre;
+  overflow-x: auto;
+}
+.kw  { color: var(--accent-violet); font-weight: 500; }
+.fn  { color: var(--accent-teal); }
+.st  { color: var(--accent-amber); }
+.cm  { color: var(--text-tertiary); font-style: italic; }
+.dec { color: var(--accent-coral); }
+.num { color: var(--accent-blue); }
+
+.badge-row { display: flex; gap: 6px; flex-wrap: wrap; margin: 10px 0 6px; }
+.badge { font-size: 11px; padding: 3px 9px; border-radius: 20px; font-weight: 600; letter-spacing: 0.02em; border: 1px solid transparent; }
+.b-danger  { background: var(--bg-coral);  color: var(--accent-coral);  border-color: var(--border-coral); }
+.b-success { background: var(--bg-teal);   color: var(--accent-teal);   border-color: var(--border-teal); }
+.b-info    { background: var(--bg-blue);   color: var(--accent-blue);   border-color: var(--border-blue); }
+.b-neutral { background: var(--bg-elevated); color: var(--text-secondary); border-color: var(--border-subtle); }
+
+.insight-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px,1fr)); gap: 10px; margin-top: 16px; }
+.insight-card { border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 13px 14px; background: var(--bg-elevated); transition: all 0.15s ease; }
+.insight-card:hover { border-color: var(--border-mid); box-shadow: var(--shadow-sm); }
+.insight-title { font-size: 13px; font-weight: 600; color: var(--text-primary); margin-bottom: 5px; display: flex; align-items: center; gap: 7px; }
+.insight-body { font-size: 12px; color: var(--text-secondary); line-height: 1.55; }
+
+.drift-demo { border: 1px solid var(--border-mid); border-radius: var(--radius-lg); overflow: hidden; margin-bottom: 16px; box-shadow: var(--shadow-sm); }
+.drift-header { padding: 10px 14px; font-size: 13px; font-weight: 600; background: var(--bg-elevated); border-bottom: 1px solid var(--border-subtle); color: var(--text-primary); }
+.drift-cols { display: grid; grid-template-columns: 1fr 1fr; }
+.drift-col { padding: 13px 14px; border-right: 1px solid var(--border-subtle); background: var(--bg-surface); }
+.drift-col:last-child { border-right: none; }
+.drift-label { font-size: 11px; color: var(--text-tertiary); margin-bottom: 8px; font-family: var(--font-mono); }
+
+.highlight-line    { background: rgba(245,166,35,0.12); border-radius: 3px; display: block; margin: -1px -4px; padding: 1px 4px; }
+.highlight-danger  { background: rgba(240,100,96,0.12); border-radius: 3px; display: block; margin: -1px -4px; padding: 1px 4px; }
+
+.stepper { display: flex; gap: 0; margin: 16px 0 12px; border: 1px solid var(--border-mid); border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow-sm); }
+.step-tab { flex: 1; padding: 9px 10px; text-align: center; font-size: 12px; cursor: pointer; border-right: 1px solid var(--border-subtle); color: var(--text-secondary); transition: all 0.15s; font-family: var(--font-body); background: transparent; border-top: none; border-bottom: none; border-left: none; }
+.step-tab:last-child { border-right: none; }
+.step-tab:hover { background: var(--bg-hover); color: var(--text-primary); }
+.step-tab.active { background: var(--bg-active); color: var(--text-primary); font-weight: 500; }
+
+.contract-panel { display: none; background: var(--bg-elevated); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 14px; }
+.contract-panel.active { display: block; animation: fadeIn 0.15s ease; }
+
+/* ════════════════════════════════════════════════════════════════════════
+   SECTION 4 — ARQUITECTURA PYTHON
+   ════════════════════════════════════════════════════════════════════════ */
+.arch-tabs { display: flex; gap: 6px; margin-bottom: 18px; flex-wrap: wrap; }
+.arch-tab {
+  padding: 6px 14px;
+  font-size: 12.5px;
+  border: 1px solid var(--border-mid);
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: flex; align-items: center; gap: 6px;
+  font-family: var(--font-body);
+}
+.arch-tab:hover { background: var(--bg-hover); color: var(--text-primary); border-color: var(--border-strong); }
+.arch-tab.active { background: var(--bg-active); border-color: var(--border-strong); color: var(--text-primary); font-weight: 500; }
+
+.arch-panel { display: none; }
+.arch-panel.active { display: block; animation: fadeIn 0.18s ease; }
+
+.arch-stack { display: grid; grid-template-columns: 1fr; gap: 6px; }
+
+.layer {
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 13px 16px;
+  background: var(--bg-elevated);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  position: relative;
+  box-shadow: var(--shadow-sm);
+}
+.layer:hover { border-color: var(--border-mid); background: var(--bg-hover); box-shadow: var(--shadow-md); }
+.layer.selected { border-color: var(--accent-blue); background: var(--bg-blue); box-shadow: 0 0 0 1px rgba(74,158,245,0.2); }
+
+.layer-header { display: flex; align-items: center; gap: 11px; }
+.layer-icon { width: 30px; height: 30px; border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; }
+.l-purple { background: var(--bg-violet); color: var(--accent-violet); }
+.l-teal   { background: var(--bg-teal);   color: var(--accent-teal); }
+.l-amber  { background: var(--bg-amber);  color: var(--accent-amber); }
+.l-coral  { background: var(--bg-coral);  color: var(--accent-coral); }
+.l-blue   { background: var(--bg-blue);   color: var(--accent-blue); }
+.l-green  { background: var(--bg-green);  color: var(--text-green); }
+
+.layer-title    { font-size: 13.5px; font-weight: 500; color: var(--text-primary); }
+.layer-subtitle { font-size: 11.5px; color: var(--text-secondary); margin-top: 2px; }
+.layer-badge {
+  margin-left: auto;
+  font-size: 10px;
+  padding: 2px 9px;
+  border-radius: 20px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.badge-guard { background: var(--bg-amber);  color: var(--accent-amber); border: 1px solid var(--border-amber); }
+.badge-hook  { background: var(--bg-teal);   color: var(--accent-teal);  border: 1px solid var(--border-teal); }
+.badge-core  { background: var(--bg-violet); color: var(--accent-violet); border: 1px solid var(--border-violet); }
+.badge-key   { background: var(--bg-coral);  color: var(--accent-coral); border: 1px solid var(--border-coral); }
+.badge-mcp   { background: var(--bg-blue);   color: var(--accent-blue);  border: 1px solid var(--border-blue); }
+
+.arrow-down { text-align: center; font-size: 18px; color: var(--text-muted); line-height: 1; padding: 2px 0; }
+
+.detail-card {
+  border: 1px solid var(--border-mid);
+  border-radius: var(--radius-lg);
+  background: var(--bg-surface);
+  padding: 18px;
+  margin-top: 14px;
+  min-height: 90px;
+  box-shadow: var(--shadow-sm);
+}
+.detail-card .dtitle { font-size: 14px; font-weight: 600; color: var(--text-primary); margin-bottom: 9px; display: flex; align-items: center; gap: 8px; }
+.detail-card .ddesc  { font-size: 13px; color: var(--text-secondary); line-height: 1.65; margin-bottom: 12px; }
+
+.code-block {
+  background: var(--bg-base);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 12px 16px;
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  color: var(--text-primary);
+  line-height: 1.75;
+  overflow-x: auto;
+  white-space: pre;
+}
+
+.hint { font-size: 12px; color: var(--text-tertiary); margin-top: 8px; font-style: italic; }
+
+.risk-flow {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px,1fr));
+  gap: 10px;
+  margin-bottom: 14px;
+  align-items: center;
+}
+.risk-node {
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 11px 13px;
+  background: var(--bg-elevated);
+  text-align: center;
+  transition: all 0.15s;
+}
+.risk-node:hover { box-shadow: var(--shadow-sm); }
+.risk-node .rn { font-size: 12.5px; font-weight: 500; color: var(--text-primary); margin-bottom: 4px; }
+.risk-node .rs { font-size: 11px; color: var(--text-secondary); line-height: 1.4; }
+.risk-node.danger  { border-color: var(--border-coral); background: var(--bg-coral); }
+.risk-node.success { border-color: var(--border-teal);  background: var(--bg-teal); }
+.risk-node.warn    { border-color: var(--border-amber); background: var(--bg-amber); }
+.risk-arrow { display:flex; align-items:center; justify-content:center; color:var(--text-muted); font-size:18px; }
+
+.sim-section {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-top: 14px;
+}
+.sim-input-group { display: flex; flex-direction: column; gap: 9px; }
+.sim-label { font-size: 12px; color: var(--text-secondary); font-weight: 500; }
+.sim-select {
+  width: 100%;
+  padding: 8px 11px;
+  font-size: 12.5px;
+  border: 1px solid var(--border-mid);
+  border-radius: var(--radius-md);
+  background: var(--bg-surface);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  transition: border-color 0.15s;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23555875'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  padding-right: 28px;
+}
+.sim-select:focus { outline: none; border-color: var(--border-strong); box-shadow: 0 0 0 2px rgba(123,110,246,0.15); }
+
+.sim-log {
+  background: var(--bg-base);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 12px;
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  line-height: 1.85;
+  min-height: 170px;
+  color: var(--text-secondary);
+}
+.log-ok   { color: var(--text-teal); }
+.log-err  { color: var(--text-coral); }
+.log-warn { color: var(--text-amber); }
+.log-dim  { color: var(--text-tertiary); }
+
+.run-btn {
+  margin-top: 4px;
+  padding: 8px 18px;
+  font-size: 12.5px;
+  cursor: pointer;
+  border: 1px solid var(--border-mid);
+  border-radius: var(--radius-md);
+  background: var(--bg-violet);
+  color: var(--accent-violet);
+  border-color: var(--border-violet);
+  font-family: var(--font-body);
+  font-weight: 500;
+  display: flex; align-items: center; gap: 6px;
+  transition: all 0.15s ease;
+}
+.run-btn:hover { background: rgba(123,110,246,0.2); box-shadow: 0 0 12px rgba(123,110,246,0.2); }
+.run-btn:active { transform: scale(0.98); }
+
+.guide-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px,1fr)); gap: 10px; }
+.guide-card {
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 13px 14px;
+  background: var(--bg-elevated);
+  transition: all 0.15s;
+}
+.guide-card:hover { border-color: var(--border-mid); box-shadow: var(--shadow-sm); }
+.guide-card .gc-title { font-size: 12.5px; font-weight: 600; color: var(--text-primary); margin-bottom: 6px; display: flex; align-items: center; gap: 7px; }
+.guide-card .gc-body  { font-size: 12px; color: var(--text-secondary); line-height: 1.55; }
+.guide-card code { font-family: var(--font-mono); font-size: 11px; background: var(--bg-hover); padding: 1px 5px; border-radius: 3px; color: var(--accent-teal); }
+
+/* ─── RESPONSIVE ────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .sidebar { transform: translateX(-100%); }
+  .sidebar.open { transform: translateX(0); box-shadow: var(--shadow-lg); }
+  .sidebar-overlay.visible { display: block; }
+  .menu-toggle { display: flex; }
+  .main { margin-left: 0; }
+  .topbar { padding: 14px 14px 14px 60px; }
+  .content-area { padding: 18px 16px; }
+  .cols { grid-template-columns: 1fr; }
+  .together-body { grid-template-columns: 1fr; }
+  .t-arrow { transform: rotate(90deg); }
+  .insight-row { grid-template-columns: 1fr; }
+  .drift-cols { grid-template-columns: 1fr; }
+  .drift-col { border-right: none; border-bottom: 1px solid var(--border-subtle); }
+  .sim-section { grid-template-columns: 1fr; }
+}
+@media (max-width: 520px) {
+  .stepper-nav { flex-wrap: wrap; }
+  .snav-btn { flex-basis: 30%; }
+}
+</style>
+</head>
+<body>
+
+<!-- MOBILE TOGGLE -->
+<button class="menu-toggle" onclick="APP.toggleSidebar()" aria-label="Abrir menú">
+  <i class="ti ti-menu-2"></i>
+</button>
+<div class="sidebar-overlay" id="sidebar-overlay" onclick="APP.closeSidebar()"></div>
+
+<!-- SIDEBAR -->
+<nav class="sidebar" id="sidebar" role="navigation" aria-label="Navegación principal">
+  <div class="sidebar-logo">
+    <div class="logo-mark">
+      <div class="logo-icon"><i class="ti ti-robot" aria-hidden="true"></i></div>
+      <div class="logo-text">
+        Agent Arch
+        <span>Guía de referencia</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="sidebar-nav">
+    <div class="nav-section-label">Módulos</div>
+
+    <div class="nav-item active" data-section="loop" onclick="APP.navigate('loop')" role="button" tabindex="0">
+      <i class="ti ti-rotate-clockwise" aria-hidden="true"></i>
+      Loop de Razonamiento
+      <span class="nav-pill">01</span>
+    </div>
+
+    <div class="nav-item" data-section="usecases" onclick="APP.navigate('usecases')" role="button" tabindex="0">
+      <i class="ti ti-git-compare" aria-hidden="true"></i>
+      REST vs FastMCP
+      <span class="nav-pill">02</span>
+    </div>
+
+    <div class="nav-item" data-section="contracts" onclick="APP.navigate('contracts')" role="button" tabindex="0">
+      <i class="ti ti-file-code" aria-hidden="true"></i>
+      Contratos de Datos
+      <span class="nav-pill">03</span>
+    </div>
+
+    <div class="nav-item" data-section="arch" onclick="APP.navigate('arch')" role="button" tabindex="0">
+      <i class="ti ti-layers-intersect" aria-hidden="true"></i>
+      Arquitectura Python
+      <span class="nav-pill">04</span>
+    </div>
+  </div>
+
+  <div class="sidebar-footer">
+    <div class="version-chip">
+      <div class="version-dot"></div>
+      v1.0 · FastMCP + Claude
+    </div>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-breadcrumb">
+      <span>Agent Arch</span>
+      <span class="sep">/</span>
+      <span id="topbar-section-name" class="topbar-title">Loop de Razonamiento</span>
+    </div>
+  </div>
+
+  <div class="content-area">
+
+    <!-- ─── SECTION 1: LOOP ─────────────────────────────────────────── -->
+    <section class="page-section active" id="section-loop" aria-label="Loop de razonamiento">
+      <div class="section-header">
+        <div class="accent-tag tag-violet"><i class="ti ti-rotate-clockwise"></i> Módulo 01</div>
+        <h1>Loop de Razonamiento</h1>
+        <p>Simulación paso a paso del ciclo interno de un agente LLM que encadena tool calls para resolver una tarea en lenguaje natural.</p>
+      </div>
+      <div class="component-card">
+
+        <div class="stepper-nav">
+          <button class="snav-btn active" onclick="LOOP.goStep(0)">1 — tarea entra</button>
+          <button class="snav-btn" onclick="LOOP.goStep(1)">2 — primer razonamiento</button>
+          <button class="snav-btn" onclick="LOOP.goStep(2)">3 — tool call</button>
+          <button class="snav-btn" onclick="LOOP.goStep(3)">4 — resultado + loop</button>
+          <button class="snav-btn" onclick="LOOP.goStep(4)">5 — segunda tool</button>
+          <button class="snav-btn" onclick="LOOP.goStep(5)">6 — respuesta final</button>
+        </div>
+
+        <div class="step-panel active" id="loop-sp0">
+          <div class="step-desc">El loop empieza cuando el agente recibe una tarea en lenguaje natural. El historial de mensajes arranca vacío — solo existe el task del usuario. El LLM todavía no sabe qué herramientas va a necesitar.</div>
+          <div class="chat-window">
+            <div class="chat-header"><span>messages[ ]</span><span style="color:var(--accent-teal)">iter 0</span></div>
+            <div class="chat-body">
+              <div class="msg msg-user"><div class="msg-label">user</div>Encontrá todos los pedidos de más de $500 del mes pasado y enviá un resumen por email a ventas@corp.com</div>
+            </div>
+            <div class="loop-indicator"><div class="loop-dot dot-thinking"></div> El LLM recibe el task. Evalúa qué tools disponibles puede necesitar para resolverlo.</div>
+          </div>
+          <div class="insight-row">
+            <div class="insight"><div class="ins-title">El historial es todo el contexto</div><div class="ins-body">El agente no tiene memoria propia. Cada llamada al LLM incluye <em>todos</em> los mensajes anteriores — user, assistant, tool results.</div></div>
+            <div class="insight"><div class="ins-title">Tools disponibles</div><div class="ins-body">El servidor MCP le pasó al LLM el schema de <code class="code-inline">query_orders</code> y <code class="code-inline">send_email</code>. El modelo las conoce antes de empezar.</div></div>
+          </div>
+        </div>
+
+        <div class="step-panel" id="loop-sp1">
+          <div class="step-desc">El LLM procesa el task y <strong>decide que necesita información antes de poder responder</strong>. No inventa los datos — razona que debe consultar primero. Genera un bloque <code class="code-inline">tool_use</code> en lugar de texto final.</div>
+          <div class="chat-window">
+            <div class="chat-header"><span>messages[ ]</span><span style="color:var(--accent-amber)">LLM pensando…</span></div>
+            <div class="chat-body">
+              <div class="msg msg-user"><div class="msg-label">user</div>Encontrá todos los pedidos de más de $500 del mes pasado y enviá un resumen por email a ventas@corp.com</div>
+              <div class="msg msg-llm"><div class="msg-label">assistant — razonamiento interno</div>Para completar esta tarea necesito: (1) consultar los pedidos del mes pasado filtrados por monto, (2) luego enviar el resumen. Voy a llamar a query_orders primero.</div>
+            </div>
+            <div class="loop-indicator"><div class="loop-dot dot-thinking"></div> <span><strong>stop_reason = "tool_use"</strong> — el modelo no terminó, necesita datos externos.</span></div>
+          </div>
+          <div class="insight-row">
+            <div class="insight"><div class="ins-title">El modelo planifica</div><div class="ins-body">Antes de llamar a la primera tool, el LLM ya sabe que va a necesitar dos pasos. Esa planificación implícita emerge del razonamiento.</div></div>
+            <div class="insight"><div class="ins-title">stop_reason controla el loop</div><div class="ins-body">Si <code class="code-inline">stop_reason == "tool_use"</code> → seguir el loop. Si <code class="code-inline">stop_reason == "end_turn"</code> → terminar y devolver la respuesta.</div></div>
+          </div>
+        </div>
+
+        <div class="step-panel" id="loop-sp2">
+          <div class="step-desc">El agente extrae el bloque <code class="code-inline">tool_use</code> de la respuesta del LLM, pasa los parámetros por FastMCP (validación Pydantic), ejecuta la tool real, y captura el resultado.</div>
+          <div class="chat-window">
+            <div class="chat-header"><span>messages[ ]</span><span style="color:var(--accent-blue)">ejecutando tool…</span></div>
+            <div class="chat-body">
+              <div class="msg msg-user"><div class="msg-label">user</div>Encontrá todos los pedidos de más de $500…</div>
+              <div class="msg msg-tool-call"><div class="msg-label">tool_use → query_orders</div>{
+  "min_amount": 500,
+  "date_from": "2025-04-01",
+  "date_to":   "2025-04-30"
+}</div>
+            </div>
+            <div class="loop-indicator"><div class="loop-dot dot-calling"></div> FastMCP valida params → ejecuta query → captura resultado.</div>
+          </div>
+          <div class="insight-row">
+            <div class="insight"><div class="ins-title">El agente no ve SQL</div><div class="ins-body">La tool <code class="code-inline">query_orders</code> puede internamente correr una query en Postgres. El agente solo ve los parámetros y el resultado.</div></div>
+            <div class="insight"><div class="ins-title">Checkpoint antes de ejecutar</div><div class="ins-body">Antes de correr una tool destructiva, el <code class="code-inline">StateManager</code> guarda un snapshot. Si la tool falla, el estado se revierte.</div></div>
+          </div>
+        </div>
+
+        <div class="step-panel" id="loop-sp3">
+          <div class="step-desc">El resultado de la tool se agrega al historial como un mensaje <code class="code-inline">tool_result</code>. El historial completo se manda de vuelta al LLM. <strong>El loop vuelve a empezar</strong> — ahora con más contexto.</div>
+          <div class="chat-window">
+            <div class="chat-header"><span>messages[ ]</span><span style="color:var(--accent-violet)">↻ volviendo al LLM</span></div>
+            <div class="chat-body">
+              <div class="msg msg-user"><div class="msg-label">user</div>Encontrá todos los pedidos de más de $500…</div>
+              <div class="msg msg-tool-call"><div class="msg-label">tool_use → query_orders</div>{ "min_amount": 500, "date_from": "2025-04-01" … }</div>
+              <div class="msg msg-tool-result"><div class="msg-label">tool_result</div>[
+  { "id": "ord_001", "amount": 820, "client": "Acme SA" },
+  { "id": "ord_002", "amount": 1340, "client": "Beta SRL" },
+  { "id": "ord_003", "amount": 610,  "client": "Gamma SA" }
+]</div>
+            </div>
+            <div class="loop-indicator"><div class="loop-dot dot-loop"></div> Todo el historial → LLM de nuevo. El modelo ahora tiene los datos y puede decidir el siguiente paso.</div>
+          </div>
+          <div class="insight-row">
+            <div class="insight"><div class="ins-title">El contexto crece con cada iteración</div><div class="ins-body">El LLM en cada vuelta ve todo lo que pasó. Puede razonar sobre los resultados anteriores para decidir la próxima acción.</div></div>
+            <div class="insight"><div class="ins-title">Sin memoria propia</div><div class="ins-body">El modelo no "recuerda" entre llamadas. Todo lo que sabe en esta vuelta viene del historial que el agente le pasa.</div></div>
+          </div>
+        </div>
+
+        <div class="step-panel" id="loop-sp4">
+          <div class="step-desc">Con los datos de los pedidos en el historial, el LLM <strong>genera una segunda tool call</strong> — ahora para enviar el email. Construye el cuerpo del mensaje a partir de los resultados anteriores.</div>
+          <div class="chat-window">
+            <div class="chat-header"><span>messages[ ]</span><span style="color:var(--accent-blue)">segunda tool…</span></div>
+            <div class="chat-body">
+              <div class="msg msg-tool-result"><div class="msg-label">tool_result — query_orders</div>[{ "id": "ord_001", "amount": 820 }, { "id": "ord_002", "amount": 1340 }, …]</div>
+              <div class="msg msg-tool-call"><div class="msg-label">tool_use → send_email</div>{
+  "to": "ventas@corp.com",
+  "subject": "Pedidos &gt;$500 — abril 2025",
+  "body": "Se encontraron 3 pedidos:\n• Acme SA: $820\n• Beta SRL: $1340\n• Gamma SA: $610\nTotal: $2770"
+}</div>
+            </div>
+            <div class="loop-indicator"><div class="loop-dot dot-calling"></div> FastMCP valida destinatario contra whitelist → hook de auditoría → envío.</div>
+          </div>
+          <div class="insight-row">
+            <div class="insight"><div class="ins-title">El LLM compone el contenido</div><div class="ins-body">El cuerpo del email lo generó el modelo a partir de los tool_results anteriores. No hay template hardcodeado.</div></div>
+            <div class="insight"><div class="ins-title">Las reglas se aplican igual</div><div class="ins-body">El pre-hook de <code class="code-inline">send_email</code> verifica el destinatario contra la whitelist antes de enviar.</div></div>
+          </div>
+        </div>
+
+        <div class="step-panel" id="loop-sp5">
+          <div class="step-desc">El resultado del email entra al historial. El LLM evalúa el contexto completo y concluye que la tarea está cumplida. Genera texto final — <code class="code-inline">stop_reason = "end_turn"</code>. El loop termina.</div>
+          <div class="chat-window">
+            <div class="chat-header"><span>messages[ ]</span><span style="color:var(--accent-teal)">end_turn — loop completo</span></div>
+            <div class="chat-body">
+              <div class="msg msg-tool-result"><div class="msg-label">tool_result — send_email</div>{ "status": "sent", "message_id": "msg_x7k2p9" }</div>
+              <div class="msg msg-final"><div class="msg-label">assistant — respuesta final</div>Listo. Encontré 3 pedidos superiores a $500 en abril (total $2.770) y envié el resumen a ventas@corp.com. El email tiene ID msg_x7k2p9.</div>
+            </div>
+            <div class="loop-indicator"><div class="loop-dot dot-done"></div> <strong>stop_reason = "end_turn"</strong> — el agente devuelve el texto final al usuario.</div>
+          </div>
+          <div class="insight-row">
+            <div class="insight"><div class="ins-title">El loop duró 2 iteraciones</div><div class="ins-body">Tarea simple → 2 tool calls. Una tarea más compleja puede necesitar 5, 10 o 20 iteraciones. El loop termina cuando el modelo decide que terminó.</div></div>
+            <div class="insight"><div class="ins-title">Todo el historial persiste</div><div class="ins-body">El historial completo queda disponible para auditoría: qué consultó, qué datos obtuvo, qué envió, en qué orden.</div></div>
+          </div>
+        </div>
+
+        <div class="nav-row">
+          <button class="nav-btn" onclick="LOOP.prevStep()">← anterior</button>
+          <span class="step-counter" id="loop-step-counter">paso 1 de 6</span>
+          <button class="nav-btn" onclick="LOOP.nextStep()">siguiente →</button>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ─── SECTION 2: USE CASES ────────────────────────────────────── -->
+    <section class="page-section" id="section-usecases" aria-label="REST vs FastMCP casos de uso">
+      <div class="section-header">
+        <div class="accent-tag tag-blue"><i class="ti ti-git-compare"></i> Módulo 02</div>
+        <h1>REST vs FastMCP</h1>
+        <p>Cuándo usar cada protocolo. La clave está en quién decide qué llamar: un humano, código determinista, o el LLM.</p>
+      </div>
+      <div class="component-card">
+
+        <div class="cols">
+          <div class="card">
+            <div class="card-head head-rest"><i class="ti ti-api" style="font-size:15px"></i> REST — el cliente es un humano o app</div>
+            <div class="card-body">
+              <div class="use-item">
+                <i class="ti ti-device-mobile use-icon" style="color:var(--accent-blue)"></i>
+                <div class="use-text"><strong>App móvil o web</strong> — un usuario toca un botón, la app llama a <code class="code-inline">POST /orders</code>. El cliente sabe exactamente qué endpoint usar.</div>
+              </div>
+              <div class="use-item">
+                <i class="ti ti-plug use-icon" style="color:var(--accent-blue)"></i>
+                <div class="use-text"><strong>Integración entre sistemas</strong> — Shopify llama a tu webhook, Stripe te notifica un pago. Contratos fijos, conocidos de antemano.</div>
+              </div>
+              <div class="use-item">
+                <i class="ti ti-users use-icon" style="color:var(--accent-blue)"></i>
+                <div class="use-text"><strong>API pública</strong> — terceros consumen tu servicio. Necesitás versionado, autenticación OAuth, documentación estable.</div>
+              </div>
+              <div class="use-item">
+                <i class="ti ti-refresh use-icon" style="color:var(--accent-blue)"></i>
+                <div class="use-text"><strong>Polling y webhooks</strong> — el cliente decide cuándo consultar. El flujo lo controla el humano o el scheduler.</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head head-mcp"><i class="ti ti-robot" style="font-size:15px"></i> FastMCP — el cliente es un LLM</div>
+            <div class="card-body">
+              <div class="use-item">
+                <i class="ti ti-brain use-icon" style="color:var(--accent-teal)"></i>
+                <div class="use-text"><strong>Agente autónomo</strong> — el modelo decide qué herramienta usar, cuándo, y con qué parámetros. No hay humano eligiendo el endpoint.</div>
+              </div>
+              <div class="use-item">
+                <i class="ti ti-messages use-icon" style="color:var(--accent-teal)"></i>
+                <div class="use-text"><strong>Asistente con acceso a sistemas</strong> — "borrá los usuarios inactivos de más de 90 días". El agente traduce lenguaje natural a tool calls.</div>
+              </div>
+              <div class="use-item">
+                <i class="ti ti-arrows-shuffle use-icon" style="color:var(--accent-teal)"></i>
+                <div class="use-text"><strong>Flujos multi-paso no predefinidos</strong> — el agente encadena tools según el contexto. La secuencia emerge del razonamiento.</div>
+              </div>
+              <div class="use-item">
+                <i class="ti ti-search use-icon" style="color:var(--accent-teal)"></i>
+                <div class="use-text"><strong>Exploración de datos</strong> — el modelo consulta, filtra, cruza información iterativamente. Cada resultado informa la siguiente llamada.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="together-card">
+          <div class="together-head">En la práctica conviven — el agente usa MCP, el resto del sistema usa REST</div>
+          <div class="together-body">
+            <div class="t-node blue">
+              <div class="t-label">App / usuarios</div>
+              <div class="t-sub">llaman via REST</div>
+            </div>
+            <div>
+              <div class="t-arrow">→</div>
+              <span class="t-arrow-label">HTTP</span>
+            </div>
+            <div class="t-node amber">
+              <div class="t-label">Backend REST</div>
+              <div class="t-sub">FastAPI, Django…</div>
+            </div>
+            <div>
+              <div class="t-arrow">⇄</div>
+              <span class="t-arrow-label">MCP</span>
+            </div>
+            <div class="t-node teal">
+              <div class="t-label">Agente LLM</div>
+              <div class="t-sub">usa FastMCP tools</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-title">Regla práctica — ¿cuál usar?</div>
+        <div class="rule-grid">
+          <div class="rule-card"><div class="rule-q">¿Quién decide qué llamar?</div><div class="rule-a a-rest"><i class="ti ti-user" style="font-size:14px"></i> humano o código → REST</div></div>
+          <div class="rule-card"><div class="rule-q">¿Quién decide qué llamar?</div><div class="rule-a a-mcp"><i class="ti ti-robot" style="font-size:14px"></i> el LLM → MCP</div></div>
+          <div class="rule-card"><div class="rule-q">¿El contrato es público / versionado?</div><div class="rule-a a-rest"><i class="ti ti-api" style="font-size:14px"></i> sí → REST</div></div>
+          <div class="rule-card"><div class="rule-q">¿El contrato puede cambiar con el código?</div><div class="rule-a a-mcp"><i class="ti ti-refresh" style="font-size:14px"></i> sí → MCP</div></div>
+          <div class="rule-card"><div class="rule-q">¿Necesitás OAuth, rate limiting, versiones?</div><div class="rule-a a-rest"><i class="ti ti-lock" style="font-size:14px"></i> sí → REST</div></div>
+          <div class="rule-card"><div class="rule-q">¿El flujo emerge del razonamiento?</div><div class="rule-a a-mcp"><i class="ti ti-brain" style="font-size:14px"></i> sí → MCP</div></div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ─── SECTION 3: CONTRACTS ─────────────────────────────────────── -->
+    <section class="page-section" id="section-contracts" aria-label="Contratos de datos FastMCP vs REST">
+      <div class="section-header">
+        <div class="accent-tag tag-teal"><i class="ti ti-file-code"></i> Módulo 03</div>
+        <h1>Contratos de Datos</h1>
+        <p>FastMCP deriva el contrato directamente del código Python. Una sola fuente de verdad elimina el drift entre documentación, validación y esquema.</p>
+      </div>
+      <div class="component-card">
+
+        <div class="cols">
+          <div class="col-card">
+            <div class="col-header rest">REST tradicional — contrato separado del código</div>
+            <div class="col-body">
+              <div class="drift-label">1. Escribís el contrato a mano (OpenAPI / docstring)</div>
+              <div class="code"><span class="cm"># openapi.yaml (o docstring manual)</span>
+<span class="st">parameters:</span>
+  - name: <span class="st">user_id</span>
+    pattern: <span class="st">"^usr_[a-z0-9]{8}$"</span>
+    required: <span class="kw">true</span>
+  - name: <span class="st">days_inactive</span>
+    minimum: <span class="num">30</span>
+    maximum: <span class="num">365</span></div>
+              <div class="badge-row">
+                <span class="badge b-danger">archivo separado</span>
+                <span class="badge b-danger">puede desincronizarse</span>
+              </div>
+              <div class="drift-label" style="margin-top:10px">2. Luego escribís la validación (duplicado)</div>
+              <div class="code"><span class="kw">def</span> <span class="fn">delete_user</span>(user_id, days):
+    <span class="cm"># validás de nuevo — ya lo dijiste arriba</span>
+    <span class="kw">if not</span> re.match(<span class="st">r"^usr_[a-z0-9]{8}$"</span>, user_id):
+        <span class="kw">raise</span> ValueError(...)
+    <span class="kw">if not</span> (<span class="num">30</span> <= days <= <span class="num">365</span>):
+        <span class="kw">raise</span> ValueError(...)</div>
+              <div class="badge-row">
+                <span class="badge b-danger">lógica duplicada</span>
+                <span class="badge b-neutral">3 lugares para actualizar</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-card">
+            <div class="col-header mcp">FastMCP — contrato derivado del código</div>
+            <div class="col-body">
+              <div class="drift-label">Una sola fuente de verdad</div>
+              <div class="code"><span class="kw">from</span> pydantic <span class="kw">import</span> BaseModel, Field
+
+<span class="kw">class</span> <span class="fn">DeleteUserParams</span>(BaseModel):
+    user_id: str = Field(
+        ...,
+        pattern=<span class="st">r"^usr_[a-z0-9]{8}$"</span>,
+        description=<span class="st">"ID del usuario"</span>
+    )
+    days_inactive: int = Field(
+        ..., ge=<span class="num">30</span>, le=<span class="num">365</span>,
+        description=<span class="st">"Días sin actividad"</span>
+    )
+
+<span class="dec">@mcp.tool()</span>
+<span class="kw">async def</span> <span class="fn">delete_user</span>(p: DeleteUserParams):
+    ...</div>
+              <div class="badge-row">
+                <span class="badge b-success">una sola definición</span>
+                <span class="badge b-success">valida en runtime</span>
+                <span class="badge b-info">genera el JSON schema</span>
+                <span class="badge b-info">documenta al LLM</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="drift-demo">
+          <div class="drift-header">El problema del drift — qué pasa cuando cambia un requisito</div>
+          <div class="drift-cols">
+            <div class="drift-col">
+              <div class="drift-label">REST: cambia el mínimo de 30 → 60 días</div>
+              <div class="code"><span class="cm"># openapi.yaml</span>
+<span class="highlight-line">    minimum: <span class="num">60</span>  ← actualizaste</span>
+
+<span class="cm"># handler.py</span>
+<span class="highlight-danger">    if days &lt; <span class="num">30</span>:  ← olvidaste</span>
+        raise ...
+
+<span class="cm"># test_docs.py</span>
+<span class="highlight-danger">    assert days &gt;= <span class="num">30</span>  ← también olvidaste</span></div>
+              <div class="badge-row"><span class="badge b-danger">3 lugares, 2 desincronizados</span></div>
+            </div>
+            <div class="drift-col">
+              <div class="drift-label">FastMCP: cambia el mínimo de 30 → 60 días</div>
+              <div class="code"><span class="kw">class</span> <span class="fn">DeleteUserParams</span>(BaseModel):
+    days_inactive: int = Field(
+        ...,
+<span class="highlight-line">        ge=<span class="num">60</span>,  ← un solo cambio</span>
+        le=<span class="num">365</span>
+    )</div>
+              <div style="height:52px"></div>
+              <div class="badge-row"><span class="badge b-success">1 lugar — todo sincronizado</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div style="font-size:13px;font-weight:600;color:var(--text-primary);margin-bottom:6px">Lo que FastMCP genera automáticamente del modelo Pydantic</div>
+
+        <div class="stepper">
+          <button class="step-tab active" onclick="CONTRACT.showStep(0)">Schema JSON</button>
+          <button class="step-tab" onclick="CONTRACT.showStep(1)">Lo que ve el LLM</button>
+          <button class="step-tab" onclick="CONTRACT.showStep(2)">Error de validación</button>
+        </div>
+
+        <div class="contract-panel active" id="contract-sp0">
+          <div class="code"><span class="cm">// generado automáticamente por FastMCP — nunca lo escribís a mano</span>
+{
+  <span class="st">"name"</span>: <span class="st">"delete_user"</span>,
+  <span class="st">"inputSchema"</span>: {
+    <span class="st">"type"</span>: <span class="st">"object"</span>,
+    <span class="st">"properties"</span>: {
+      <span class="st">"user_id"</span>: {
+        <span class="st">"type"</span>: <span class="st">"string"</span>,
+        <span class="st">"pattern"</span>: <span class="st">"^usr_[a-z0-9]{8}$"</span>,
+        <span class="st">"description"</span>: <span class="st">"ID del usuario"</span>
+      },
+      <span class="st">"days_inactive"</span>: {
+        <span class="st">"type"</span>: <span class="st">"integer"</span>,
+        <span class="st">"minimum"</span>: <span class="num">60</span>,
+        <span class="st">"maximum"</span>: <span class="num">365</span>,
+        <span class="st">"description"</span>: <span class="st">"Días sin actividad"</span>
+      }
+    },
+    <span class="st">"required"</span>: [<span class="st">"user_id"</span>, <span class="st">"days_inactive"</span>]
+  }
+}</div>
+        </div>
+
+        <div class="contract-panel" id="contract-sp1">
+          <div class="code"><span class="cm">// el modelo recibe esto y sabe exactamente cómo llamar la tool</span>
+<span class="cm">// intenta llamarla así (correcto):</span>
+{
+  <span class="st">"user_id"</span>: <span class="st">"usr_a1b2c3d4"</span>,     <span class="cm">// cumple el pattern</span>
+  <span class="st">"days_inactive"</span>: <span class="num">90</span>          <span class="cm">// entre 60 y 365 ✓</span>
+}
+
+<span class="cm">// intenta llamarla así (incorrecto — rechazado antes de llegar a tu fn):</span>
+{
+  <span class="st">"user_id"</span>: <span class="st">"admin_root"</span>,        <span class="cm">// no cumple el pattern ✗</span>
+  <span class="st">"days_inactive"</span>: <span class="num">5</span>           <span class="cm">// menor que 60 ✗</span>
+}</div>
+        </div>
+
+        <div class="contract-panel" id="contract-sp2">
+          <div class="code"><span class="cm"># el error que FastMCP devuelve al LLM (estructurado, no un crash)</span>
+ValidationError: <span class="num">2</span> validation errors <span class="kw">for</span> DeleteUserParams
+user_id
+  String should match pattern <span class="st">'^usr_[a-z0-9]{8}$'</span>
+  Input: <span class="st">'admin_root'</span>  [type=string_pattern_mismatch]
+days_inactive
+  Input should be greater than or equal to <span class="num">60</span>
+  Input: <span class="num">5</span>  [type=greater_than_equal]
+
+<span class="cm"># el LLM recibe este mensaje, corrige los parámetros y reintenta</span>
+<span class="cm"># tu función nunca llegó a ejecutarse</span></div>
+        </div>
+
+        <div class="insight-grid">
+          <div class="insight-card">
+            <div class="insight-title"><i class="ti ti-source-code" style="color:var(--accent-violet)"></i> Una fuente de verdad</div>
+            <div class="insight-body">El modelo Pydantic es el contrato. Cambiás un <code class="code-inline">ge=30</code> a <code class="code-inline">ge=60</code> y todo el stack se actualiza automáticamente.</div>
+          </div>
+          <div class="insight-card">
+            <div class="insight-title"><i class="ti ti-shield-check" style="color:var(--accent-teal)"></i> Validación previa a ejecución</div>
+            <div class="insight-body">Pydantic rechaza los parámetros inválidos antes de que tu función corra. Imposible que llegue un <code class="code-inline">user_id</code> malformado.</div>
+          </div>
+          <div class="insight-card">
+            <div class="insight-title"><i class="ti ti-robot" style="color:var(--accent-blue)"></i> El LLM aprende del schema</div>
+            <div class="insight-body">El modelo ve el <code class="code-inline">pattern</code>, el <code class="code-inline">minimum</code> y el <code class="code-inline">description</code> antes de intentar la llamada. Menos errores.</div>
+          </div>
+          <div class="insight-card">
+            <div class="insight-title"><i class="ti ti-rotate" style="color:var(--accent-amber)"></i> Auto-corrección del agente</div>
+            <div class="insight-body">Si el LLM manda parámetros inválidos, recibe el <code class="code-inline">ValidationError</code> estructurado de Pydantic y puede corregirlos y reintentar.</div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ─── SECTION 4: ARCH ──────────────────────────────────────────── -->
+    <section class="page-section" id="section-arch" aria-label="Arquitectura Python del agente">
+      <div class="section-header">
+        <div class="accent-tag tag-amber"><i class="ti ti-layers-intersect"></i> Módulo 04</div>
+        <h1>Arquitectura Python</h1>
+        <p>Las capas que protegen al agente contra la indeterminación: llaves inmutables, hooks, reglas de negocio, estado con checkpoints.</p>
+      </div>
+      <div class="component-card">
+
+        <div class="arch-tabs">
+          <button class="arch-tab active" id="arch-tab-btn-arch" onclick="ARCH.switchTab('arch')"><i class="ti ti-layout-sidebar"></i> Capas</button>
+          <button class="arch-tab" id="arch-tab-btn-flow" onclick="ARCH.switchTab('flow')"><i class="ti ti-shield-check"></i> Flujo de riesgo</button>
+          <button class="arch-tab" id="arch-tab-btn-sim" onclick="ARCH.switchTab('sim')"><i class="ti ti-player-play"></i> Simulador</button>
+          <button class="arch-tab" id="arch-tab-btn-guide" onclick="ARCH.switchTab('guide')"><i class="ti ti-book"></i> Patrones</button>
+        </div>
+
+        <!-- PANEL CAPAS -->
+        <div class="arch-panel active" id="arch-panel-arch">
+          <div class="arch-stack">
+            <div class="layer" data-id="key" onclick="ARCH.selectLayer(this)">
+              <div class="layer-header">
+                <div class="layer-icon l-coral"><i class="ti ti-key"></i></div>
+                <div><div class="layer-title">agent_key.py — Llaves del agente</div><div class="layer-subtitle">Identidad, permisos y contexto inmutable</div></div>
+                <span class="layer-badge badge-key">KEY</span>
+              </div>
+            </div>
+            <div class="arrow-down">↓</div>
+            <div class="layer" data-id="fastmcp" onclick="ARCH.selectLayer(this)">
+              <div class="layer-header">
+                <div class="layer-icon l-blue"><i class="ti ti-plug"></i></div>
+                <div><div class="layer-title">FastMCP — Servidor de herramientas</div><div class="layer-subtitle">Exposición de tools, resources y prompts</div></div>
+                <span class="layer-badge badge-mcp">MCP</span>
+              </div>
+            </div>
+            <div class="arrow-down">↓</div>
+            <div class="layer" data-id="hooks" onclick="ARCH.selectLayer(this)">
+              <div class="layer-header">
+                <div class="layer-icon l-teal"><i class="ti ti-hook"></i></div>
+                <div><div class="layer-title">hooks.py — Guardias del ciclo</div><div class="layer-subtitle">Pre/post-call, validación y logging</div></div>
+                <span class="layer-badge badge-hook">HOOK</span>
+              </div>
+            </div>
+            <div class="arrow-down">↓</div>
+            <div class="layer" data-id="rules" onclick="ARCH.selectLayer(this)">
+              <div class="layer-header">
+                <div class="layer-icon l-amber"><i class="ti ti-shield-lock"></i></div>
+                <div><div class="layer-title">business_rules.py — Reglas de negocio</div><div class="layer-subtitle">Contratos explícitos, invariantes y guards</div></div>
+                <span class="layer-badge badge-guard">GUARD</span>
+              </div>
+            </div>
+            <div class="arrow-down">↓</div>
+            <div class="layer" data-id="agent" onclick="ARCH.selectLayer(this)">
+              <div class="layer-header">
+                <div class="layer-icon l-purple"><i class="ti ti-robot"></i></div>
+                <div><div class="layer-title">agent.py — Núcleo del agente</div><div class="layer-subtitle">Loop de razonamiento + ejecución de herramientas</div></div>
+                <span class="layer-badge badge-core">CORE</span>
+              </div>
+            </div>
+            <div class="arrow-down">↓</div>
+            <div class="layer" data-id="state" onclick="ARCH.selectLayer(this)">
+              <div class="layer-header">
+                <div class="layer-icon l-green"><i class="ti ti-database"></i></div>
+                <div><div class="layer-title">state.py — Estado determinista</div><div class="layer-subtitle">Snapshot, checkpoints y rollback</div></div>
+                <span class="layer-badge badge-hook">STATE</span>
+              </div>
+            </div>
+          </div>
+          <div class="detail-card" id="arch-detail-box">
+            <div class="dtitle"><i class="ti ti-cursor-text"></i> Seleccioná una capa para ver detalles</div>
+            <div class="ddesc">Cada capa protege contra una forma diferente de indeterminación en el agente.</div>
+          </div>
+          <p class="hint">↑ Hacé clic en cualquier bloque para ver el código y la explicación.</p>
+        </div>
+
+        <!-- PANEL FLUJO DE RIESGO -->
+        <div class="arch-panel" id="arch-panel-flow">
+          <p style="font-size:13px;color:var(--text-secondary);margin-bottom:16px">Ciclo de vida de una llamada a tool — cada punto puede fallar sin las protecciones correctas.</p>
+          <div class="risk-flow">
+            <div class="risk-node warn"><div class="rn"><i class="ti ti-message"></i> Input del LLM</div><div class="rs">Puede contener intención ambigua o malformada</div></div>
+            <div class="risk-arrow">→</div>
+            <div class="risk-node danger"><div class="rn"><i class="ti ti-alert-triangle"></i> Sin guard</div><div class="rs">Acción ejecutada con parámetros inválidos</div></div>
+            <div class="risk-arrow">→</div>
+            <div class="risk-node danger"><div class="rn"><i class="ti ti-bug"></i> Efecto secundario</div><div class="rs">Estado corrompido, sin posibilidad de rollback</div></div>
+          </div>
+          <div class="risk-flow">
+            <div class="risk-node warn"><div class="rn"><i class="ti ti-message"></i> Input del LLM</div><div class="rs">Puede contener intención ambigua o malformada</div></div>
+            <div class="risk-arrow">→</div>
+            <div class="risk-node success"><div class="rn"><i class="ti ti-shield-check"></i> Pre-hook + guard</div><div class="rs">Validación antes de ejecución. Rechaza o normaliza</div></div>
+            <div class="risk-arrow">→</div>
+            <div class="risk-node success"><div class="rn"><i class="ti ti-check"></i> Acción segura</div><div class="rs">Estado auditado, reversible con checkpoint</div></div>
+          </div>
+          <div style="font-size:14px;font-weight:600;color:var(--text-primary);margin:16px 0 10px">¿Qué es la "indeterminación"?</div>
+          <div class="guide-grid">
+            <div class="guide-card"><div class="gc-title"><i class="ti ti-arrows-shuffle" style="color:var(--accent-coral)"></i> No determinismo</div><div class="gc-body">El LLM puede generar parámetros distintos en dos runs idénticos. Sin validación, cada run produce un efecto diferente.</div></div>
+            <div class="guide-card"><div class="gc-title"><i class="ti ti-arrow-merge" style="color:var(--accent-amber)"></i> Ambigüedad semántica</div><div class="gc-body">"Borrar usuarios inactivos" puede significar 30 días o 30 segundos. El guard impone la definición canónica.</div></div>
+            <div class="guide-card"><div class="gc-title"><i class="ti ti-ghost" style="color:var(--accent-violet)"></i> Hallucination de tool</div><div class="gc-body">El modelo puede invocar una herramienta con argumentos que no existen. El hook rechaza la llamada antes de ejecutar.</div></div>
+            <div class="guide-card"><div class="gc-title"><i class="ti ti-database-off" style="color:var(--accent-coral)"></i> Estado derivado</div><div class="gc-body">Sin snapshot, una segunda ejecución del mismo prompt puede llegar a un estado diferente si el contexto cambió.</div></div>
+          </div>
+        </div>
+
+        <!-- PANEL SIMULADOR -->
+        <div class="arch-panel" id="arch-panel-sim">
+          <p style="font-size:13px;color:var(--text-secondary);margin-bottom:4px">Simulá llamadas al agente y observá cómo las protecciones reaccionan en cada capa.</p>
+          <div class="sim-section">
+            <div class="sim-input-group">
+              <span class="sim-label">Herramienta solicitada por el LLM</span>
+              <select class="sim-select" id="sim-tool">
+                <option value="delete_user">delete_user</option>
+                <option value="send_email">send_email</option>
+                <option value="update_price">update_price</option>
+                <option value="bulk_refund">bulk_refund</option>
+                <option value="unknown_tool">unknown_tool (hallucination)</option>
+              </select>
+              <span class="sim-label">Escenario de parámetros</span>
+              <select class="sim-select" id="sim-scenario">
+                <option value="valid">Parámetros válidos</option>
+                <option value="missing">Parámetro faltante</option>
+                <option value="outofrange">Valor fuera de rango</option>
+                <option value="unauthorized">Sin permiso (key insuficiente)</option>
+                <option value="dryrun">Dry-run mode activado</option>
+              </select>
+              <button class="run-btn" onclick="ARCH.runSim()"><i class="ti ti-player-play"></i> Ejecutar simulación</button>
+            </div>
+            <div>
+              <span class="sim-label">Log de ejecución</span>
+              <div class="sim-log" id="sim-log">— esperando ejecución —</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- PANEL PATRONES -->
+        <div class="arch-panel" id="arch-panel-guide">
+          <p style="font-size:13px;color:var(--text-secondary);margin-bottom:14px">Patrones clave para escribir agentes deterministas y auditables.</p>
+          <div class="guide-grid">
+            <div class="guide-card"><div class="gc-title"><i class="ti ti-lock" style="color:var(--accent-coral)"></i> Key inmutable</div><div class="gc-body">Usá <code>@dataclass(frozen=True)</code> para el contexto del agente. Una key que puede mutar es una fuente de indeterminación.</div></div>
+            <div class="guide-card"><div class="gc-title"><i class="ti ti-hook" style="color:var(--accent-teal)"></i> Hooks sincrónicos</div><div class="gc-body">Los pre-hooks deben ser <em>síncronos y sin efectos secundarios</em>. Un pre-hook con I/O introduce latencia no determinista.</div></div>
+            <div class="guide-card"><div class="gc-title"><i class="ti ti-clipboard-check" style="color:var(--accent-amber)"></i> Contratos explícitos</div><div class="gc-body">Cada regla de negocio tiene una sola fuente de verdad. Nunca condicionales inline en el agente; siempre <code>rules.validate()</code>.</div></div>
+            <div class="guide-card"><div class="gc-title"><i class="ti ti-clock-record" style="color:var(--accent-blue)"></i> Checkpoints</div><div class="gc-body">Guardá el estado antes de cada tool destructiva. Sin checkpoint, el rollback requiere reconstruir el estado desde logs.</div></div>
+            <div class="guide-card"><div class="gc-title"><i class="ti ti-test-pipe" style="color:var(--accent-violet)"></i> Dry-run por defecto</div><div class="gc-body">Las tools destructivas arrancan en modo dry-run. El agente necesita pasar <code>confirm=True</code> explícitamente.</div></div>
+            <div class="guide-card"><div class="gc-title"><i class="ti ti-eye" style="color:var(--text-green)"></i> Observabilidad</div><div class="gc-body">Cada ejecución genera un <code>run_id</code> trazable. Sin trazabilidad, debuggear comportamiento no determinista es imposible.</div></div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </div><!-- /content-area -->
+</div><!-- /main -->
+
+<script>
+/* ════════════════════════════════════════════════════════════════════
+   APP — navegación principal
+   ════════════════════════════════════════════════════════════════════ */
+const APP = (() => {
+  const SECTION_NAMES = {
+    loop:      'Loop de Razonamiento',
+    usecases:  'REST vs FastMCP',
+    contracts: 'Contratos de Datos',
+    arch:      'Arquitectura Python'
+  };
+
+  function navigate(sectionId) {
+    // Hide all sections
+    document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
+    // Deactivate nav items
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    // Show target section
+    const section = document.getElementById('section-' + sectionId);
+    if (section) section.classList.add('active');
+    // Activate nav item
+    const navItem = document.querySelector(`.nav-item[data-section="${sectionId}"]`);
+    if (navItem) navItem.classList.add('active');
+    // Update topbar
+    const label = document.getElementById('topbar-section-name');
+    if (label) label.textContent = SECTION_NAMES[sectionId] || sectionId;
+    // Close sidebar on mobile
+    closeSidebar();
+  }
+
+  function toggleSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebar-overlay');
+    sidebar.classList.toggle('open');
+    overlay.classList.toggle('visible');
+  }
+
+  function closeSidebar() {
+    document.getElementById('sidebar').classList.remove('open');
+    document.getElementById('sidebar-overlay').classList.remove('visible');
+  }
+
+  // Keyboard nav
+  document.querySelectorAll('.nav-item').forEach(item => {
+    item.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        APP.navigate(item.dataset.section);
+      }
+    });
+  });
+
+  return { navigate, toggleSidebar, closeSidebar };
+})();
+
+/* ════════════════════════════════════════════════════════════════════
+   LOOP — módulo del loop de razonamiento
+   ════════════════════════════════════════════════════════════════════ */
+const LOOP = (() => {
+  let cur = 0;
+  const total = 6;
+
+  function goStep(i) {
+    document.querySelectorAll('.step-panel').forEach((p, j) => {
+      p.classList.toggle('active', j === i);
+    });
+    document.querySelectorAll('.snav-btn').forEach((b, j) => {
+      b.classList.toggle('active', j === i);
+    });
+    const counter = document.getElementById('loop-step-counter');
+    if (counter) counter.textContent = `paso ${i + 1} de ${total}`;
+    cur = i;
+  }
+
+  function nextStep() { goStep((cur + 1) % total); }
+  function prevStep() { goStep((cur - 1 + total) % total); }
+
+  return { goStep, nextStep, prevStep };
+})();
+
+/* ════════════════════════════════════════════════════════════════════
+   CONTRACT — módulo de contratos
+   ════════════════════════════════════════════════════════════════════ */
+const CONTRACT = (() => {
+  function showStep(i) {
+    document.querySelectorAll('.step-tab').forEach((s, j) => s.classList.toggle('active', j === i));
+    document.querySelectorAll('.contract-panel').forEach((p, j) => p.classList.toggle('active', j === i));
+  }
+  return { showStep };
+})();
+
+/* ════════════════════════════════════════════════════════════════════
+   ARCH — módulo de arquitectura Python
+   ════════════════════════════════════════════════════════════════════ */
+const ARCH = (() => {
+
+  const LAYER_DATA = {
+    key: {
+      title: "agent_key.py — Llaves del agente",
+      icon: "ti-key",
+      desc: "Define la identidad y los permisos del agente. Es inmutable durante toda la ejecución. Evita que el agente escale privilegios en tiempo de ejecución.",
+      code: `<span class="cm"># agent_key.py</span>
+<span class="kw">from</span> dataclasses <span class="kw">import</span> dataclass, field
+<span class="kw">from</span> typing <span class="kw">import</span> FrozenSet
+<span class="kw">import</span> uuid
+
+<span class="dec">@dataclass(frozen=True)</span>  <span class="cm"># inmutable — sin mutación en runtime</span>
+<span class="kw">class</span> <span class="fn">AgentKey</span>:
+    agent_id: str = field(default_factory=<span class="kw">lambda</span>: str(uuid.uuid4()))
+    permissions: FrozenSet[str] = field(default_factory=frozenset)
+    environment: str = <span class="st">"sandbox"</span>  <span class="cm"># nunca prod por defecto</span>
+    run_id: str = field(default_factory=<span class="kw">lambda</span>: str(uuid.uuid4()))
+
+    <span class="kw">def</span> <span class="fn">require</span>(self, action: str) -> None:
+        <span class="kw">if</span> action <span class="kw">not in</span> self.permissions:
+            <span class="kw">raise</span> PermissionError(
+                f<span class="st">"[{self.run_id}] Acción '{action}' no autorizada"</span>
+            )`
+    },
+    fastmcp: {
+      title: "FastMCP — Servidor de herramientas",
+      icon: "ti-plug",
+      desc: "Expone las tools al LLM con esquemas JSON estrictos. El esquema es la primera línea de defensa: si el modelo genera parámetros que no encajan, MCP los rechaza antes de llegar al agente.",
+      code: `<span class="cm"># server.py</span>
+<span class="kw">from</span> fastmcp <span class="kw">import</span> FastMCP
+<span class="kw">from</span> pydantic <span class="kw">import</span> BaseModel, Field, validator
+
+mcp = FastMCP(<span class="st">"mi-agente"</span>)
+
+<span class="kw">class</span> <span class="fn">DeleteUserParams</span>(BaseModel):
+    user_id: str = Field(..., pattern=<span class="st">r"^usr_[a-z0-9]{8}$"</span>)
+    confirm: bool = Field(<span class="kw">False</span>)          <span class="cm"># dry-run por defecto</span>
+    reason: str = Field(..., min_length=<span class="num">10</span>)  <span class="cm"># obliga justificación</span>
+
+<span class="dec">@mcp.tool()</span>
+<span class="kw">async def</span> <span class="fn">delete_user</span>(params: DeleteUserParams) -> dict:
+    <span class="kw">if not</span> params.confirm:
+        <span class="kw">return</span> {<span class="st">"dry_run"</span>: <span class="kw">True</span>, <span class="st">"preview"</span>: f<span class="st">"Eliminaría {params.user_id}"</span>}
+    ...`
+    },
+    hooks: {
+      title: "hooks.py — Guardias del ciclo de vida",
+      icon: "ti-hook",
+      desc: "Pre-hooks validan antes de ejecutar. Post-hooks auditan y registran resultados. Son el punto donde se intercepta cualquier llamada con contexto anómalo sin tocar la lógica del agente.",
+      code: `<span class="cm"># hooks.py</span>
+<span class="kw">from</span> functools <span class="kw">import</span> wraps
+<span class="kw">import</span> logging, time
+
+logger = logging.getLogger(<span class="st">"agent.hooks"</span>)
+
+<span class="kw">def</span> <span class="fn">pre_hook</span>(validator):
+    <span class="kw">def</span> <span class="fn">decorator</span>(fn):
+        <span class="dec">@wraps</span>(fn)
+        <span class="kw">async def</span> <span class="fn">wrapper</span>(*args, **kwargs):
+            ctx = kwargs.get(<span class="st">"ctx"</span>)
+            validator(ctx, kwargs)
+            <span class="kw">return await</span> fn(*args, **kwargs)
+        <span class="kw">return</span> wrapper
+    <span class="kw">return</span> decorator
+
+<span class="kw">def</span> <span class="fn">audit_hook</span>(fn):
+    <span class="dec">@wraps</span>(fn)
+    <span class="kw">async def</span> <span class="fn">wrapper</span>(*args, **kwargs):
+        t0 = time.monotonic()
+        <span class="kw">try</span>:
+            result = <span class="kw">await</span> fn(*args, **kwargs)
+            logger.info(f<span class="st">"OK {fn.__name__} ({time.monotonic()-t0:.3f}s)"</span>)
+            <span class="kw">return</span> result
+        <span class="kw">except</span> Exception <span class="kw">as</span> e:
+            logger.error(f<span class="st">"ERR {fn.__name__}: {e}"</span>); <span class="kw">raise</span>
+    <span class="kw">return</span> wrapper`
+    },
+    rules: {
+      title: "business_rules.py — Contratos de negocio",
+      icon: "ti-shield-lock",
+      desc: "Cada regla de negocio es un contrato con nombre. Centralizar las validaciones aquí garantiza que el agente no pueda evadir una regla por omisión o por prompt injection.",
+      code: `<span class="cm"># business_rules.py</span>
+<span class="kw">from</span> dataclasses <span class="kw">import</span> dataclass
+
+<span class="dec">@dataclass</span>
+<span class="kw">class</span> <span class="fn">RuleViolation</span>(Exception):
+    rule: str
+    context: dict
+
+<span class="kw">class</span> <span class="fn">BusinessRules</span>:
+    MAX_REFUND_PCT  = <span class="num">0.15</span>
+    MIN_PRICE       = <span class="num">0.01</span>
+    MAX_BULK_DELETE = <span class="num">50</span>
+
+    <span class="kw">def</span> <span class="fn">validate_refund</span>(self, amount: float, order_total: float) -> None:
+        pct = amount / order_total
+        <span class="kw">if</span> pct > self.MAX_REFUND_PCT:
+            <span class="kw">raise</span> RuleViolation(
+                rule=<span class="st">"MAX_REFUND_PCT"</span>,
+                context={<span class="st">"amount"</span>: amount, <span class="st">"pct"</span>: pct}
+            )`
+    },
+    agent: {
+      title: "agent.py — Núcleo del agente",
+      icon: "ti-robot",
+      desc: "El loop de razonamiento que conecta todas las piezas. Consume la AgentKey, invoca MCP con hooks, verifica reglas antes de ejecutar acciones destructivas y guarda checkpoints.",
+      code: `<span class="cm"># agent.py</span>
+<span class="kw">from</span> anthropic <span class="kw">import</span> Anthropic
+<span class="kw">from</span> .agent_key <span class="kw">import</span> AgentKey
+<span class="kw">from</span> .state <span class="kw">import</span> StateManager
+
+<span class="kw">class</span> <span class="fn">Agent</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(self, key: AgentKey):
+        self.key   = key
+        self.state = StateManager(run_id=key.run_id)
+        self.llm   = Anthropic()
+
+    <span class="kw">async def</span> <span class="fn">run</span>(self, task: str) -> str:
+        messages = [{<span class="st">"role"</span>: <span class="st">"user"</span>, <span class="st">"content"</span>: task}]
+        <span class="kw">while True</span>:
+            resp = self.llm.messages.create(
+                model=<span class="st">"claude-opus-4-5"</span>,
+                tools=self._tools(), messages=messages,
+            )
+            <span class="kw">if</span> resp.stop_reason == <span class="st">"end_turn"</span>:
+                <span class="kw">return</span> resp.content[<span class="num">0</span>].text
+            <span class="kw">for</span> block <span class="kw">in</span> resp.content:
+                <span class="kw">if</span> block.type == <span class="st">"tool_use"</span>:
+                    self.key.require(block.name)
+                    snap = self.state.checkpoint()
+                    <span class="kw">try</span>:
+                        result = <span class="kw">await</span> self._call(block)
+                    <span class="kw">except</span> Exception:
+                        self.state.rollback(snap); <span class="kw">raise</span>`
+    },
+    state: {
+      title: "state.py — Estado determinista",
+      icon: "ti-database",
+      desc: "Cada ejecución tiene un estado inmutable con snapshots antes de acciones destructivas. Permite rollback total o parcial y garantiza reproducibilidad entre runs.",
+      code: `<span class="cm"># state.py</span>
+<span class="kw">import</span> copy
+<span class="kw">from</span> dataclasses <span class="kw">import</span> dataclass, field
+
+<span class="dec">@dataclass</span>
+<span class="kw">class</span> <span class="fn">Snapshot</span>:
+    seq: int
+    data: dict
+    run_id: str
+
+<span class="kw">class</span> <span class="fn">StateManager</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(self, run_id: str):
+        self.run_id = run_id
+        self._data: dict = {}
+        self._history: list = []
+        self._seq: int = <span class="num">0</span>
+
+    <span class="kw">def</span> <span class="fn">checkpoint</span>(self) -> Snapshot:
+        snap = Snapshot(self._seq, copy.deepcopy(self._data), self.run_id)
+        self._history.append(snap)
+        self._seq += <span class="num">1</span>
+        <span class="kw">return</span> snap
+
+    <span class="kw">def</span> <span class="fn">rollback</span>(self, snap: Snapshot) -> None:
+        self._data = copy.deepcopy(snap.data)
+        self._history = [s <span class="kw">for</span> s <span class="kw">in</span> self._history <span class="kw">if</span> s.seq <= snap.seq]`
+    }
+  };
+
+  const SIM_RESULTS = {
+    'delete_user|valid':        [['dim','→ AgentKey.require("delete_user")'],['ok','✓ Permiso: delete_user autorizado'],['dim','→ pre_hook validando parámetros'],['ok','✓ user_id válido, reason ≥ 10 chars'],['dim','→ BusinessRules.validate_bulk_delete([1])'],['ok','✓ count=1 ≤ MAX=50'],['dim','→ state.checkpoint() seq=0'],['ok','✓ Snapshot guardado'],['ok','✓ Tool ejecutada. Estado actualizado.']],
+    'delete_user|missing':      [['dim','→ AgentKey.require("delete_user")'],['ok','✓ Permiso verificado'],['dim','→ pre_hook validando parámetros'],['err','✗ ValidationError: campo "reason" requerido (min_length=10)'],['warn','⚠ Tool bloqueada — estado sin modificar']],
+    'delete_user|outofrange':   [['dim','→ AgentKey.require("delete_user")'],['ok','✓ Permiso verificado'],['dim','→ FastMCP validando esquema'],['err','✗ ValidationError: user_id no coincide con patrón ^usr_[a-z0-9]{8}$'],['warn','⚠ Tool rechazada por esquema MCP']],
+    'delete_user|unauthorized': [['dim','→ AgentKey.require("delete_user")'],['err','✗ PermissionError: acción "delete_user" no está en key.permissions'],['warn','⚠ Ejecución detenida en capa KEY']],
+    'delete_user|dryrun':       [['dim','→ AgentKey.require("delete_user")'],['ok','✓ Permiso verificado'],['dim','→ pre_hook OK'],['ok','✓ confirm=False → modo dry-run'],['ok','{ "dry_run": true, "preview": "Eliminaría usr_a1b2c3d4" }'],['dim','ℹ Estado no modificado']],
+    'send_email|valid':         [['dim','→ AgentKey.require("send_email")'],['ok','✓ Permiso: send_email autorizado'],['dim','→ pre_hook: validando destinatarios'],['ok','✓ Todos los destinatarios en whitelist'],['dim','→ audit_hook iniciado'],['ok','✓ Email enviado. OK (0.082s)']],
+    'send_email|unauthorized':  [['dim','→ AgentKey.require("send_email")'],['err','✗ PermissionError: "send_email" no autorizado en ambiente sandbox'],['warn','⚠ Bloqueado — capa KEY']],
+    'send_email|outofrange':    [['dim','→ FastMCP validando esquema'],['err','✗ ValidationError: "to" debe ser lista de emails válidos'],['warn','⚠ Rechazado por esquema']],
+    'send_email|missing':       [['err','✗ ValidationError: campo "subject" requerido'],['warn','⚠ Bloqueado antes de ejecución']],
+    'send_email|dryrun':        [['ok','✓ Dry-run: sin envío real'],['ok','{ "preview": "Para: test@corp.com | Asunto: ... }'],['dim','ℹ Estado no modificado']],
+    'update_price|valid':       [['ok','✓ Permiso verificado'],['ok','✓ Valor 9.99 ≥ MIN_PRICE 0.01'],['dim','→ state.checkpoint()'],['ok','✓ Precio actualizado']],
+    'update_price|outofrange':  [['dim','→ BusinessRules.validate_price(0.0)'],['err','✗ RuleViolation: MIN_PRICE=0.01 violado (valor=0.0)'],['warn','⚠ Rollback ejecutado → seq-1']],
+    'update_price|missing':     [['err','✗ ValidationError: "product_id" requerido'],['warn','⚠ Bloqueado por esquema']],
+    'update_price|unauthorized':[['err','✗ PermissionError: "update_price" no en permisos de key'],['warn','⚠ Bloqueado — capa KEY']],
+    'update_price|dryrun':      [['ok','✓ Dry-run: precio no modificado'],['ok','{ "preview": "product_xyz → $9.99" }']],
+    'bulk_refund|valid':        [['ok','✓ Permiso: bulk_refund'],['ok','✓ amount/total=0.12 ≤ MAX_REFUND_PCT=0.15'],['dim','→ checkpoint seq=0'],['ok','✓ 3 reembolsos procesados']],
+    'bulk_refund|outofrange':   [['dim','→ BusinessRules.validate_refund(200, 300)'],['err','✗ RuleViolation: MAX_REFUND_PCT violado (pct=0.67 > 0.15)'],['warn','⚠ Rollback ejecutado']],
+    'bulk_refund|missing':      [['err','✗ ValidationError: "order_ids" requerido'],['warn','⚠ Bloqueado']],
+    'bulk_refund|unauthorized': [['err','✗ PermissionError: "bulk_refund" no en permisos'],['warn','⚠ Bloqueado — capa KEY']],
+    'bulk_refund|dryrun':       [['ok','✓ Dry-run activo'],['ok','{ "preview": "Reembolsaría 3 órdenes por $45.00" }'],['dim','ℹ Sin cambios en estado']],
+    'unknown_tool|valid':       [['dim','→ FastMCP buscando tool "unknown_tool"'],['err','✗ ToolNotFoundError: "unknown_tool" no registrada en servidor MCP'],['warn','⚠ Hallucination detectada — bloqueada en capa MCP']],
+    'unknown_tool|missing':     [['err','✗ ToolNotFoundError: tool no registrada'],['warn','⚠ Bloqueado — capa MCP']],
+    'unknown_tool|outofrange':  [['err','✗ ToolNotFoundError'],['warn','⚠ Bloqueado — capa MCP']],
+    'unknown_tool|unauthorized':[['err','✗ ToolNotFoundError'],['warn','⚠ Bloqueado — capa MCP']],
+    'unknown_tool|dryrun':      [['err','✗ ToolNotFoundError: tool no existe, dry-run irrelevante'],['warn','⚠ Bloqueado — capa MCP']],
+  };
+
+  function selectLayer(el) {
+    document.querySelectorAll('.layer').forEach(l => l.classList.remove('selected'));
+    el.classList.add('selected');
+    const d = LAYER_DATA[el.dataset.id];
+    if (!d) return;
+    const box = document.getElementById('arch-detail-box');
+    box.innerHTML = `
+      <div class="dtitle"><i class="ti ${d.icon}" aria-hidden="true"></i> ${d.title}</div>
+      <div class="ddesc">${d.desc}</div>
+      <div class="code-block">${d.code}</div>
+    `;
+  }
+
+  function switchTab(id) {
+    document.querySelectorAll('.arch-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.arch-panel').forEach(p => p.classList.remove('active'));
+    const btn = document.getElementById('arch-tab-btn-' + id);
+    const panel = document.getElementById('arch-panel-' + id);
+    if (btn) btn.classList.add('active');
+    if (panel) panel.classList.add('active');
+  }
+
+  async function runSim() {
+    const tool     = document.getElementById('sim-tool').value;
+    const scenario = document.getElementById('sim-scenario').value;
+    const log      = document.getElementById('sim-log');
+    const key      = `${tool}|${scenario}`;
+    const lines    = SIM_RESULTS[key] || [['warn','⚠ Escenario no configurado']];
+    log.innerHTML  = '';
+    for (let i = 0; i < lines.length; i++) {
+      await new Promise(r => setTimeout(r, 190 + i * 130));
+      const [cls, text] = lines[i];
+      const div = document.createElement('div');
+      div.className   = 'log-' + cls;
+      div.textContent = text;
+      log.appendChild(div);
+      log.scrollTop = log.scrollHeight;
+    }
+  }
+
+  return { selectLayer, switchTab, runSim };
+})();
+</script>
+</body>
+</html>
