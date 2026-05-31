@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard - Arquitectura de Agente LLM</title>
+<style>
+  /* =========================================
+     SISTEMA DE DISEÑO GLOBAL (Variables)
+     ========================================= */
+  :root {
+    --color-background-primary: #ffffff;
+    --color-background-secondary: #f8f9fa;
+    --color-background-tertiary: #f1f5f9;
+    --color-border-primary: #000000;
+    --color-border-secondary: #e5e7eb;
+    --color-border-tertiary: #d1d5db;
+    
+    --color-text-primary: #111827;
+    --color-text-secondary: #4b5563;
+    --color-text-tertiary: #6b7280;
+    
+    --color-success: #0F6E56;
+    --color-bg-success: #E1F5EE;
+    --color-danger: #993C1D;
+    --color-bg-danger: #FAECE7;
+    --color-info: #185FA5;
+    --color-bg-info: #E6F1FB;
+    --color-warning: #854F0B;
+    --color-bg-warning: #FAEEDA;
+
+    --border-radius-sm: 4px;
+    --border-radius-md: 6px;
+    --border-radius-lg: 10px;
+    
+    --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: var(--font-sans); display: flex; height: 100vh; overflow: hidden; background: var(--color-background-tertiary); color: var(--color-text-primary); }
+  .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); }
+
+  /* =========================================
+     LAYOUT PRINCIPAL (Menú + Contenido)
+     ========================================= */
+  .app-container { display: flex; width: 100%; height: 100%; }
+  
+  .sidebar { width: 260px; background: var(--color-background-primary); border-right: 1px solid var(--color-border-tertiary); display: flex; flex-direction: column; padding: 20px 10px; z-index: 10; box-shadow: 2px 0 8px rgba(0,0,0,0.05); }
+  .sidebar-header { font-size: 16px; font-weight: 600; padding: 0 10px 20px; border-bottom: 1px solid var(--color-border-secondary); margin-bottom: 15px; color: var(--color-text-primary); }
+  
+  .nav-btn { padding: 12px 14px; margin-bottom: 5px; border: none; background: transparent; text-align: left; font-size: 14px; font-weight: 500; color: var(--color-text-secondary); border-radius: var(--border-radius-md); cursor: pointer; transition: all 0.2s ease; }
+  .nav-btn:hover { background: var(--color-background-secondary); color: var(--color-text-primary); }
+  .nav-btn.active { background: var(--color-bg-info); color: var(--color-info); border-left: 3px solid var(--color-info); border-radius: 0 var(--border-radius-md) var(--border-radius-md) 0; }
+
+  .main-content { flex: 1; overflow-y: auto; padding: 40px; }
+  .section-container { max-width: 850px; margin: 0 auto; display: none; animation: fadeIn 0.3s ease; }
+  .section-container.active { display: block; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+  .section-title-main { font-size: 22px; font-weight: 600; margin-bottom: 24px; color: var(--color-text-primary); padding-bottom: 10px; border-bottom: 2px solid var(--color-border-secondary); }
+
+  /* =========================================
+     ESTILOS COMPARTIDOS (Tarjetas, Código, Badges)
+     ========================================= */
+  .code-block { font-family: var(--font-mono); font-size: 12px; background: var(--color-background-secondary); padding: 12px 14px; border-radius: var(--border-radius-md); border: 0.5px solid var(--color-border-tertiary); color: var(--color-text-primary); line-height: 1.7; overflow-x: auto; white-space: pre; margin-bottom: 10px; }
+  .code-inline { font-family: var(--font-mono); font-size: 11px; background: var(--color-background-secondary); padding: 2px 5px; border-radius: 4px; border: 0.5px solid var(--color-border-tertiary); }
+  
+  /* Syntax Highlighting Base */
+  .kw { color: #534AB7; font-weight: 500; } .fn { color: #0F6E56; } .st { color: #854F0B; } .cm { color: var(--color-text-tertiary); font-style: italic; } .dec { color: #993C1D; } .num { color: #185FA5; }
+
+  .card-base { border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); background: var(--color-background-primary); box-shadow: 0 2px 4px rgba(0,0,0,0.02); transition: box-shadow 0.2s ease; overflow: hidden; }
+  .card-base:hover { box-shadow: 0 4px 8px rgba(0,0,0,0.06); }
+  
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+  @media (max-width: 768px) { .grid-2 { grid-template-columns: 1fr; } .app-container { flex-direction: column; } .sidebar { width: 100%; height: auto; border-right: none; border-bottom: 1px solid var(--color-border-tertiary); flex-direction: row; flex-wrap: wrap; padding: 10px; } .sidebar-header { display: none; } .nav-btn { flex: 1; text-align: center; border-left: none; border-bottom: 2px solid transparent; border-radius: var(--border-radius-md); } .nav-btn.active { border-left: none; border-bottom: 2px solid var(--color-info); border-radius: var(--border-radius-md); } .main-content { padding: 20px; } }
+
+  .badge { font-size: 11px; padding: 3px 9px; border-radius: 4px; font-weight: 500; display: inline-block; }
+  .b-danger { background: var(--color-bg-danger); color: var(--color-danger); }
+  .b-success { background: var(--color-bg-success); color: var(--color-success); }
+  .b-info { background: var(--color-bg-info); color: var(--color-info); }
+  .b-warn { background: var(--color-bg-warning); color: var(--color-warning); }
+
+  /* =========================================
+     MÓDULO 1: LOOP DE RAZONAMIENTO
+     ========================================= */
+  .stepper-nav { display: flex; border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); overflow: hidden; margin-bottom: 16px; background: var(--color-background-primary); }
+  .snav-btn { flex: 1; padding: 10px 6px; font-size: 12px; cursor: pointer; border: none; border-right: 0.5px solid var(--color-border-tertiary); background: transparent; color: var(--color-text-secondary); transition: background .15s; text-align: center; }
+  .snav-btn:last-child { border-right: none; }
+  .snav-btn.active { background: var(--color-bg-info); color: var(--color-info); font-weight: 600; }
+  
+  .loop-panel { display: none; }
+  .loop-panel.active { display: block; animation: fadeIn 0.2s ease; }
+  
+  .chat-window { border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); overflow: hidden; background: var(--color-background-primary); margin-bottom: 16px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
+  .chat-header { padding: 10px 14px; font-size: 12px; font-weight: 600; color: var(--color-text-tertiary); border-bottom: 0.5px solid var(--color-border-tertiary); display: flex; justify-content: space-between; align-items: center; background: var(--color-background-secondary); }
+  .chat-body { padding: 16px; display: flex; flex-direction: column; gap: 10px; background: #f8fafc; }
+  
+  .msg { padding: 10px 14px; border-radius: var(--border-radius-md); font-size: 13px; line-height: 1.6; max-width: 90%; }
+  .msg-label { font-size: 10px; font-weight: 600; opacity: 0.7; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.05em; }
+  .msg-user { background: var(--color-bg-info); color: var(--color-info); align-self: flex-end; border-bottom-right-radius: 2px; }
+  .msg-llm { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); color: var(--color-text-primary); align-self: flex-start; border-bottom-left-radius: 2px; }
+  .msg-tool-call { background: var(--color-bg-warning); border: 0.5px solid #FAC775; color: var(--color-warning); align-self: flex-start; font-family: var(--font-mono); font-size: 11.5px; border-bottom-left-radius: 2px;}
+  .msg-tool-result { background: var(--color-bg-success); border: 0.5px solid #C0DD97; color: var(--color-success); align-self: flex-start; font-family: var(--font-mono); font-size: 11.5px; border-bottom-left-radius: 2px;}
+  .msg-final { background: var(--color-bg-success); border: 0.5px solid #9FE1CB; color: var(--color-success); align-self: flex-start; border-bottom-left-radius: 2px;}
+  
+  .loop-indicator { display: flex; align-items: center; gap: 10px; padding: 12px 14px; font-size: 13px; font-weight: 500; color: var(--color-text-secondary); border-top: 0.5px solid var(--color-border-tertiary); background: var(--color-background-primary); }
+  .loop-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; box-shadow: 0 0 0 2px rgba(255,255,255,0.5); }
+  .dot-thinking { background: #EF9F27; } .dot-calling { background: #378ADD; } .dot-done { background: #1D9E75; } .dot-loop { background: #7F77DD; }
+
+  .insight-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 10px; }
+  .insight { border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); padding: 14px; background: var(--color-background-primary); }
+  .ins-title { font-size: 13px; font-weight: 600; color: var(--color-text-primary); margin-bottom: 6px; }
+  .ins-body { font-size: 12px; color: var(--color-text-secondary); line-height: 1.6; }
+  
+  .step-desc { font-size: 14px; color: var(--color-text-secondary); line-height: 1.6; margin-bottom: 16px; }
+  .nav-row { display: flex; justify-content: space-between; align-items: center; margin-top: 20px; }
+  .ctrl-btn { padding: 8px 16px; font-size: 13px; cursor: pointer; border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); background: var(--color-background-primary); color: var(--color-text-primary); transition: background 0.2s; }
+  .ctrl-btn:hover { background: var(--color-background-secondary); }
+
+  /* =========================================
+     MÓDULO 2: REST VS FASTMCP
+     ========================================= */
+  .uc-head { padding: 12px 14px; font-size: 14px; font-weight: 600; border-bottom: 0.5px solid var(--color-border-tertiary); }
+  .head-rest { background: var(--color-bg-info); color: var(--color-info); }
+  .head-mcp { background: var(--color-bg-success); color: var(--color-success); }
+  .uc-body { padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+  .use-item { display: flex; gap: 10px; align-items: flex-start; }
+  .use-icon { font-weight: bold; font-size: 14px; margin-top: 2px; }
+  .use-text { font-size: 13px; color: var(--color-text-secondary); line-height: 1.5; }
+  .use-text strong { color: var(--color-text-primary); font-weight: 600; }
+
+  .together-card { border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); overflow: hidden; margin: 20px 0; background: var(--color-background-primary); }
+  .together-head { padding: 12px 14px; font-size: 14px; font-weight: 600; border-bottom: 0.5px solid var(--color-border-tertiary); background: var(--color-background-secondary); }
+  .together-body { padding: 20px; display: flex; justify-content: space-between; align-items: center; gap: 10px; overflow-x: auto;}
+  .t-node { border: 1px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); padding: 12px; background: var(--color-background-primary); text-align: center; min-width: 130px; }
+  .t-label { font-size: 13px; font-weight: 600; color: var(--color-text-primary); margin-bottom: 4px; }
+  .t-sub { font-size: 11px; color: var(--color-text-secondary); }
+  .t-node.blue { border-color: #B5D4F4; background: var(--color-bg-info); }
+  .t-node.amber { border-color: #FAC775; background: var(--color-bg-warning); }
+  .t-node.teal { border-color: #9FE1CB; background: var(--color-bg-success); }
+  .t-arrow { font-size: 20px; color: var(--color-text-tertiary); text-align: center; font-weight: bold; }
+  .t-arrow-label { font-size: 11px; font-weight: 600; color: var(--color-text-tertiary); text-align: center; display: block; margin-top: 4px; text-transform: uppercase; }
+
+  .rule-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-top: 16px; }
+  .rule-card { border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); padding: 16px; background: var(--color-background-primary); box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+  .rule-q { font-size: 13px; color: var(--color-text-secondary); margin-bottom: 8px; line-height: 1.4; }
+  .rule-a { font-size: 14px; font-weight: 600; }
+  
+  /* =========================================
+     MÓDULO 3: CONTRATOS
+     ========================================= */
+  .drift-label { font-size: 12px; font-weight: 600; color: var(--color-text-secondary); margin-bottom: 8px; }
+  .highlight-line { background: var(--color-bg-warning); border-radius: 3px; display: block; margin: -1px -4px; padding: 1px 4px; font-weight: bold; border-left: 2px solid var(--color-warning);}
+  .highlight-danger { background: var(--color-bg-danger); border-radius: 3px; display: block; margin: -1px -4px; padding: 1px 4px; font-weight: bold; border-left: 2px solid var(--color-danger);}
+  
+  .c-stepper { display: flex; margin: 20px 0 10px; border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); overflow: hidden; background: var(--color-background-primary); }
+  .c-step { flex: 1; padding: 12px; text-align: center; font-size: 13px; font-weight: 500; cursor: pointer; border-right: 0.5px solid var(--color-border-tertiary); color: var(--color-text-secondary); transition: all .2s; }
+  .c-step:last-child { border-right: none; }
+  .c-step.active { background: var(--color-background-secondary); color: var(--color-text-primary); border-bottom: 2px solid var(--color-info); }
+  .c-panel { display: none; animation: fadeIn 0.2s ease;}
+  .c-panel.active { display: block; }
+
+  /* =========================================
+     MÓDULO 4: ARQUITECTURA PYTHON
+     ========================================= */
+  .arch-tabs { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
+  .arch-tab { padding: 8px 16px; font-size: 13px; font-weight: 500; border: 1px solid var(--color-border-secondary); border-radius: var(--border-radius-md); background: var(--color-background-primary); color: var(--color-text-secondary); cursor: pointer; transition: all .2s; }
+  .arch-tab:hover { background: var(--color-background-secondary); color: var(--color-text-primary); }
+  .arch-tab.active { background: var(--color-background-secondary); border-color: var(--color-border-primary); color: var(--color-text-primary); box-shadow: inset 0 2px 0 var(--color-border-primary); }
+  
+  .arch-panel { display: none; animation: fadeIn 0.2s ease; }
+  .arch-panel.active { display: block; }
+  
+  .layer { border: 1px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 16px; background: var(--color-background-primary); cursor: pointer; transition: all .2s; position: relative; margin-bottom: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.02);}
+  .layer:hover { border-color: var(--color-text-secondary); transform: translateY(-1px); box-shadow: 0 4px 6px rgba(0,0,0,0.05);}
+  .layer.selected { border-color: var(--color-info); background: var(--color-bg-info); }
+  
+  .layer-header { display: flex; align-items: center; gap: 14px; }
+  .layer-icon { width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: bold; flex-shrink: 0; }
+  .l-purple { background: #EEEDFE; color: #534AB7; }
+  .l-teal { background: var(--color-bg-success); color: var(--color-success); }
+  .l-amber { background: var(--color-bg-warning); color: var(--color-warning); }
+  .l-coral { background: var(--color-bg-danger); color: var(--color-danger); }
+  .l-blue { background: var(--color-bg-info); color: var(--color-info); }
+  .layer-title { font-size: 15px; font-weight: 600; color: var(--color-text-primary); }
+  .layer-subtitle { font-size: 13px; color: var(--color-text-secondary); margin-top: 4px; }
+  .arrow-down { text-align: center; font-size: 20px; font-weight: bold; color: var(--color-text-tertiary); padding: 2px 0; margin-bottom: 6px; }
+
+  .detail-card { border: 1px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); background: var(--color-background-primary); padding: 20px; margin-top: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+  .dtitle { font-size: 16px; font-weight: 600; color: var(--color-text-primary); margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+  .ddesc { font-size: 14px; color: var(--color-text-secondary); line-height: 1.6; margin-bottom: 16px; }
+  
+  .sim-section { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 16px; }
+  .sim-input-group { display: flex; flex-direction: column; gap: 12px; background: var(--color-background-primary); padding: 20px; border-radius: var(--border-radius-lg); border: 1px solid var(--color-border-tertiary); }
+  .sim-label { font-size: 13px; font-weight: 600; color: var(--color-text-secondary); }
+  .sim-select { width: 100%; padding: 10px; font-size: 14px; border: 1px solid var(--color-border-secondary); border-radius: var(--border-radius-md); background: #fff; color: var(--color-text-primary); cursor: pointer; }
+  .run-btn { margin-top: 10px; padding: 12px; font-size: 14px; font-weight: 600; cursor: pointer; border: none; border-radius: var(--border-radius-md); background: var(--color-text-primary); color: #fff; transition: opacity 0.2s; }
+  .run-btn:hover { opacity: 0.9; }
+  
+  .sim-log { background: #1e293b; color: #cbd5e1; border-radius: var(--border-radius-md); padding: 16px; font-family: var(--font-mono); font-size: 12px; line-height: 1.8; min-height: 250px; box-shadow: inset 0 2px 4px rgba(0,0,0,0.2); overflow-y: auto; }
+  .log-ok { color: #4ade80; } .log-err { color: #f87171; } .log-warn { color: #fbbf24; } .log-dim { color: #64748b; }
+</style>
+</head>
+<body>
+
+<div class="app-container">
+  <nav class="sidebar">
+    <div class="sidebar-header">AI Agent Docs</div>
+    <button class="nav-btn active" onclick="appNav.showSection('sec-loop', this)">1. Loop de Razonamiento</button>
+    <button class="nav-btn" onclick="appNav.showSection('sec-rest', this)">2. REST vs FastMCP</button>
+    <button class="nav-btn" onclick="appNav.showSection('sec-contract', this)">3. Contratos de Datos</button>
+    <button class="nav-btn" onclick="appNav.showSection('sec-arch', this)">4. Arquitectura Python</button>
+  </nav>
+
+  <main class="main-content">
+    
+    <section id="sec-loop" class="section-container active">
+      <h2 class="section-title-main">Simulación del Loop de Razonamiento</h2>
+      
+      <div class="stepper-nav">
+        <button class="snav-btn active" onclick="loopModule.goStep(0)">1 — tarea entra</button>
+        <button class="snav-btn" onclick="loopModule.goStep(1)">2 — primer razonamiento</button>
+        <button class="snav-btn" onclick="loopModule.goStep(2)">3 — tool call</button>
+        <button class="snav-btn" onclick="loopModule.goStep(3)">4 — resultado + loop</button>
+        <button class="snav-btn" onclick="loopModule.goStep(4)">5 — segunda tool</button>
+        <button class="snav-btn" onclick="loopModule.goStep(5)">6 — final</button>
+      </div>
+
+      <div class="loop-panel active" id="sp0">
+        <div class="step-desc">El loop empieza cuando el agente recibe una tarea en lenguaje natural. El historial de mensajes arranca vacío.</div>
+        <div class="chat-window">
+          <div class="chat-header"><span>messages[ ]</span><span style="color:var(--color-success)">iter 0</span></div>
+          <div class="chat-body">
+            <div class="msg msg-user"><div class="msg-label">user</div>Encontrá todos los pedidos de más de $500 del mes pasado y enviá un resumen por email a ventas@corp.com</div>
+          </div>
+        </div>
+        <div class="loop-indicator"><div class="loop-dot dot-thinking"></div> Evalúa qué tools disponibles puede necesitar.</div>
+      </div>
+
+      <div class="loop-panel" id="sp1">
+        <div class="step-desc">El LLM procesa el task y <strong>decide que necesita información</strong>. Genera un bloque <span class="code-inline">tool_use</span>.</div>
+        <div class="chat-window">
+          <div class="chat-header"><span>messages[ ]</span><span style="color:#EF9F27">LLM pensando…</span></div>
+          <div class="chat-body">
+            <div class="msg msg-user"><div class="msg-label">user</div>Encontrá todos los pedidos...</div>
+            <div class="msg msg-llm"><div class="msg-label">assistant — razonamiento interno</div>Para completar esta tarea necesito consultar los pedidos. Voy a llamar a query_orders primero.</div>
+          </div>
+        </div>
+        <div class="loop-indicator"><div class="loop-dot dot-thinking"></div> <span><strong>stop_reason = "tool_use"</strong> — necesita datos externos.</span></div>
+      </div>
+
+      <div class="loop-panel" id="sp2">
+        <div class="step-desc">El agente extrae el bloque, pasa los parámetros por FastMCP, y ejecuta la tool real.</div>
+        <div class="chat-window">
+          <div class="chat-header"><span>messages[ ]</span><span style="color:#378ADD">ejecutando tool…</span></div>
+          <div class="chat-body">
+            <div class="msg msg-tool-call"><div class="msg-label">tool_use → query_orders</div>{
+  "min_amount": 500,
+  "date_from": "2026-04-01",
+  "date_to":   "2026-04-30"
+}</div>
+          </div>
+        </div>
+        <div class="loop-indicator"><div class="loop-dot dot-calling"></div> FastMCP valida params → ejecuta query.</div>
+      </div>
+
+      <div class="loop-panel" id="sp3">
+        <div class="step-desc">El resultado se agrega al historial. <strong>El loop vuelve a empezar</strong> con más contexto.</div>
+        <div class="chat-window">
+          <div class="chat-header"><span>messages[ ]</span><span style="color:#7F77DD">↻ volviendo al LLM</span></div>
+          <div class="chat-body">
+            <div class="msg msg-tool-result"><div class="msg-label">tool_result</div>[
+  { "id": "ord_001", "amount": 820, "client": "Acme SA" },
+  { "id": "ord_002", "amount": 1340, "client": "Beta SRL" }
+]</div>
+          </div>
+        </div>
+        <div class="loop-indicator"><div class="loop-dot dot-loop"></div> Todo el historial viaja al LLM de nuevo.</div>
+      </div>
+
+      <div class="loop-panel" id="sp4">
+        <div class="step-desc">Con los datos en el historial, el LLM <strong>genera una segunda tool call</strong> (email).</div>
+        <div class="chat-window">
+          <div class="chat-header"><span>messages[ ]</span><span style="color:#378ADD">segunda tool…</span></div>
+          <div class="chat-body">
+            <div class="msg msg-tool-call"><div class="msg-label">tool_use → send_email</div>{
+  "to": "ventas@corp.com",
+  "subject": "Pedidos >$500",
+  "body": "Se encontraron 2 pedidos. Total: $2160"
+}</div>
+          </div>
+        </div>
+        <div class="loop-indicator"><div class="loop-dot dot-calling"></div> FastMCP valida destinatario → envío.</div>
+      </div>
+
+      <div class="loop-panel" id="sp5">
+        <div class="step-desc">El resultado del email entra al historial. El LLM concluye que la tarea está cumplida.</div>
+        <div class="chat-window">
+          <div class="chat-header"><span>messages[ ]</span><span style="color:var(--color-success)">end_turn — loop completo</span></div>
+          <div class="chat-body">
+            <div class="msg msg-tool-result"><div class="msg-label">tool_result — send_email</div>{ "status": "sent", "message_id": "msg_x7k2p9" }</div>
+            <div class="msg msg-final"><div class="msg-label">assistant — respuesta final</div>Listo. Encontré los pedidos y envié el resumen a ventas@corp.com.</div>
+          </div>
+        </div>
+        <div class="loop-indicator"><div class="loop-dot dot-done"></div> <strong>stop_reason = "end_turn"</strong> — termina la iteración.</div>
+      </div>
+
+      <div class="nav-row">
+        <button class="ctrl-btn" onclick="loopModule.prevStep()">← Anterior</button>
+        <span style="font-size: 13px; font-weight: 500;" id="loop-counter">Paso 1 de 6</span>
+        <button class="ctrl-btn" onclick="loopModule.nextStep()">Siguiente →</button>
+      </div>
+    </section>
+
+    <section id="sec-rest" class="section-container">
+      <h2 class="section-title-main">Casos de Uso: REST vs FastMCP</h2>
+      
+      <div class="grid-2">
+        <div class="card-base">
+          <div class="uc-head head-rest">REST — el cliente es un humano o app</div>
+          <div class="uc-body">
+            <div class="use-item">
+              <div class="use-icon" style="color:var(--color-info)">📱</div>
+              <div class="use-text"><strong>App móvil o web</strong> — El usuario toca un botón, la app llama a un endpoint específico conocido.</div>
+            </div>
+            <div class="use-item">
+              <div class="use-icon" style="color:var(--color-info)">🔄</div>
+              <div class="use-text"><strong>Integración B2B</strong> — Sistemas externos que consumen tu API pública con contratos fijos.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-base">
+          <div class="uc-head head-mcp">FastMCP — el cliente es un LLM</div>
+          <div class="uc-body">
+            <div class="use-item">
+              <div class="use-icon" style="color:var(--color-success)">🧠</div>
+              <div class="use-text"><strong>Agente autónomo</strong> — El modelo decide qué herramienta usar, cuándo, y con qué parámetros.</div>
+            </div>
+            <div class="use-item">
+              <div class="use-icon" style="color:var(--color-success)">s🔀</div>
+              <div class="use-text"><strong>Flujos emergentes</strong> — La secuencia de llamadas emerge del razonamiento, no de código hardcodeado.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="together-card">
+        <div class="together-head">Arquitectura Híbrida Recomendada</div>
+        <div class="together-body">
+          <div class="t-node blue"><div class="t-label">App Frontend</div><div class="t-sub">Llama via REST</div></div>
+          <div><div class="t-arrow">→</div><span class="t-arrow-label">HTTP</span></div>
+          <div class="t-node amber"><div class="t-label">Backend Core</div><div class="t-sub">FastAPI, Django, C#</div></div>
+          <div><div class="t-arrow">⇄</div><span class="t-arrow-label">MCP</span></div>
+          <div class="t-node teal"><div class="t-label">Agente LLM</div><div class="t-sub">Usa FastMCP tools</div></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="sec-contract" class="section-container">
+      <h2 class="section-title-main">Contrato Derivado de Código</h2>
+      <p class="step-desc">Comparación entre documentar contratos a mano (OpenAPI/Swagger) y derivarlos automáticamente desde el código (Pydantic/FastMCP).</p>
+      
+      <div class="grid-2">
+        <div class="card-base">
+          <div class="uc-head" style="background:var(--color-bg-danger); color:var(--color-danger);">REST Tradicional (Drift)</div>
+          <div class="uc-body">
+            <div class="drift-label">1. Cambio de requisito: mínimo de 30 a 60 días</div>
+            <div class="code-block"><span class="cm"># openapi.yaml</span>
+<span class="highlight-line">    minimum: <span class="num">60</span>  ← actualizaste</span>
+
+<span class="cm"># handler.py (Lógica Backend)</span>
+<span class="highlight-danger">    if days &lt; <span class="num">30</span>:  ← olvidaste</span>
+        raise ...</div>
+            <div><span class="badge b-danger">Código desincronizado</span></div>
+          </div>
+        </div>
+
+        <div class="card-base">
+          <div class="uc-head" style="background:var(--color-bg-success); color:var(--color-success);">FastMCP (Single Source of Truth)</div>
+          <div class="uc-body">
+            <div class="drift-label">Cambio de requisito: mínimo de 30 a 60 días</div>
+            <div class="code-block"><span class="kw">class</span> <span class="fn">DeleteUserParams</span>(BaseModel):
+    days_inactive: int = Field(
+        ...,
+<span class="highlight-line">        ge=<span class="num">60</span>,  ← un solo cambio</span>
+        le=<span class="num">365</span>
+    )</div>
+            <div><span class="badge b-success">1 lugar — todo sincronizado</span></div>
+          </div>
+        </div>
+      </div>
+
+      <h3 style="font-size: 15px; margin-top:24px; color:var(--color-text-primary);">Lo que FastMCP genera automáticamente</h3>
+      <div class="c-stepper">
+        <div class="c-step active" onclick="contractModule.showStep(0)">1. Schema JSON (al LLM)</div>
+        <div class="c-step" onclick="contractModule.showStep(1)">2. Input del Modelo</div>
+        <div class="c-step" onclick="contractModule.showStep(2)">3. Rechazo de Validación</div>
+      </div>
+
+      <div class="c-panel active" id="csp0">
+        <div class="code-block"><span class="cm">// Generado automáticamente. El LLM lee esto antes de actuar.</span>
+{
+  <span class="st">"name"</span>: <span class="st">"delete_user"</span>,
+  <span class="st">"inputSchema"</span>: {
+    <span class="st">"properties"</span>: {
+      <span class="st">"days_inactive"</span>: {
+        <span class="st">"type"</span>: <span class="st">"integer"</span>,
+        <span class="st">"minimum"</span>: <span class="num">60</span>
+      }
+    }
+  }
+}</div>
+      </div>
+      <div class="c-panel" id="csp1">
+        <div class="code-block"><span class="cm">// El LLM intenta enviar un dato inválido (menor a 60)</span>
+{
+  <span class="st">"user_id"</span>: <span class="st">"usr_admin"</span>,
+  <span class="st">"days_inactive"</span>: <span class="num">5</span> 
+}</div>
+      </div>
+      <div class="c-panel" id="csp2">
+        <div class="code-block"><span class="cm"># Error que FastMCP devuelve al LLM sin crashear el sistema</span>
+ValidationError: 1 validation error
+days_inactive
+  Input should be greater than or equal to <span class="num">60</span>
+  Input: <span class="num">5</span>  [type=greater_than_equal]
+
+<span class="cm"># El modelo lee el error, se autocorrige y reintenta.</span></div>
+      </div>
+    </section>
+
+    <section id="sec-arch" class="section-container">
+      <h2 class="section-title-main">Arquitectura Segura del Agente</h2>
+      
+      <div class="arch-tabs">
+        <button class="arch-tab active" onclick="archModule.switchTab('capas', this)">Capas de Seguridad</button>
+        <button class="arch-tab" onclick="archModule.switchTab('simulador', this)">Simulador de Ejecución</button>
+      </div>
+
+      <div class="arch-panel active" id="atab-capas">
+        <div class="grid-2" style="grid-template-columns: 1fr 1.3fr;">
+          <div class="arch-list">
+            <div class="layer selected" data-id="key" onclick="archModule.selectLayer(this)">
+              <div class="layer-header">
+                <div class="layer-icon l-coral">🔑</div>
+                <div><div class="layer-title">agent_key.py</div><div class="layer-subtitle">Identidad y permisos</div></div>
+              </div>
+            </div>
+            <div class="arrow-down">↓</div>
+            <div class="layer" data-id="fastmcp" onclick="archModule.selectLayer(this)">
+              <div class="layer-header">
+                <div class="layer-icon l-blue">🔌</div>
+                <div><div class="layer-title">FastMCP Server</div><div class="layer-subtitle">Validación Pydantic</div></div>
+              </div>
+            </div>
+            <div class="arrow-down">↓</div>
+            <div class="layer" data-id="hooks" onclick="archModule.selectLayer(this)">
+              <div class="layer-header">
+                <div class="layer-icon l-teal">🪝</div>
+                <div><div class="layer-title">hooks.py</div><div class="layer-subtitle">Guardias del ciclo</div></div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="detail-card" id="arch-detail-box">
+            </div>
+        </div>
+      </div>
+
+      <div class="arch-panel" id="atab-simulador">
+        <p class="step-desc">Prueba cómo responden las distintas capas defensivas ante inputs del LLM.</p>
+        <div class="sim-section">
+          <div class="sim-input-group">
+            <label class="sim-label">Herramienta solicitada</label>
+            <select class="sim-select" id="sim-tool">
+              <option value="delete_user">delete_user</option>
+              <option value="send_email">send_email</option>
+              <option value="unknown_tool">unknown_tool (alucinación)</option>
+            </select>
+
+            <label class="sim-label" style="margin-top:10px">Escenario de datos</label>
+            <select class="sim-select" id="sim-scenario">
+              <option value="valid">Parámetros válidos</option>
+              <option value="missing">Falta parámetro obligatorio</option>
+              <option value="unauthorized">Sin permisos en Key</option>
+            </select>
+
+            <button class="run-btn" onclick="archModule.runSim()">▶ Ejecutar Simulación</button>
+          </div>
+
+          <div>
+            <div class="sim-label" style="margin-bottom: 8px;">Consola de Ejecución</div>
+            <div class="sim-log" id="sim-log">— esperando ejecución —</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<script>
+/**
+ * =======================================================
+ * CORE NAVIGATION (SPA Logic)
+ * =======================================================
+ */
+const appNav = {
+  showSection: function(sectionId, btnElement) {
+    // Esconder todas las secciones
+    document.querySelectorAll('.section-container').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+    
+    // Mostrar seleccionada
+    document.getElementById(sectionId).classList.add('active');
+    btnElement.classList.add('active');
+  }
+};
+
+/**
+ * =======================================================
+ * MODULO 1: LOOP DE RAZONAMIENTO
+ * =======================================================
+ */
+const loopModule = {
+  cur: 0,
+  total: 6,
+  goStep: function(i) {
+    document.querySelectorAll('.loop-panel').forEach((p, j) => p.classList.toggle('active', j === i));
+    document.querySelectorAll('.snav-btn').forEach((b, j) => b.classList.toggle('active', j === i));
+    document.getElementById('loop-counter').textContent = `Paso ${i + 1} de ${this.total}`;
+    this.cur = i;
+  },
+  nextStep: function() { this.goStep((this.cur + 1) % this.total); },
+  prevStep: function() { this.goStep((this.cur - 1 + this.total) % this.total); }
+};
+
+/**
+ * =======================================================
+ * MODULO 3: CONTRATOS
+ * =======================================================
+ */
+const contractModule = {
+  showStep: function(i) {
+    document.querySelectorAll('.c-step').forEach((s, j) => s.classList.toggle('active', j === i));
+    document.querySelectorAll('.c-panel').forEach((p, j) => p.classList.toggle('active', j === i));
+  }
+};
+
+/**
+ * =======================================================
+ * MODULO 4: ARQUITECTURA PYTHON
+ * =======================================================
+ */
+const archModule = {
+  data: {
+    key: {
+      title: "agent_key.py", desc: "Define la identidad y los permisos inmutables del agente. Bloquea ejecución si el modelo intenta acciones no autorizadas.",
+      code: `<span class="kw">class</span> <span class="fn">AgentKey</span>:
+    permissions: FrozenSet[str]
+    <span class="kw">def</span> <span class="fn">require</span>(self, action: str):
+        <span class="kw">if not</span> action <span class="kw">in</span> self.permissions:
+            <span class="kw">raise</span> PermissionError(...)`
+    },
+    fastmcp: {
+      title: "FastMCP Server", desc: "Filtra parámetros inválidos antes de que toquen la lógica del backend usando modelos de Pydantic.",
+      code: `<span class="kw">class</span> <span class="fn">DeleteUserParams</span>(BaseModel):
+    user_id: str = Field(pattern=<span class="st">r"^usr_"</span>)
+
+<span class="dec">@mcp.tool()</span>
+<span class="kw">async def</span> <span class="fn">delete_user</span>(p: DeleteUserParams): ...`
+    },
+    hooks: {
+      title: "hooks.py", desc: "Intercepta las llamadas validadas para aplicar reglas de negocio o auditoría sin modificar el core del agente.",
+      code: `<span class="kw">def</span> <span class="fn">pre_hook</span>(validator):
+    <span class="kw">async def</span> <span class="fn">wrapper</span>(*args, **kwargs):
+        validator(kwargs) <span class="cm"># Revisa reglas</span>
+        <span class="kw">return await</span> fn(*args, **kwargs)
+    <span class="kw">return</span> wrapper`
+    }
+  },
+  
+  simResults: {
+    'delete_user|valid': [['dim','→ AgentKey check'],['ok','✓ Permiso autorizado'],['dim','→ FastMCP Pydantic'],['ok','✓ Schema OK'],['ok','✓ Tool ejecutada.']],
+    'delete_user|missing': [['dim','→ AgentKey check'],['ok','✓ Permiso autorizado'],['dim','→ FastMCP Pydantic'],['err','✗ ValidationError: Falta campo obligatorio'],['warn','⚠ Tool bloqueada.']],
+    'delete_user|unauthorized': [['dim','→ AgentKey check'],['err','✗ PermissionError: delete_user no autorizado'],['warn','⚠ Ejecución detenida en capa KEY.']],
+    'send_email|valid': [['dim','→ AgentKey check'],['ok','✓ Permiso OK'],['ok','✓ Email enviado (0.082s)']],
+    'send_email|missing': [['err','✗ ValidationError: "subject" requerido'],['warn','⚠ Bloqueado antes de ejecución']],
+    'send_email|unauthorized': [['err','✗ PermissionError'],['warn','⚠ Bloqueado en capa KEY']],
+    'unknown_tool|valid': [['dim','→ FastMCP buscando tool'],['err','✗ ToolNotFoundError'],['warn','⚠ Alucinación bloqueada']],
+    'unknown_tool|missing': [['err','✗ ToolNotFoundError'],['warn','⚠ Bloqueado']],
+    'unknown_tool|unauthorized': [['err','✗ ToolNotFoundError'],['warn','⚠ Bloqueado']]
+  },
+
+  switchTab: function(tabId, btnElement) {
+    document.querySelectorAll('.arch-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.arch-tab').forEach(b => b.classList.remove('active'));
+    document.getElementById('atab-' + tabId).classList.add('active');
+    btnElement.classList.add('active');
+  },
+
+  selectLayer: function(el) {
+    document.querySelectorAll('.layer').forEach(l => l.classList.remove('selected'));
+    el.classList.add('selected');
+    const id = el.dataset.id;
+    const d = this.data[id];
+    document.getElementById('arch-detail-box').innerHTML = `
+      <div class="dtitle">${d.title}</div>
+      <div class="ddesc">${d.desc}</div>
+      <div class="code-block">${d.code}</div>
+    `;
+  },
+
+  runSim: async function() {
+    const tool = document.getElementById('sim-tool').value;
+    const scenario = document.getElementById('sim-scenario').value;
+    const log = document.getElementById('sim-log');
+    const key = `${tool}|${scenario}`;
+    const lines = this.simResults[key];
+    
+    log.innerHTML = '';
+    for (let i = 0; i < lines.length; i++) {
+      await new Promise(r => setTimeout(r, 200 + i * 150));
+      const [cls, text] = lines[i];
+      const span = document.createElement('div');
+      span.className = 'log-' + cls;
+      span.textContent = text;
+      log.appendChild(span);
+      log.scrollTop = log.scrollHeight;
+    }
+  }
+};
+
+// Inicializar vista por defecto de la Arquitectura
+document.addEventListener('DOMContentLoaded', () => {
+  archModule.selectLayer(document.querySelector('.layer[data-id="key"]'));
+});
+</script>
+</body>
+</html>
