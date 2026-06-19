@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dossier de Evaluación — Desarrollo de Software</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=JetBrains+Mono:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #0B0E14;
+    --panel: #141925;
+    --panel-raised: #1A2030;
+    --line: #2A3142;
+    --bone: #E8E6DF;
+    --bone-dim: #9CA3B5;
+    --sage: #4D9484;
+    --sage-dim: #2E5A50;
+    --terracotta: #C77B4C;
+    --terracotta-dim: #6B4530;
+    --red-flag: #B5564A;
+
+    --font-display: 'Fraunces', serif;
+    --font-mono: 'JetBrains Mono', monospace;
+    --font-body: 'Inter', sans-serif;
+  }
+
+  *{ box-sizing: border-box; }
+  html{ scroll-behavior: smooth; }
+
+  body{
+    margin:0;
+    background: var(--bg);
+    color: var(--bone);
+    font-family: var(--font-body);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  body::before{
+    content:"";
+    position: fixed;
+    inset:0;
+    background-image:
+      radial-gradient(circle at 15% 10%, rgba(77,148,132,0.07), transparent 45%),
+      radial-gradient(circle at 85% 90%, rgba(199,123,76,0.05), transparent 40%);
+    pointer-events: none;
+    z-index:0;
+  }
+
+  .app{
+    position: relative;
+    z-index:1;
+    max-width: 880px;
+    margin: 0 auto;
+    padding: 48px 24px 100px;
+  }
+
+  /* ---------- HEADER / MASTHEAD ---------- */
+  .masthead{
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 28px;
+    margin-bottom: 40px;
+    display:flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+  .masthead-eyebrow{
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--sage);
+    margin-bottom: 10px;
+  }
+  .masthead h1{
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: clamp(28px, 4vw, 40px);
+    margin: 0;
+    letter-spacing: -0.01em;
+  }
+  .masthead-meta{
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--bone-dim);
+    text-align: right;
+    line-height: 1.7;
+  }
+
+  /* ---------- SCREENS ---------- */
+  .screen{ display:none; }
+  .screen.active{ display:block; animation: fadeIn .35s ease; }
+  @keyframes fadeIn{ from{opacity:0; transform: translateY(6px);} to{opacity:1; transform:none;} }
+
+  /* ---------- MENU DE PERFILES ---------- */
+  .intro-text{
+    color: var(--bone-dim);
+    font-size: 15px;
+    max-width: 560px;
+    margin-bottom: 36px;
+  }
+  .profile-grid{
+    display:grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+  @media (max-width: 720px){
+    .profile-grid{ grid-template-columns: 1fr; }
+  }
+
+  .profile-card{
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 28px 22px;
+    text-align: left;
+    cursor: pointer;
+    color: var(--bone);
+    font-family: var(--font-body);
+    position: relative;
+    overflow: hidden;
+    transition: border-color .25s ease, transform .25s ease, background .25s ease;
+  }
+  .profile-card::before{
+    content:"";
+    position:absolute;
+    top:0; left:0;
+    width: 3px;
+    height: 100%;
+    background: var(--sage-dim);
+    transition: background .25s ease;
+  }
+  .profile-card:hover{
+    border-color: var(--sage-dim);
+    transform: translateY(-2px);
+    background: var(--panel-raised);
+  }
+  .profile-card:hover::before{ background: var(--sage); }
+  .profile-card:focus-visible{ outline: 2px solid var(--sage); outline-offset: 3px; }
+
+  .profile-card[data-level="senior"]::before{ background: var(--terracotta-dim); }
+  .profile-card[data-level="senior"]:hover::before{ background: var(--terracotta); }
+
+  .rings{
+    width: 54px;
+    height: 54px;
+    margin-bottom: 18px;
+  }
+  .rings circle{ fill:none; stroke-width: 2.5; }
+  .ring-track{ stroke: var(--line); }
+  .ring-fill{ stroke: var(--sage); }
+  .profile-card[data-level="senior"] .ring-fill{ stroke: var(--terracotta); }
+
+  .profile-code{
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--bone-dim);
+    letter-spacing: 0.08em;
+    display:block;
+    margin-bottom: 6px;
+  }
+  .profile-card h3{
+    font-family: var(--font-display);
+    font-size: 21px;
+    font-weight: 600;
+    margin: 0 0 8px;
+  }
+  .profile-card p{
+    font-size: 13.5px;
+    color: var(--bone-dim);
+    margin: 0;
+  }
+  .profile-tags{
+    margin-top: 16px;
+    display:flex;
+    gap:6px;
+    flex-wrap: wrap;
+  }
+  .tag{
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    padding: 3px 8px;
+    border: 1px solid var(--line);
+    border-radius: 2px;
+    color: var(--bone-dim);
+  }
+
+  /* ---------- TEST HEADER ---------- */
+  .test-header{
+    display:flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 28px;
+    flex-wrap: wrap;
+    gap: 14px;
+  }
+  .back-btn{
+    background: none;
+    border: 1px solid var(--line);
+    color: var(--bone-dim);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    padding: 8px 14px;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: all .2s ease;
+  }
+  .back-btn:hover{ border-color: var(--sage); color: var(--bone); }
+
+  .progress-wrap{
+    flex: 1;
+    min-width: 200px;
+    margin: 0 20px;
+  }
+  .progress-label{
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--bone-dim);
+    margin-bottom: 6px;
+    display:flex;
+    justify-content: space-between;
+  }
+  .progress-track{
+    height: 3px;
+    background: var(--line);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .progress-fill{
+    height: 100%;
+    background: var(--sage);
+    width: 0%;
+    transition: width .3s ease;
+  }
+  .level-pill{
+    font-family: var(--font-mono);
+    font-size: 11px;
+    padding: 6px 12px;
+    border: 1px solid var(--sage-dim);
+    color: var(--sage);
+    border-radius: 3px;
+    white-space: nowrap;
+  }
+  .level-pill.senior{ border-color: var(--terracotta-dim); color: var(--terracotta); }
+
+  /* ---------- QUESTION CARD ---------- */
+  .q-list{ display: flex; flex-direction: column; gap: 12px; }
+
+  .q-card{
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .q-card.answered{ border-color: var(--line); }
+  .q-card.correct{ border-color: var(--sage-dim); }
+  .q-card.incorrect{ border-color: var(--red-flag); }
+
+  .q-head{
+    display:flex;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 18px 20px;
+    cursor: pointer;
+    user-select: none;
+  }
+  .q-num{
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--bone-dim);
+    padding-top: 3px;
+    flex-shrink:0;
+    width: 58px;
+  }
+  .q-text{
+    flex:1;
+    font-size: 15px;
+    line-height: 1.55;
+  }
+  .q-toggle{
+    flex-shrink: 0;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    border: 1px solid var(--line);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-family: var(--font-mono);
+    font-size: 15px;
+    color: var(--bone-dim);
+    transition: transform .3s ease, background .2s ease, border-color .2s ease;
+  }
+  .q-card.open .q-toggle{
+    transform: rotate(45deg);
+    background: var(--sage-dim);
+    border-color: var(--sage);
+    color: var(--bone);
+  }
+
+  .q-body{
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height .4s ease;
+  }
+  .q-card.open .q-body{ max-height: 600px; }
+
+  .q-options{
+    padding: 0 20px 20px 94px;
+    display:flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  @media (max-width: 560px){
+    .q-options{ padding-left: 20px; }
+    .q-num{ width: auto; margin-bottom: 4px; }
+    .q-head{ flex-wrap: wrap; }
+  }
+
+  .opt{
+    text-align:left;
+    background: var(--panel-raised);
+    border: 1px solid var(--line);
+    color: var(--bone);
+    padding: 11px 14px;
+    border-radius: 3px;
+    font-family: var(--font-body);
+    font-size: 14px;
+    cursor: pointer;
+    transition: border-color .2s ease, background .2s ease;
+    display:flex;
+    align-items:center;
+    gap: 10px;
+  }
+  .opt:hover:not(:disabled){ border-color: var(--sage-dim); }
+  .opt-letter{
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--bone-dim);
+    width: 16px;
+    flex-shrink:0;
+  }
+  .opt:disabled{ cursor: default; }
+  .opt.is-correct{ border-color: var(--sage); background: rgba(77,148,132,0.12); }
+  .opt.is-wrong{ border-color: var(--red-flag); background: rgba(181,86,74,0.1); }
+  .opt.is-correct .opt-letter{ color: var(--sage); }
+  .opt.is-wrong .opt-letter{ color: var(--red-flag); }
+
+  .q-feedback{
+    padding: 0 20px 20px 94px;
+    font-size: 13px;
+    color: var(--bone-dim);
+    line-height: 1.6;
+    border-top: 1px dashed var(--line);
+    margin-top: 4px;
+    padding-top: 14px;
+    display:none;
+  }
+  @media (max-width: 560px){ .q-feedback{ padding-left: 20px; } }
+  .q-feedback.show{ display:block; }
+  .q-feedback b{ color: var(--bone); }
+
+  /* ---------- RESULTADOS ---------- */
+  .results{
+    text-align:center;
+    padding: 50px 20px;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+  }
+  .results-score{
+    font-family: var(--font-display);
+    font-size: 64px;
+    font-weight: 600;
+    color: var(--sage);
+    line-height: 1;
+  }
+  .results-sub{
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--bone-dim);
+    margin-top: 8px;
+    letter-spacing: 0.05em;
+  }
+  .results-verdict{
+    margin-top: 24px;
+    font-size: 15px;
+    max-width: 460px;
+    margin-left:auto;
+    margin-right:auto;
+    color: var(--bone-dim);
+  }
+  .retry-btn{
+    margin-top: 28px;
+    background: var(--sage-dim);
+    border: 1px solid var(--sage);
+    color: var(--bone);
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    padding: 11px 20px;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: background .2s ease;
+  }
+  .retry-btn:hover{ background: var(--sage); }
+
+  footer{
+    text-align:center;
+    margin-top: 60px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--bone-dim);
+    opacity: 0.6;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ animation: none !important; transition: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <div class="masthead">
+    <div>
+      <div class="masthead-eyebrow">Proceso de Selección · Confidencial</div>
+      <h1>Dossier de Evaluación</h1>
+    </div>
+    <div class="masthead-meta">
+      ÁREA · TICs<br>
+      TECNICATURA EN DESARROLLO DE SOFTWARE
+    </div>
+  </div>
+
+  <!-- ============ PANTALLA 1: MENÚ DE PERFILES ============ -->
+  <section class="screen active" id="screen-menu">
+    <p class="intro-text">Seleccioná el nivel de seniority a evaluar. Cada perfil contiene 15 preguntas de opción múltiple, calibradas en dificultad y enfoque. Las opciones permanecen ocultas hasta que decidas revelarlas — pensá la respuesta antes de ver las alternativas.</p>
+
+    <div class="profile-grid">
+
+      <button class="profile-card" data-level="junior" onclick="startTest('junior')">
+        <svg class="rings" viewBox="0 0 60 60">
+          <circle class="ring-track" cx="30" cy="30" r="24"/>
+          <circle class="ring-fill" cx="30" cy="30" r="24" stroke-dasharray="50 150" stroke-linecap="round" transform="rotate(-90 30 30)"/>
+        </svg>
+        <span class="profile-code">PERFIL · NV-01</span>
+        <h3>Junior</h3>
+        <p>Fundamentos sólidos, lógica de programación y primeros pasos en buenas prácticas.</p>
+        <div class="profile-tags">
+          <span class="tag">Bases</span>
+          <span class="tag">Lógica</span>
+        </div>
+      </button>
+
+      <button class="profile-card" data-level="semi" onclick="startTest('semi')">
+        <svg class="rings" viewBox="0 0 60 60">
+          <circle class="ring-track" cx="30" cy="30" r="24"/>
+          <circle class="ring-fill" cx="30" cy="30" r="24" stroke-dasharray="100 150" stroke-linecap="round" transform="rotate(-90 30 30)"/>
+        </svg>
+        <span class="profile-code">PERFIL · NV-02</span>
+        <h3>Semi-Senior</h3>
+        <p>Autonomía técnica, criterio de diseño y resolución de problemas bajo ambigüedad.</p>
+        <div class="profile-tags">
+          <span class="tag">Arquitectura</span>
+          <span class="tag">Criterio</span>
+        </div>
+      </button>
+
+      <button class="profile-card" data-level="senior" onclick="startTest('senior')">
+        <svg class="rings" viewBox="0 0 60 60">
+          <circle class="ring-track" cx="30" cy="30" r="24"/>
+          <circle class="ring-fill" cx="30" cy="30" r="24" stroke-dasharray="150 150" stroke-linecap="round" transform="rotate(-90 30 30)"/>
+        </svg>
+        <span class="profile-code">PERFIL · NV-03</span>
+        <h3>Senior</h3>
+        <p>Visión sistémica, liderazgo técnico y decisiones de alto impacto y responsabilidad.</p>
+        <div class="profile-tags">
+          <span class="tag">Sistemas</span>
+          <span class="tag">Liderazgo</span>
+        </div>
+      </button>
+
+    </div>
+  </section>
+
+  <!-- ============ PANTALLA 2: TEST ============ -->
+  <section class="screen" id="screen-test">
+    <div class="test-header">
+      <button class="back-btn" onclick="goToMenu()">← Cambiar perfil</button>
+      <div class="progress-wrap">
+        <div class="progress-label">
+          <span id="progress-text">0 / 15 respondidas</span>
+          <span id="progress-score">0 correctas</span>
+        </div>
+        <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
+      </div>
+      <span class="level-pill" id="level-pill">NV-01 · JUNIOR</span>
+    </div>
+
+    <div class="q-list" id="q-list"></div>
+
+    <div class="results" id="results" style="display:none;">
+      <div class="results-score" id="results-score">0/15</div>
+      <div class="results-sub">PUNTAJE FINAL</div>
+      <p class="results-verdict" id="results-verdict"></p>
+      <button class="retry-btn" onclick="startTest(currentLevel)">Reintentar este nivel</button>
+    </div>
+  </section>
+
+  <footer>Documento de uso interno — proceso de selección de personal</footer>
+</div>
+
+<script>
+const BANKS = {
+  junior: [
+    {q:"¿Qué es una variable en programación?", opts:["Un espacio en memoria que almacena un valor y puede cambiar","Un tipo de función que siempre devuelve texto","Un comentario que el compilador ignora","Una instrucción que detiene el programa"], correct:0, fb:"Una variable es un contenedor con nombre que referencia un valor almacenado en memoria, y ese valor puede modificarse durante la ejecución del programa."},
+    {q:"¿Cuál es la diferencia entre <code>==</code> y <code>===</code> en JavaScript?", opts:["No hay ninguna diferencia real","<code>==</code> compara valor y tipo; <code>===</code> solo valor","<code>===</code> compara valor y tipo sin convertir; <code>==</code> convierte tipos antes de comparar","<code>===</code> solo funciona con números"], correct:2, fb:"El operador <code>===</code> es de igualdad estricta: compara tipo y valor sin conversión implícita. <code>==</code> realiza coerción de tipos antes de comparar, lo que puede generar resultados inesperados."},
+    {q:"¿Qué estructura de datos sigue el principio 'primero en entrar, primero en salir' (FIFO)?", opts:["Pila (Stack)","Cola (Queue)","Árbol binario","Lista enlazada circular"], correct:1, fb:"Una Cola (Queue) procesa elementos en el orden en que llegaron: el primero en entrar es el primero en salir. La Pila, en cambio, funciona con LIFO (último en entrar, primero en salir)."},
+    {q:"¿Para qué sirve principalmente Git en un proyecto de software?", opts:["Para compilar el código más rápido","Para llevar un historial de cambios y permitir colaboración entre desarrolladores","Para diseñar interfaces de usuario","Para alojar bases de datos en la nube"], correct:1, fb:"Git es un sistema de control de versiones: registra el historial de cambios del código, permite revertir errores y coordinar el trabajo de varias personas sobre el mismo proyecto."},
+    {q:"¿Qué hace una función recursiva?", opts:["Se ejecuta una sola vez y termina","Se llama a sí misma hasta cumplir una condición de corte","Solo puede usarse con números","Nunca puede devolver un valor"], correct:1, fb:"La recursividad consiste en que una función se invoca a sí misma, generalmente resolviendo un problema dividiéndolo en subproblemas más pequeños, hasta alcanzar un caso base que detiene las llamadas."},
+    {q:"¿Qué significa que un lenguaje sea 'tipado fuerte'?", opts:["Que es más rápido de ejecutar","Que no permite operar entre tipos de datos incompatibles sin conversión explícita","Que solo se usa para tipografía web","Que no necesita compilador"], correct:1, fb:"En un lenguaje de tipado fuerte, el sistema impide operaciones entre tipos incompatibles (por ejemplo, sumar un texto con un número) salvo que se haga una conversión explícita."},
+    {q:"¿Cuál de estas opciones describe correctamente HTML, CSS y JavaScript?", opts:["Los tres cumplen exactamente la misma función","HTML define estructura, CSS define estilo visual, JavaScript define comportamiento","CSS define la estructura y HTML el estilo","JavaScript reemplaza por completo a HTML y CSS"], correct:1, fb:"Es la división clásica de responsabilidades en desarrollo web: HTML aporta la estructura semántica del contenido, CSS controla la presentación visual, y JavaScript añade interactividad y lógica de comportamiento."},
+    {q:"¿Qué es un bucle infinito y por qué es un problema?", opts:["Un bucle que se ejecuta muy rápido y eso es bueno","Un bucle cuya condición de salida nunca se cumple, consumiendo recursos indefinidamente","Un tipo de bucle exclusivo de bases de datos","Un bucle que solo existe en lenguajes funcionales"], correct:1, fb:"Un bucle infinito ocurre cuando la condición de corte nunca se satisface. El programa queda 'atascado' repitiendo el bloque de código, lo que puede congelar la aplicación o agotar recursos del sistema."},
+    {q:"¿Qué es una API, en términos simples?", opts:["Un lenguaje de programación nuevo","Un conjunto de reglas que permite que dos programas se comuniquen entre sí","Un tipo de base de datos no relacional","Un editor de código"], correct:1, fb:"Una API (Interfaz de Programación de Aplicaciones) define un conjunto de reglas y métodos para que distintos sistemas o programas puedan solicitar e intercambiar información entre ellos."},
+    {q:"En una base de datos relacional, ¿qué es una clave primaria (primary key)?", opts:["Una columna que puede repetirse en varias filas","Un identificador único que distingue a cada fila de una tabla","La primera columna que se crea, sin importar su contenido","Una contraseña de acceso a la base de datos"], correct:1, fb:"La clave primaria garantiza que cada registro (fila) de una tabla pueda identificarse de forma única, evitando duplicados y permitiendo relacionar tablas entre sí."},
+    {q:"¿Qué diferencia hay entre un array (arreglo) y un objeto en JavaScript, a grandes rasgos?", opts:["No hay diferencia, son lo mismo","El array ordena elementos por índice numérico; el objeto los asocia por clave (nombre)","El objeto solo puede contener números","El array no puede contener texto"], correct:1, fb:"Un array organiza sus elementos mediante índices numéricos ordenados (0, 1, 2...), mientras que un objeto asocia valores a claves con nombre, sin un orden numérico inherente."},
+    {q:"¿Qué es 'debuggear' un programa?", opts:["Escribir el código desde cero","Documentar las funciones del sistema","Identificar y corregir errores en el código","Comprimir el tamaño del archivo final"], correct:2, fb:"Debuggear (depurar) es el proceso de encontrar la causa de un comportamiento incorrecto en el programa y corregirlo, frecuentemente con la ayuda de herramientas de depuración paso a paso."},
+    {q:"¿Qué ventaja principal ofrece comentar el código?", opts:["Hace que el programa se ejecute más rápido","Ayuda a que otras personas (o uno mismo en el futuro) entiendan la intención del código","Es obligatorio para que el código compile","Reduce automáticamente los errores de sintaxis"], correct:1, fb:"Los comentarios no afectan la ejecución del programa, pero mejoran su mantenibilidad al explicar el propósito o razonamiento detrás de una porción de código para futuros lectores."},
+    {q:"¿Qué es la 'consola' en el contexto de desarrollo web?", opts:["Un dispositivo de hardware para programar","Una herramienta del navegador o entorno que muestra mensajes, errores y permite ejecutar código","Un tipo de servidor exclusivo de Java","Una extensión obligatoria para HTML"], correct:1, fb:"La consola es una herramienta integrada en navegadores y entornos de desarrollo que permite ver mensajes de log, errores de ejecución y probar fragmentos de código de forma interactiva."},
+    {q:"¿Cuál de estas es una buena práctica al nombrar variables?", opts:["Usar nombres cortos sin sentido como 'x1', 'a2' siempre","Usar nombres descriptivos que indiquen qué representa el dato, como 'edadUsuario'","Usar siempre el mismo nombre 'temp' para todo","Usar números aleatorios como nombre"], correct:1, fb:"Nombrar las variables de forma descriptiva mejora la legibilidad del código y facilita que otras personas (o uno mismo más adelante) entiendan su propósito sin necesidad de comentarios adicionales."}
+  ],
+  semi: [
+    {q:"¿Qué problema busca resolver el patrón de diseño 'Singleton'?", opts:["Permitir múltiples instancias simultáneas de una clase","Garantizar que una clase tenga una única instancia accesible globalmente","Acelerar las consultas a una base de datos","Convertir una clase abstracta en concreta"], correct:1, fb:"El patrón Singleton restringe la instanciación de una clase a un único objeto, útil cuando se necesita un punto de acceso global y controlado, como una conexión de configuración compartida."},
+    {q:"En el contexto de APIs REST, ¿qué diferencia hay entre los métodos PUT y PATCH?", opts:["Son exactamente iguales","PUT reemplaza el recurso completo; PATCH aplica una modificación parcial","PATCH solo se usa para borrar recursos","PUT solo funciona con JSON y PATCH con XML"], correct:1, fb:"PUT está pensado para reemplazar el recurso completo con la nueva representación enviada, mientras que PATCH aplica cambios parciales, modificando solo los campos especificados."},
+    {q:"¿Qué es la 'inyección de dependencias' y qué problema resuelve?", opts:["Es una técnica de optimización de bases de datos","Es un mecanismo para insertar código malicioso de forma controlada","Es un patrón donde las dependencias de un objeto se proveen externamente en vez de crearlas internamente, reduciendo el acoplamiento","Es una forma de minimizar archivos JavaScript"], correct:2, fb:"La inyección de dependencias desacopla una clase de la creación de sus colaboradores: en vez de instanciarlos internamente, se los recibe desde afuera (por constructor, por ejemplo), lo que facilita las pruebas y el mantenimiento."},
+    {q:"¿Qué indica la sigla SOLID en diseño de software orientado a objetos?", opts:["Un conjunto de cinco principios de diseño para código mantenible y extensible","Un framework específico de JavaScript","Una metodología de gestión de proyectos ágil","Un tipo de base de datos"], correct:0, fb:"SOLID agrupa cinco principios (Responsabilidad Única, Abierto/Cerrado, Sustitución de Liskov, Segregación de Interfaces e Inversión de Dependencias) orientados a lograr código más mantenible, flexible y testeable."},
+    {q:"¿Cuándo es preferible usar una base de datos no relacional (NoSQL) sobre una relacional?", opts:["Siempre, porque es más moderna","Cuando los datos son altamente estructurados y requieren transacciones complejas","Cuando se necesita flexibilidad de esquema, alta escalabilidad horizontal o datos poco estructurados","Nunca, las relacionales son siempre superiores"], correct:2, fb:"Las bases NoSQL suelen elegirse cuando el esquema de datos cambia con frecuencia, se requiere escalar horizontalmente con facilidad, o el modelo de datos (documentos, grafos, clave-valor) no se ajusta bien al modelo tabular relacional."},
+    {q:"¿Qué es una 'condición de carrera' (race condition) en programación concurrente?", opts:["Un error de sintaxis común en bucles","Una situación donde el resultado depende del orden impredecible en que se ejecutan procesos o hilos concurrentes","Un tipo de prueba de rendimiento","Un patrón de diseño para acelerar consultas"], correct:1, fb:"Una condición de carrera ocurre cuando dos o más procesos/hilos acceden y modifican un recurso compartido al mismo tiempo, y el resultado final depende del orden de ejecución, generando comportamientos no deterministas."},
+    {q:"¿Qué ventaja aporta escribir pruebas unitarias (unit tests)?", opts:["Eliminan la necesidad de revisar el código manualmente para siempre","Permiten detectar regresiones tempranamente al verificar que unidades de código funcionen como se espera de forma aislada","Hacen que el programa ocupe menos espacio en disco","Sustituyen completamente a las pruebas de integración"], correct:1, fb:"Las pruebas unitarias validan el comportamiento de unidades pequeñas de código (funciones, métodos) de forma aislada, lo que permite detectar errores o regresiones rápidamente cuando se modifica el sistema."},
+    {q:"¿Qué es la normalización de bases de datos?", opts:["Comprimir archivos de base de datos para ahorrar espacio","Un proceso para organizar datos y reducir la redundancia dividiendo la información en tablas relacionadas","Convertir todos los textos a minúsculas","Encriptar la información sensible de los usuarios"], correct:1, fb:"La normalización organiza los datos en tablas relacionadas siguiendo reglas (formas normales) que minimizan la redundancia y previenen inconsistencias al actualizar la información."},
+    {q:"En arquitectura de software, ¿qué caracteriza a un sistema 'desacoplado'?", opts:["Que todos sus módulos dependen fuertemente entre sí","Que sus componentes tienen baja dependencia mutua, permitiendo modificar uno sin afectar gravemente a los demás","Que no tiene ninguna base de datos","Que solo puede ejecutarse en un único servidor"], correct:1, fb:"Un sistema desacoplado divide responsabilidades en componentes con baja dependencia entre sí, lo que facilita modificar, reemplazar o escalar partes individuales sin generar efectos en cascada sobre el resto."},
+    {q:"¿Qué problema resuelve principalmente el uso de caché (caching)?", opts:["Aumentar la seguridad de las contraseñas","Reducir el tiempo de respuesta evitando recalcular u obtener de nuevo datos que ya se solicitaron recientemente","Eliminar la necesidad de bases de datos","Generar automáticamente documentación del código"], correct:1, fb:"El caché almacena temporalmente resultados de operaciones costosas (consultas, cálculos) para servirlos rápidamente en solicitudes posteriores, reduciendo latencia y carga sobre el sistema de origen."},
+    {q:"¿Qué es la 'deuda técnica'?", opts:["El costo monetario de las licencias de software","El conjunto de tareas pendientes generadas al elegir soluciones rápidas en vez de las más correctas, que deberán resolverse después","Un préstamo bancario para financiar un proyecto de software","Un tipo de error de compilación"], correct:1, fb:"La deuda técnica representa el costo futuro (en tiempo y esfuerzo) de haber optado por una solución más rápida pero menos óptima en el corto plazo, que tarde o temprano requerirá ser corregida o refactorizada."},
+    {q:"¿Qué diferencia hay entre integración continua (CI) y despliegue continuo (CD)?", opts:["Son sinónimos exactos","CI automatiza la integración y prueba frecuente de cambios de código; CD automatiza además su despliegue a producción","CD se refiere solo a bases de datos","CI solo aplica a proyectos en Python"], correct:1, fb:"La integración continua automatiza la fusión y prueba frecuente del código de distintos desarrolladores. El despliegue continuo extiende esa automatización hasta llevar los cambios validados directamente a producción."},
+    {q:"¿Qué representa el acrónimo CRUD en desarrollo de software?", opts:["Un protocolo de red","Las operaciones básicas de persistencia: Crear, Leer, Actualizar y Borrar (Create, Read, Update, Delete)","Un tipo de algoritmo de ordenamiento","Un estándar de seguridad de contraseñas"], correct:1, fb:"CRUD describe las cuatro operaciones fundamentales que un sistema realiza sobre los datos persistentes: crearlos, leerlos, actualizarlos y eliminarlos."},
+    {q:"¿Por qué es importante manejar adecuadamente las excepciones (try/catch) en el código?", opts:["Porque sin ellas el programa no compila nunca","Porque permiten anticipar errores esperables y evitar que el programa colapse abruptamente, dando una respuesta controlada","Porque aumentan la velocidad de ejecución del programa","Porque son obligatorias en todos los lenguajes de programación"], correct:1, fb:"El manejo de excepciones permite capturar errores previsibles durante la ejecución y responder de forma controlada (mostrando un mensaje, reintentando, registrando el error) en vez de que el programa termine abruptamente."},
+    {q:"¿Qué significa que una API sea 'idempotente' en una operación como GET o PUT?", opts:["Que solo puede llamarse una vez en la vida del sistema","Que ejecutar la misma operación múltiples veces produce el mismo resultado que ejecutarla una sola vez","Que la operación siempre falla la segunda vez","Que requiere autenticación obligatoria"], correct:1, fb:"La idempotencia implica que repetir la misma solicitud varias veces tiene el mismo efecto que hacerla una sola vez, lo cual es clave para diseñar APIs robustas frente a reintentos por fallas de red."}
+  ],
+  senior: [
+    {q:"Un sistema en producción presenta degradación de performance solo bajo alta carga, pero las pruebas en staging no la reproducen. ¿Cuál es el enfoque más adecuado?", opts:["Asumir que es un problema de hardware y solicitar más servidores de inmediato","Replicar condiciones de carga similares a producción mediante pruebas de stress/carga y analizar métricas (CPU, memoria, I/O, locks de base de datos) bajo ese escenario","Reescribir el módulo más reciente sin investigar más","Ignorarlo hasta que un cliente se queje formalmente"], correct:1, fb:"La degradación bajo carga suele revelar cuellos de botella (locks, pooling de conexiones, garbage collection, I/O) que no aparecen con tráfico bajo. Reproducir condiciones similares con pruebas de carga y observabilidad es el camino más confiable antes de actuar sobre hipótesis no verificadas."},
+    {q:"¿Cuál es la diferencia clave entre escalabilidad horizontal y vertical, y cuándo preferirías cada una?", opts:["Son lo mismo, solo cambia el nombre según el proveedor cloud","Vertical agrega más potencia a una máquina (CPU/RAM); horizontal agrega más máquinas. Horizontal suele preferirse para alta disponibilidad y tolerancia a fallos","Horizontal siempre es más barata que vertical en cualquier escenario","Vertical solo aplica a bases de datos NoSQL"], correct:1, fb:"Escalar verticalmente aumenta los recursos de una sola máquina, con un límite físico y un único punto de falla. Escalar horizontalmente distribuye la carga entre varias máquinas, lo que mejora la tolerancia a fallos y permite crecer de forma más flexible, aunque introduce complejidad de coordinación."},
+    {q:"Como responsable técnico, detectás que un error de diseño propio —ya en producción— será costoso de corregir y nadie más lo notó. ¿Cuál es la conducta profesionalmente correcta?", opts:["Quedarse callado mientras el sistema siga funcionando aparentemente bien","Comunicarlo proactivamente al equipo y a quien corresponda, evaluando impacto, riesgo y plan de mitigación, aunque implique exponer un error propio","Corregirlo en secreto fuera de horario para que nadie lo note","Culpar a otro integrante del equipo para evitar consecuencias"], correct:1, fb:"La responsabilidad profesional en roles de alto impacto exige transparencia: comunicar el riesgo con un plan de mitigación protege al proyecto y a la organización, incluso cuando admitir el error propio es incómodo. Ocultarlo multiplica el riesgo y erosiona la confianza del equipo."},
+    {q:"¿Qué problema concreto resuelve un patrón de arquitectura de microservicios frente a un monolito, y qué costo introduce?", opts:["Resuelve todos los problemas de performance sin ningún costo adicional","Permite desplegar y escalar componentes de forma independiente, pero introduce complejidad de comunicación entre servicios, consistencia de datos y observabilidad distribuida","Elimina por completo la necesidad de bases de datos","Solo es útil para aplicaciones móviles"], correct:1, fb:"Los microservicios permiten desarrollo, despliegue y escalado independientes por dominio, pero a costa de mayor complejidad operativa: comunicación entre servicios (latencia, fallos parciales), consistencia eventual de datos y la necesidad de observabilidad distribuida robusta (trazas, logs centralizados)."},
+    {q:"Un cliente solicita una funcionalidad que compromete la seguridad de los datos de otros usuarios. ¿Cómo se aborda esta situación desde un rol de liderazgo técnico?", opts:["Implementarla igual porque el cliente siempre tiene razón","Negarse sin dar explicaciones y cerrar la conversación","Explicar técnicamente el riesgo concreto, proponer alternativas que cumplan el objetivo de negocio sin comprometer la seguridad, y documentar la decisión","Implementarla pero ocultarle el riesgo al cliente"], correct:2, fb:"Un rol de responsabilidad técnica implica traducir el riesgo en términos comprensibles para el cliente, ofrecer alternativas viables que satisfagan la necesidad de negocio sin sacrificar la seguridad, y dejar constancia documentada de la decisión tomada, sea cual sea el resultado."},
+    {q:"¿Qué es el principio de 'menor privilegio' (least privilege) y por qué es central en el diseño de sistemas seguros?", opts:["Dar a cada usuario o proceso solo los permisos mínimos necesarios para cumplir su función, reduciendo la superficie de ataque","Otorgar acceso de administrador a todos los empleados para simplificar el soporte","Es un principio exclusivo de redes físicas, no aplica a software","Significa que el sistema debe tener la menor cantidad de líneas de código posible"], correct:0, fb:"El principio de menor privilegio limita los permisos de cada usuario, proceso o servicio al mínimo indispensable para su función. Esto reduce drásticamente el daño potencial si una credencial o componente es comprometido."},
+    {q:"En un proyecto legacy sin documentación y con el autor original ya desvinculado, ¿cuál es la estrategia más sólida para comenzar a intervenir el código con seguridad?", opts:["Reescribir todo el sistema desde cero antes de tocar nada","Empezar a modificar directamente lo que el cliente pide, sin más análisis","Mapear el comportamiento actual (pruebas de caracterización), identificar zonas críticas y de mayor riesgo, y avanzar con cambios incrementales validados por pruebas","Eliminar las partes que no se entiendan"], correct:2, fb:"Frente a código legacy sin documentación, escribir pruebas de caracterización (que capturan el comportamiento actual, sea correcto o no) antes de modificar permite refactorizar con una red de seguridad. Reescribir todo desde cero suele subestimar reglas de negocio ocultas en el código existente."},
+    {q:"¿Qué distingue a la consistencia eventual de la consistencia fuerte en sistemas distribuidos, y en qué escenario aceptarías la primera?", opts:["No hay diferencia real entre ambas","Consistencia fuerte garantiza que todas las réplicas vean el mismo dato al instante; eventual permite una ventana temporal de divergencia. Esta última es aceptable cuando la disponibilidad y latencia importan más que la exactitud inmediata","La consistencia eventual significa que el sistema nunca será consistente","Solo las bases relacionales ofrecen consistencia eventual"], correct:1, fb:"La consistencia fuerte asegura que toda lectura posterior a una escritura refleje el valor más reciente en todas las réplicas, a costa de latencia o disponibilidad. La consistencia eventual tolera una ventana de desincronización entre réplicas, lo cual es aceptable en sistemas donde la disponibilidad y el rendimiento son prioritarios (por ejemplo, contadores de likes en redes sociales)."},
+    {q:"¿Cómo justificarías, ante un equipo o un cliente, la decisión de invertir tiempo en refactorizar código que 'funciona' actualmente?", opts:["No se puede justificar, refactorizar es siempre una pérdida de tiempo","Argumentando el costo creciente de mantenimiento, el riesgo de errores futuros y la menor velocidad de desarrollo que genera no abordarlo, idealmente con métricas o ejemplos concretos","Diciendo simplemente que el código 'se ve feo'","Haciendo la refactorización sin avisar a nadie para evitar la conversación"], correct:1, fb:"La justificación efectiva conecta la deuda técnica con impacto de negocio tangible: tiempo de desarrollo futuro, frecuencia de bugs, dificultad de onboarding de nuevos desarrolladores. Presentar evidencia concreta (tiempos de entrega, incidentes recurrentes) hace la conversación mucho más persuasiva que un argumento estético."},
+    {q:"¿Qué rol cumple un 'circuit breaker' (cortacircuitos) en arquitecturas de servicios distribuidos?", opts:["Es un componente de hardware que protege los servidores físicos de sobrecargas eléctricas","Es un patrón de software que detecta fallos repetidos en una dependencia y deja de llamarla temporalmente, evitando que el fallo se propague en cascada","Es una herramienta exclusiva para encriptar contraseñas","Sirve únicamente para limitar el tamaño de archivos subidos"], correct:1, fb:"El patrón circuit breaker monitorea las fallas de una dependencia externa; si supera un umbral, 'abre el circuito' y deja de intentar llamadas durante un período, evitando que un servicio caído arrastre a todo el sistema en una falla en cascada."},
+    {q:"Frente a un plazo de entrega imposible de cumplir sin omitir pruebas críticas, ¿qué curso de acción demuestra mayor criterio profesional?", opts:["Omitir las pruebas en silencio y entregar a tiempo sin avisar a nadie","Negarse a entregar nada hasta que el plazo se extienda indefinidamente","Comunicar el riesgo con datos concretos (qué se deja sin probar y su impacto potencial), y negociar una alternativa: reducir alcance, extender plazo, o aceptar el riesgo de forma explícita y documentada con quien tiene autoridad para decidirlo","Renunciar al proyecto inmediatamente"], correct:2, fb:"La decisión correcta no es unilateral: implica exponer el trade-off real con claridad (qué riesgo se asume, qué impacto tendría) y dejar que la decisión final, si implica asumir riesgo, sea tomada conscientemente por quien tiene la autoridad y visión de negocio para hacerlo, con respaldo documentado."},
+    {q:"¿Qué ventaja aporta el versionado semántico (semantic versioning, ej. 2.4.1) en librerías o APIs públicas?", opts:["Permite saber instantáneamente cuántas líneas de código tiene el proyecto","Comunica de forma estandarizada el impacto de un cambio (mayor: rompe compatibilidad, menor: nueva funcionalidad compatible, parche: corrección) facilitando decisiones de actualización a quienes consumen la librería","Es solo una convención estética sin impacto funcional","Determina automáticamente la licencia de uso del software"], correct:1, fb:"El versionado semántico (MAYOR.MENOR.PARCHE) comunica de forma predecible el tipo de cambio introducido, permitiendo a los equipos que consumen una API o librería decidir con información si pueden actualizar de forma segura o si deben revisar compatibilidad."},
+    {q:"En un equipo de desarrollo, ¿qué objetivo principal cumple una revisión de código (code review) más allá de detectar bugs?", opts:["Ningún otro objetivo relevante, solo sirve para encontrar errores de sintaxis","Transferir conocimiento del dominio y del sistema entre integrantes del equipo, mantener consistencia de estándares, y fomentar responsabilidad colectiva sobre la calidad del código","Determinar quién es el mejor programador del equipo","Reemplazar completamente la necesidad de pruebas automatizadas"], correct:1, fb:"Más allá de la detección de errores, el code review distribuye conocimiento sobre el sistema entre el equipo, refuerza estándares compartidos de calidad, y construye una cultura de responsabilidad colectiva sobre el código, reduciendo dependencia de una sola persona."},
+    {q:"¿Cómo evaluarías técnicamente si conviene construir una solución propia o adoptar una herramienta/servicio de terceros (build vs. buy)?", opts:["Siempre construir todo internamente, sin excepciones, para tener control total","Siempre comprar o adoptar terceros, nunca construir nada propio","Evaluar si la funcionalidad es diferenciadora para el negocio o un commodity, el costo total de mantenimiento propio versus la dependencia y el riesgo de un proveedor externo, y el tiempo de llegada al mercado","Decidir exclusivamente según el precio de la licencia, sin otro criterio"], correct:2, fb:"La decisión build vs. buy pondera si la funcionalidad aporta ventaja competitiva real (justifica inversión propia) o es un problema ya resuelto por el mercado (conviene adoptar), sumado al costo de mantenimiento a largo plazo, el riesgo de dependencia de terceros, y la urgencia de tiempo al mercado."},
+    {q:"¿Qué significa 'observabilidad' en un sistema en producción, y por qué es más amplia que simplemente tener logs?", opts:["Es exactamente lo mismo que tener logs de errores guardados en un archivo","Es la capacidad de entender el estado interno de un sistema a partir de sus señales externas, combinando logs, métricas y trazas distribuidas para diagnosticar problemas sin necesidad de reproducirlos manualmente","Se refiere únicamente a la interfaz visual que ven los usuarios finales","Es un sinónimo de tener buena documentación técnica"], correct:1, fb:"La observabilidad integra tres pilares —logs, métricas y trazas (traces)— para permitir inferir el comportamiento interno de un sistema complejo a partir de sus salidas, facilitando diagnosticar incidentes en producción sin depender de reproducir manualmente cada escenario."}
+  ]
+};
+
+const LEVEL_META = {
+  junior: {label:"NV-01 · JUNIOR", cls:""},
+  semi: {label:"NV-02 · SEMI-SENIOR", cls:""},
+  senior: {label:"NV-03 · SENIOR", cls:"senior"}
+};
+
+let currentLevel = null;
+let answers = {};
+
+function startTest(level){
+  currentLevel = level;
+  answers = {};
+  document.getElementById('screen-menu').classList.remove('active');
+  document.getElementById('screen-test').classList.add('active');
+  document.getElementById('results').style.display = 'none';
+
+  const pill = document.getElementById('level-pill');
+  pill.textContent = LEVEL_META[level].label;
+  pill.className = 'level-pill ' + LEVEL_META[level].cls;
+
+  renderQuestions(level);
+  updateProgress();
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function goToMenu(){
+  document.getElementById('screen-test').classList.remove('active');
+  document.getElementById('screen-menu').classList.add('active');
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function renderQuestions(level){
+  const list = document.getElementById('q-list');
+  list.innerHTML = '';
+  const bank = BANKS[level];
+
+  bank.forEach((item, idx) => {
+    const card = document.createElement('div');
+    card.className = 'q-card';
+    card.id = 'card-' + idx;
+
+    const letters = ['A','B','C','D'];
+    const optsHtml = item.opts.map((opt, oIdx) =>
+      `<button class="opt" data-idx="${oIdx}" onclick="selectOption(${idx}, ${oIdx})">
+         <span class="opt-letter">${letters[oIdx]}</span><span>${opt}</span>
+       </button>`
+    ).join('');
+
+    card.innerHTML = `
+      <div class="q-head" onclick="toggleCard(${idx})">
+        <span class="q-num">BLK · ${String(idx+1).padStart(2,'0')}/15</span>
+        <span class="q-text">${item.q}</span>
+        <span class="q-toggle">+</span>
+      </div>
+      <div class="q-body">
+        <div class="q-options">${optsHtml}</div>
+        <div class="q-feedback" id="fb-${idx}"><b>Comentario:</b> ${item.fb}</div>
+      </div>
+    `;
+    list.appendChild(card);
+  });
+}
+
+function toggleCard(idx){
+  const card = document.getElementById('card-' + idx);
+  card.classList.toggle('open');
+}
+
+function selectOption(qIdx, oIdx){
+  if (answers[qIdx] !== undefined) return; // ya respondida
+
+  const item = BANKS[currentLevel][qIdx];
+  const card = document.getElementById('card-' + qIdx);
+  const buttons = card.querySelectorAll('.opt');
+
+  answers[qIdx] = oIdx;
+
+  buttons.forEach((btn, i) => {
+    btn.disabled = true;
+    if (i === item.correct) btn.classList.add('is-correct');
+    if (i === oIdx && oIdx !== item.correct) btn.classList.add('is-wrong');
+  });
+
+  card.classList.add('answered');
+  card.classList.add(oIdx === item.correct ? 'correct' : 'incorrect');
+  document.getElementById('fb-' + qIdx).classList.add('show');
+
+  updateProgress();
+
+  const answeredCount = Object.keys(answers).length;
+  if (answeredCount === BANKS[currentLevel].length){
+    setTimeout(showResults, 400);
+  }
+}
+
+function updateProgress(){
+  const total = BANKS[currentLevel].length;
+  const answered = Object.keys(answers).length;
+  let correct = 0;
+  Object.keys(answers).forEach(k => {
+    if (answers[k] === BANKS[currentLevel][k].correct) correct++;
+  });
+
+  document.getElementById('progress-text').textContent = `${answered} / ${total} respondidas`;
+  document.getElementById('progress-score').textContent = `${correct} correctas`;
+  document.getElementById('progress-fill').style.width = (answered/total*100) + '%';
+}
+
+function showResults(){
+  const total = BANKS[currentLevel].length;
+  let correct = 0;
+  Object.keys(answers).forEach(k => {
+    if (answers[k] === BANKS[currentLevel][k].correct) correct++;
+  });
+
+  const pct = correct / total;
+  let verdict = '';
+  if (pct >= 0.85) verdict = 'Desempeño sobresaliente. El candidato demuestra dominio sólido de los conceptos evaluados para este nivel.';
+  else if (pct >= 0.65) verdict = 'Desempeño satisfactorio. Hay base suficiente para el nivel, con algunas áreas a reforzar.';
+  else if (pct >= 0.4) verdict = 'Desempeño parcial. Se recomienda profundizar en los temas señalados como incorrectos antes de avanzar de nivel.';
+  else verdict = 'Desempeño por debajo de lo esperado para este nivel. Se sugiere revisión exhaustiva de fundamentos.';
+
+  document.getElementById('results-score').textContent = `${correct}/${total}`;
+  document.getElementById('results-verdict').textContent = verdict;
+  document.getElementById('results').style.display = 'block';
+  document.getElementById('results').scrollIntoView({behavior:'smooth', block:'center'});
+}
+</script>
+
+</body>
+</html>
