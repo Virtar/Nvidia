@@ -416,6 +416,133 @@
     opacity: 0.6;
   }
 
+  /* ---------- SECCIÓN DE DESAFÍOS CREATIVOS ---------- */
+  .section-divider{
+    display:flex;
+    align-items:center;
+    gap: 16px;
+    margin: 56px 0 28px;
+  }
+  .section-divider::before,
+  .section-divider::after{
+    content:"";
+    flex:1;
+    height: 1px;
+    background: var(--line);
+  }
+  .section-divider-label{
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--terracotta);
+    white-space: nowrap;
+  }
+  .creative-intro{
+    color: var(--bone-dim);
+    font-size: 13.5px;
+    margin-bottom: 24px;
+    line-height: 1.6;
+    border-left: 2px solid var(--terracotta-dim);
+    padding-left: 14px;
+  }
+
+  .c-card{
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-left: 2px solid var(--terracotta-dim);
+    border-radius: 4px;
+    padding: 22px 22px 20px;
+    margin-bottom: 14px;
+  }
+  .c-num{
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--terracotta);
+    letter-spacing: 0.06em;
+    display:block;
+    margin-bottom: 10px;
+  }
+  .c-text{
+    font-size: 15px;
+    line-height: 1.6;
+    margin-bottom: 16px;
+  }
+  .c-textarea{
+    width: 100%;
+    min-height: 100px;
+    background: var(--panel-raised);
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    color: var(--bone);
+    font-family: var(--font-body);
+    font-size: 14px;
+    padding: 12px 14px;
+    resize: vertical;
+    line-height: 1.5;
+  }
+  .c-textarea:focus{ outline: none; border-color: var(--terracotta-dim); }
+  .c-textarea:disabled{ opacity: 0.7; }
+
+  .c-actions{
+    display:flex;
+    justify-content: space-between;
+    align-items:center;
+    margin-top: 10px;
+  }
+  .c-charcount{
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--bone-dim);
+  }
+  .c-submit{
+    background: var(--terracotta-dim);
+    border: 1px solid var(--terracotta);
+    color: var(--bone);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    padding: 9px 16px;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: background .2s ease;
+  }
+  .c-submit:hover:not(:disabled){ background: var(--terracotta); }
+  .c-submit:disabled{ opacity: 0.4; cursor: not-allowed; }
+
+  .c-criteria{
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px dashed var(--line);
+    font-size: 13px;
+    line-height: 1.65;
+    color: var(--bone-dim);
+    display:none;
+  }
+  .c-criteria.show{ display:block; animation: fadeIn .35s ease; }
+  .c-criteria-label{
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--terracotta);
+    display:block;
+    margin-bottom: 8px;
+  }
+  .c-criteria ul{
+    margin: 0;
+    padding-left: 18px;
+  }
+  .c-criteria li{ margin-bottom: 6px; }
+  .c-criteria b{ color: var(--bone); }
+
+  .c-card.done{ border-left-color: var(--terracotta); }
+  .c-done-tag{
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    color: var(--sage);
+    margin-left: 8px;
+  }
+
   @media (prefers-reduced-motion: reduce){
     *{ animation: none !important; transition: none !important; }
   }
@@ -427,7 +554,7 @@
 
   <div class="masthead">
     <div>
-      <div class="masthead-eyebrow">Proceso de Selección · Confidencial</div>
+      <div class="masthead-eyebrow">Proceso de Selección</div>
       <h1>Dossier de Evaluación</h1>
     </div>
     <div class="masthead-meta">
@@ -503,6 +630,12 @@
 
     <div class="q-list" id="q-list"></div>
 
+    <div class="section-divider">
+      <span class="section-divider-label">Bloque externo · Pensamiento creativo</span>
+    </div>
+    <p class="creative-intro">Estas 4 preguntas no tienen una única respuesta correcta. Evalúan capacidad de resolución de problemas, criterio y originalidad. Escribí tu razonamiento y, al enviar, vas a ver qué buscaba evaluar cada desafío — no hay calificación automática.</p>
+    <div class="c-list" id="c-list"></div>
+
     <div class="results" id="results" style="display:none;">
       <div class="results-score" id="results-score">0/15</div>
       <div class="results-sub">PUNTAJE FINAL</div>
@@ -517,55 +650,112 @@
 <script>
 const BANKS = {
   junior: [
-    {q:"¿Qué es una variable en programación?", opts:["Un espacio en memoria que almacena un valor y puede cambiar","Un tipo de función que siempre devuelve texto","Un comentario que el compilador ignora","Una instrucción que detiene el programa"], correct:0, fb:"Una variable es un contenedor con nombre que referencia un valor almacenado en memoria, y ese valor puede modificarse durante la ejecución del programa."},
-    {q:"¿Cuál es la diferencia entre <code>==</code> y <code>===</code> en JavaScript?", opts:["No hay ninguna diferencia real","<code>==</code> compara valor y tipo; <code>===</code> solo valor","<code>===</code> compara valor y tipo sin convertir; <code>==</code> convierte tipos antes de comparar","<code>===</code> solo funciona con números"], correct:2, fb:"El operador <code>===</code> es de igualdad estricta: compara tipo y valor sin conversión implícita. <code>==</code> realiza coerción de tipos antes de comparar, lo que puede generar resultados inesperados."},
-    {q:"¿Qué estructura de datos sigue el principio 'primero en entrar, primero en salir' (FIFO)?", opts:["Pila (Stack)","Cola (Queue)","Árbol binario","Lista enlazada circular"], correct:1, fb:"Una Cola (Queue) procesa elementos en el orden en que llegaron: el primero en entrar es el primero en salir. La Pila, en cambio, funciona con LIFO (último en entrar, primero en salir)."},
-    {q:"¿Para qué sirve principalmente Git en un proyecto de software?", opts:["Para compilar el código más rápido","Para llevar un historial de cambios y permitir colaboración entre desarrolladores","Para diseñar interfaces de usuario","Para alojar bases de datos en la nube"], correct:1, fb:"Git es un sistema de control de versiones: registra el historial de cambios del código, permite revertir errores y coordinar el trabajo de varias personas sobre el mismo proyecto."},
-    {q:"¿Qué hace una función recursiva?", opts:["Se ejecuta una sola vez y termina","Se llama a sí misma hasta cumplir una condición de corte","Solo puede usarse con números","Nunca puede devolver un valor"], correct:1, fb:"La recursividad consiste en que una función se invoca a sí misma, generalmente resolviendo un problema dividiéndolo en subproblemas más pequeños, hasta alcanzar un caso base que detiene las llamadas."},
-    {q:"¿Qué significa que un lenguaje sea 'tipado fuerte'?", opts:["Que es más rápido de ejecutar","Que no permite operar entre tipos de datos incompatibles sin conversión explícita","Que solo se usa para tipografía web","Que no necesita compilador"], correct:1, fb:"En un lenguaje de tipado fuerte, el sistema impide operaciones entre tipos incompatibles (por ejemplo, sumar un texto con un número) salvo que se haga una conversión explícita."},
-    {q:"¿Cuál de estas opciones describe correctamente HTML, CSS y JavaScript?", opts:["Los tres cumplen exactamente la misma función","HTML define estructura, CSS define estilo visual, JavaScript define comportamiento","CSS define la estructura y HTML el estilo","JavaScript reemplaza por completo a HTML y CSS"], correct:1, fb:"Es la división clásica de responsabilidades en desarrollo web: HTML aporta la estructura semántica del contenido, CSS controla la presentación visual, y JavaScript añade interactividad y lógica de comportamiento."},
-    {q:"¿Qué es un bucle infinito y por qué es un problema?", opts:["Un bucle que se ejecuta muy rápido y eso es bueno","Un bucle cuya condición de salida nunca se cumple, consumiendo recursos indefinidamente","Un tipo de bucle exclusivo de bases de datos","Un bucle que solo existe en lenguajes funcionales"], correct:1, fb:"Un bucle infinito ocurre cuando la condición de corte nunca se satisface. El programa queda 'atascado' repitiendo el bloque de código, lo que puede congelar la aplicación o agotar recursos del sistema."},
-    {q:"¿Qué es una API, en términos simples?", opts:["Un lenguaje de programación nuevo","Un conjunto de reglas que permite que dos programas se comuniquen entre sí","Un tipo de base de datos no relacional","Un editor de código"], correct:1, fb:"Una API (Interfaz de Programación de Aplicaciones) define un conjunto de reglas y métodos para que distintos sistemas o programas puedan solicitar e intercambiar información entre ellos."},
-    {q:"En una base de datos relacional, ¿qué es una clave primaria (primary key)?", opts:["Una columna que puede repetirse en varias filas","Un identificador único que distingue a cada fila de una tabla","La primera columna que se crea, sin importar su contenido","Una contraseña de acceso a la base de datos"], correct:1, fb:"La clave primaria garantiza que cada registro (fila) de una tabla pueda identificarse de forma única, evitando duplicados y permitiendo relacionar tablas entre sí."},
-    {q:"¿Qué diferencia hay entre un array (arreglo) y un objeto en JavaScript, a grandes rasgos?", opts:["No hay diferencia, son lo mismo","El array ordena elementos por índice numérico; el objeto los asocia por clave (nombre)","El objeto solo puede contener números","El array no puede contener texto"], correct:1, fb:"Un array organiza sus elementos mediante índices numéricos ordenados (0, 1, 2...), mientras que un objeto asocia valores a claves con nombre, sin un orden numérico inherente."},
-    {q:"¿Qué es 'debuggear' un programa?", opts:["Escribir el código desde cero","Documentar las funciones del sistema","Identificar y corregir errores en el código","Comprimir el tamaño del archivo final"], correct:2, fb:"Debuggear (depurar) es el proceso de encontrar la causa de un comportamiento incorrecto en el programa y corregirlo, frecuentemente con la ayuda de herramientas de depuración paso a paso."},
-    {q:"¿Qué ventaja principal ofrece comentar el código?", opts:["Hace que el programa se ejecute más rápido","Ayuda a que otras personas (o uno mismo en el futuro) entiendan la intención del código","Es obligatorio para que el código compile","Reduce automáticamente los errores de sintaxis"], correct:1, fb:"Los comentarios no afectan la ejecución del programa, pero mejoran su mantenibilidad al explicar el propósito o razonamiento detrás de una porción de código para futuros lectores."},
-    {q:"¿Qué es la 'consola' en el contexto de desarrollo web?", opts:["Un dispositivo de hardware para programar","Una herramienta del navegador o entorno que muestra mensajes, errores y permite ejecutar código","Un tipo de servidor exclusivo de Java","Una extensión obligatoria para HTML"], correct:1, fb:"La consola es una herramienta integrada en navegadores y entornos de desarrollo que permite ver mensajes de log, errores de ejecución y probar fragmentos de código de forma interactiva."},
-    {q:"¿Cuál de estas es una buena práctica al nombrar variables?", opts:["Usar nombres cortos sin sentido como 'x1', 'a2' siempre","Usar nombres descriptivos que indiquen qué representa el dato, como 'edadUsuario'","Usar siempre el mismo nombre 'temp' para todo","Usar números aleatorios como nombre"], correct:1, fb:"Nombrar las variables de forma descriptiva mejora la legibilidad del código y facilita que otras personas (o uno mismo más adelante) entiendan su propósito sin necesidad de comentarios adicionales."}
+    {q:"¿Qué es una variable en programación?", opts:["Un espacio en memoria que almacena un valor y puede cambiar durante la ejecución","Un identificador que, una vez declarado, mantiene siempre el mismo valor","Una instrucción que solo existe dentro de funciones recursivas","Un tipo de dato exclusivo para almacenar texto"], correct:0, fb:"Una variable es un contenedor con nombre que referencia un valor almacenado en memoria, y ese valor puede modificarse durante la ejecución del programa. Mantener siempre el mismo valor describe más bien a una constante."},
+    {q:"¿Cuál es la diferencia entre <code>==</code> y <code>===</code> en JavaScript?", opts:["<code>==</code> compara valor y tipo; <code>===</code> solo compara el valor","<code>===</code> compara valor y tipo sin convertir; <code>==</code> convierte tipos antes de comparar","Ambos comparan tipo y valor, pero <code>===</code> es más lento de ejecutar","<code>==</code> solo puede usarse para comparar números enteros"], correct:1, fb:"El operador <code>===</code> es de igualdad estricta: compara tipo y valor sin conversión implícita. <code>==</code> realiza coerción de tipos antes de comparar, lo que puede generar resultados inesperados como que '5' == 5 sea verdadero."},
+    {q:"¿Qué estructura de datos sigue el principio 'primero en entrar, primero en salir' (FIFO)?", opts:["Pila (Stack)","Cola (Queue)","Lista enlazada doble","Tabla hash"], correct:1, fb:"Una Cola (Queue) procesa elementos en el orden en que llegaron: el primero en entrar es el primero en salir. La Pila funciona con el principio opuesto, LIFO."},
+    {q:"¿Qué hace principalmente Git en un proyecto de software?", opts:["Optimiza el código para que se ejecute con menor consumo de memoria","Lleva un historial de cambios y permite colaboración entre desarrolladores sobre el mismo código","Genera automáticamente la documentación técnica del proyecto","Detecta y corrige errores de sintaxis antes de compilar"], correct:1, fb:"Git es un sistema de control de versiones: registra el historial de cambios del código, permite revertir errores y coordinar el trabajo de varias personas sobre el mismo proyecto. No optimiza ni corrige código por sí mismo."},
+    {q:"¿Qué hace una función recursiva?", opts:["Se ejecuta en paralelo en distintos núcleos del procesador","Se llama a sí misma hasta cumplir una condición de corte (caso base)","Solo puede aceptar un único parámetro de entrada","Se ejecuta automáticamente al iniciar el programa, sin ser invocada"], correct:1, fb:"La recursividad consiste en que una función se invoca a sí misma, generalmente dividiendo un problema en subproblemas más pequeños, hasta alcanzar un caso base que detiene las llamadas. No implica paralelismo ni ejecución automática."},
+    {q:"¿Qué significa que un lenguaje sea de 'tipado fuerte'?", opts:["Que el código se ejecuta más rápido que en lenguajes de tipado débil","Que no permite operar entre tipos de datos incompatibles sin conversión explícita","Que las variables, una vez declaradas, no pueden volver a usarse","Que requiere obligatoriamente un compilador y no puede interpretarse"], correct:1, fb:"En un lenguaje de tipado fuerte, el sistema impide operaciones entre tipos incompatibles (por ejemplo, sumar un texto con un número) salvo que se haga una conversión explícita. Esto no determina por sí solo la velocidad de ejecución."},
+    {q:"¿Qué describe correctamente la relación entre HTML, CSS y JavaScript en una página web?", opts:["HTML define estructura, CSS define estilo visual, JavaScript define comportamiento","CSS define la estructura semántica y HTML solo aplica estilos visuales","JavaScript reemplaza a HTML y CSS en aplicaciones modernas, por lo que ya no se usan juntos","Los tres lenguajes cumplen la misma función y son intercambiables según el navegador"], correct:0, fb:"Es la división clásica de responsabilidades en desarrollo web: HTML aporta la estructura semántica del contenido, CSS controla la presentación visual, y JavaScript añade interactividad y lógica de comportamiento. Siguen usándose en conjunto incluso en frameworks modernos."},
+    {q:"¿Qué es un bucle infinito y por qué representa un problema?", opts:["Un bucle que itera sobre un array vacío y por eso nunca devuelve resultados","Un bucle cuya condición de salida nunca se cumple, consumiendo recursos del sistema indefinidamente","Un bucle que se ejecuta exactamente una vez antes de detenerse por error","Un patrón de diseño usado deliberadamente para mantener servidores activos"], correct:1, fb:"Un bucle infinito ocurre cuando la condición de corte nunca se satisface, repitiendo el bloque de código indefinidamente. Esto puede congelar la aplicación o agotar recursos del sistema, a diferencia de mantener un servidor activo de forma controlada (que usa otros mecanismos)."},
+    {q:"¿Qué es una API, en términos simples?", opts:["Un lenguaje de programación orientado a la nube","Un conjunto de reglas que permite que dos programas se comuniquen entre sí","Un tipo de base de datos optimizada para móviles","Una herramienta exclusiva para diseñar interfaces gráficas"], correct:1, fb:"Una API (Interfaz de Programación de Aplicaciones) define un conjunto de reglas y métodos para que distintos sistemas o programas puedan solicitar e intercambiar información entre ellos, independientemente del lenguaje en que estén escritos."},
+    {q:"En una base de datos relacional, ¿qué es una clave primaria (primary key)?", opts:["Una columna que puede repetirse en varias filas para facilitar búsquedas","Un identificador único que distingue a cada fila de una tabla","Un campo que almacena exclusivamente la fecha de creación del registro","La columna que define el orden visual en que se muestran los datos"], correct:1, fb:"La clave primaria garantiza que cada registro (fila) de una tabla pueda identificarse de forma única, evitando duplicados y permitiendo relacionar tablas entre sí mediante claves foráneas."},
+    {q:"¿Qué diferencia hay entre un array (arreglo) y un objeto en JavaScript, a grandes rasgos?", opts:["El array ordena elementos por índice numérico; el objeto los asocia por clave (nombre)","El objeto solo puede almacenar funciones, nunca valores simples","El array no puede contener strings, solo números","Ambos son estructuras idénticas y la diferencia es únicamente de sintaxis"], correct:0, fb:"Un array organiza sus elementos mediante índices numéricos ordenados (0, 1, 2...), mientras que un objeto asocia valores a claves con nombre, sin un orden numérico inherente. Ambos pueden almacenar cualquier tipo de dato, incluyendo funciones."},
+    {q:"¿Qué es 'debuggear' un programa?", opts:["Reducir el tamaño del archivo compilado para que ocupe menos espacio","Identificar y corregir errores en el comportamiento del código","Traducir el código a otro lenguaje de programación","Generar copias de seguridad automáticas del proyecto"], correct:1, fb:"Debuggear (depurar) es el proceso de encontrar la causa de un comportamiento incorrecto en el programa y corregirlo, frecuentemente con la ayuda de herramientas de depuración paso a paso, como breakpoints."},
+    {q:"¿Qué ventaja principal ofrece comentar el código?", opts:["Reduce el tiempo de compilación porque el compilador los procesa primero","Ayuda a que otras personas (o uno mismo en el futuro) entiendan la intención del código","Convierte automáticamente el código en documentación técnica formal","Evita que se generen errores de sintaxis durante la ejecución"], correct:1, fb:"Los comentarios no afectan la ejecución ni la compilación del programa, pero mejoran su mantenibilidad al explicar el propósito o razonamiento detrás de una porción de código para futuros lectores."},
+    {q:"¿Qué función cumple la consola en el contexto de desarrollo web?", opts:["Es un servidor remoto donde se almacena el código fuente del proyecto","Es una herramienta integrada al navegador o entorno que muestra mensajes, errores y permite ejecutar código de forma interactiva","Es un componente exclusivo de las bases de datos para ejecutar consultas SQL","Es el lugar donde se configuran los permisos de acceso del sistema operativo"], correct:1, fb:"La consola es una herramienta integrada en navegadores y entornos de desarrollo que permite ver mensajes de log, errores de ejecución y probar fragmentos de código de forma interactiva."},
+    {q:"¿Cuál de estas es considerada una buena práctica al nombrar variables?", opts:["Usar nombres descriptivos que indiquen qué representa el dato, como 'edadUsuario'","Usar siempre nombres en mayúsculas para que destaquen visualmente en el editor","Usar el mismo nombre genérico ('data') para todas las variables del programa","Incluir el tipo de dato como parte obligatoria del nombre en todos los casos"], correct:0, fb:"Nombrar las variables de forma descriptiva mejora la legibilidad del código y facilita que otras personas entiendan su propósito sin necesidad de comentarios adicionales. Incluir el tipo en el nombre (notación húngara) fue una convención común pero hoy se considera obsoleta en la mayoría de los lenguajes modernos."}
   ],
   semi: [
-    {q:"¿Qué problema busca resolver el patrón de diseño 'Singleton'?", opts:["Permitir múltiples instancias simultáneas de una clase","Garantizar que una clase tenga una única instancia accesible globalmente","Acelerar las consultas a una base de datos","Convertir una clase abstracta en concreta"], correct:1, fb:"El patrón Singleton restringe la instanciación de una clase a un único objeto, útil cuando se necesita un punto de acceso global y controlado, como una conexión de configuración compartida."},
-    {q:"En el contexto de APIs REST, ¿qué diferencia hay entre los métodos PUT y PATCH?", opts:["Son exactamente iguales","PUT reemplaza el recurso completo; PATCH aplica una modificación parcial","PATCH solo se usa para borrar recursos","PUT solo funciona con JSON y PATCH con XML"], correct:1, fb:"PUT está pensado para reemplazar el recurso completo con la nueva representación enviada, mientras que PATCH aplica cambios parciales, modificando solo los campos especificados."},
-    {q:"¿Qué es la 'inyección de dependencias' y qué problema resuelve?", opts:["Es una técnica de optimización de bases de datos","Es un mecanismo para insertar código malicioso de forma controlada","Es un patrón donde las dependencias de un objeto se proveen externamente en vez de crearlas internamente, reduciendo el acoplamiento","Es una forma de minimizar archivos JavaScript"], correct:2, fb:"La inyección de dependencias desacopla una clase de la creación de sus colaboradores: en vez de instanciarlos internamente, se los recibe desde afuera (por constructor, por ejemplo), lo que facilita las pruebas y el mantenimiento."},
-    {q:"¿Qué indica la sigla SOLID en diseño de software orientado a objetos?", opts:["Un conjunto de cinco principios de diseño para código mantenible y extensible","Un framework específico de JavaScript","Una metodología de gestión de proyectos ágil","Un tipo de base de datos"], correct:0, fb:"SOLID agrupa cinco principios (Responsabilidad Única, Abierto/Cerrado, Sustitución de Liskov, Segregación de Interfaces e Inversión de Dependencias) orientados a lograr código más mantenible, flexible y testeable."},
-    {q:"¿Cuándo es preferible usar una base de datos no relacional (NoSQL) sobre una relacional?", opts:["Siempre, porque es más moderna","Cuando los datos son altamente estructurados y requieren transacciones complejas","Cuando se necesita flexibilidad de esquema, alta escalabilidad horizontal o datos poco estructurados","Nunca, las relacionales son siempre superiores"], correct:2, fb:"Las bases NoSQL suelen elegirse cuando el esquema de datos cambia con frecuencia, se requiere escalar horizontalmente con facilidad, o el modelo de datos (documentos, grafos, clave-valor) no se ajusta bien al modelo tabular relacional."},
-    {q:"¿Qué es una 'condición de carrera' (race condition) en programación concurrente?", opts:["Un error de sintaxis común en bucles","Una situación donde el resultado depende del orden impredecible en que se ejecutan procesos o hilos concurrentes","Un tipo de prueba de rendimiento","Un patrón de diseño para acelerar consultas"], correct:1, fb:"Una condición de carrera ocurre cuando dos o más procesos/hilos acceden y modifican un recurso compartido al mismo tiempo, y el resultado final depende del orden de ejecución, generando comportamientos no deterministas."},
-    {q:"¿Qué ventaja aporta escribir pruebas unitarias (unit tests)?", opts:["Eliminan la necesidad de revisar el código manualmente para siempre","Permiten detectar regresiones tempranamente al verificar que unidades de código funcionen como se espera de forma aislada","Hacen que el programa ocupe menos espacio en disco","Sustituyen completamente a las pruebas de integración"], correct:1, fb:"Las pruebas unitarias validan el comportamiento de unidades pequeñas de código (funciones, métodos) de forma aislada, lo que permite detectar errores o regresiones rápidamente cuando se modifica el sistema."},
-    {q:"¿Qué es la normalización de bases de datos?", opts:["Comprimir archivos de base de datos para ahorrar espacio","Un proceso para organizar datos y reducir la redundancia dividiendo la información en tablas relacionadas","Convertir todos los textos a minúsculas","Encriptar la información sensible de los usuarios"], correct:1, fb:"La normalización organiza los datos en tablas relacionadas siguiendo reglas (formas normales) que minimizan la redundancia y previenen inconsistencias al actualizar la información."},
-    {q:"En arquitectura de software, ¿qué caracteriza a un sistema 'desacoplado'?", opts:["Que todos sus módulos dependen fuertemente entre sí","Que sus componentes tienen baja dependencia mutua, permitiendo modificar uno sin afectar gravemente a los demás","Que no tiene ninguna base de datos","Que solo puede ejecutarse en un único servidor"], correct:1, fb:"Un sistema desacoplado divide responsabilidades en componentes con baja dependencia entre sí, lo que facilita modificar, reemplazar o escalar partes individuales sin generar efectos en cascada sobre el resto."},
-    {q:"¿Qué problema resuelve principalmente el uso de caché (caching)?", opts:["Aumentar la seguridad de las contraseñas","Reducir el tiempo de respuesta evitando recalcular u obtener de nuevo datos que ya se solicitaron recientemente","Eliminar la necesidad de bases de datos","Generar automáticamente documentación del código"], correct:1, fb:"El caché almacena temporalmente resultados de operaciones costosas (consultas, cálculos) para servirlos rápidamente en solicitudes posteriores, reduciendo latencia y carga sobre el sistema de origen."},
-    {q:"¿Qué es la 'deuda técnica'?", opts:["El costo monetario de las licencias de software","El conjunto de tareas pendientes generadas al elegir soluciones rápidas en vez de las más correctas, que deberán resolverse después","Un préstamo bancario para financiar un proyecto de software","Un tipo de error de compilación"], correct:1, fb:"La deuda técnica representa el costo futuro (en tiempo y esfuerzo) de haber optado por una solución más rápida pero menos óptima en el corto plazo, que tarde o temprano requerirá ser corregida o refactorizada."},
-    {q:"¿Qué diferencia hay entre integración continua (CI) y despliegue continuo (CD)?", opts:["Son sinónimos exactos","CI automatiza la integración y prueba frecuente de cambios de código; CD automatiza además su despliegue a producción","CD se refiere solo a bases de datos","CI solo aplica a proyectos en Python"], correct:1, fb:"La integración continua automatiza la fusión y prueba frecuente del código de distintos desarrolladores. El despliegue continuo extiende esa automatización hasta llevar los cambios validados directamente a producción."},
-    {q:"¿Qué representa el acrónimo CRUD en desarrollo de software?", opts:["Un protocolo de red","Las operaciones básicas de persistencia: Crear, Leer, Actualizar y Borrar (Create, Read, Update, Delete)","Un tipo de algoritmo de ordenamiento","Un estándar de seguridad de contraseñas"], correct:1, fb:"CRUD describe las cuatro operaciones fundamentales que un sistema realiza sobre los datos persistentes: crearlos, leerlos, actualizarlos y eliminarlos."},
-    {q:"¿Por qué es importante manejar adecuadamente las excepciones (try/catch) en el código?", opts:["Porque sin ellas el programa no compila nunca","Porque permiten anticipar errores esperables y evitar que el programa colapse abruptamente, dando una respuesta controlada","Porque aumentan la velocidad de ejecución del programa","Porque son obligatorias en todos los lenguajes de programación"], correct:1, fb:"El manejo de excepciones permite capturar errores previsibles durante la ejecución y responder de forma controlada (mostrando un mensaje, reintentando, registrando el error) en vez de que el programa termine abruptamente."},
-    {q:"¿Qué significa que una API sea 'idempotente' en una operación como GET o PUT?", opts:["Que solo puede llamarse una vez en la vida del sistema","Que ejecutar la misma operación múltiples veces produce el mismo resultado que ejecutarla una sola vez","Que la operación siempre falla la segunda vez","Que requiere autenticación obligatoria"], correct:1, fb:"La idempotencia implica que repetir la misma solicitud varias veces tiene el mismo efecto que hacerla una sola vez, lo cual es clave para diseñar APIs robustas frente a reintentos por fallas de red."}
+    {q:"¿Qué problema busca resolver el patrón de diseño 'Singleton'?", opts:["Permitir que una clase tenga múltiples configuraciones intercambiables en tiempo de ejecución","Garantizar que una clase tenga una única instancia accesible globalmente","Acelerar las consultas a una base de datos mediante índices automáticos","Convertir una clase abstracta en una interfaz pública"], correct:1, fb:"El patrón Singleton restringe la instanciación de una clase a un único objeto, útil cuando se necesita un punto de acceso global y controlado, como una conexión de configuración compartida. No está pensado para gestionar múltiples configuraciones simultáneas."},
+    {q:"En el contexto de APIs REST, ¿qué diferencia hay entre los métodos PUT y PATCH?", opts:["PUT reemplaza el recurso completo; PATCH aplica una modificación parcial","PATCH reemplaza el recurso completo; PUT aplica una modificación parcial","Ambos reemplazan el recurso completo, pero PATCH requiere autenticación adicional","PUT solo se usa para crear recursos nuevos, nunca para actualizar"], correct:0, fb:"PUT está pensado para reemplazar el recurso completo con la nueva representación enviada, mientras que PATCH aplica cambios parciales, modificando solo los campos especificados."},
+    {q:"¿Qué es la 'inyección de dependencias' y qué problema resuelve?", opts:["Una técnica de optimización de consultas en bases de datos relacionales","Un patrón donde las dependencias de un objeto se proveen externamente en vez de crearlas internamente, reduciendo el acoplamiento","Un mecanismo del sistema operativo para asignar memoria a procesos","Una forma de minificar y empaquetar archivos JavaScript para producción"], correct:1, fb:"La inyección de dependencias desacopla una clase de la creación de sus colaboradores: en vez de instanciarlos internamente, se los recibe desde afuera (por constructor, por ejemplo), lo que facilita las pruebas y el mantenimiento."},
+    {q:"¿Qué indica la sigla SOLID en diseño de software orientado a objetos?", opts:["Un conjunto de cinco principios de diseño para código mantenible y extensible","Un estándar de la industria para medir el rendimiento de servidores","Una metodología de gestión de proyectos basada en sprints","Un protocolo de comunicación entre microservicios"], correct:0, fb:"SOLID agrupa cinco principios (Responsabilidad Única, Abierto/Cerrado, Sustitución de Liskov, Segregación de Interfaces e Inversión de Dependencias) orientados a lograr código más mantenible, flexible y testeable."},
+    {q:"¿Cuándo es preferible usar una base de datos no relacional (NoSQL) sobre una relacional?", opts:["Cuando las transacciones requieren garantías estrictas de integridad referencial entre múltiples tablas","Cuando se necesita flexibilidad de esquema, alta escalabilidad horizontal o datos poco estructurados","Únicamente cuando el equipo de desarrollo prefiere evitar el lenguaje SQL","Cuando el volumen de datos es pequeño y no va a crecer con el tiempo"], correct:1, fb:"Las bases NoSQL suelen elegirse cuando el esquema de datos cambia con frecuencia, se requiere escalar horizontalmente con facilidad, o el modelo de datos (documentos, grafos, clave-valor) no se ajusta bien al modelo tabular relacional. Las transacciones con integridad referencial estricta favorecen a las relacionales."},
+    {q:"¿Qué es una 'condición de carrera' (race condition) en programación concurrente?", opts:["Un error de sintaxis que ocurre exclusivamente en bucles anidados","Una situación donde el resultado depende del orden impredecible en que se ejecutan procesos o hilos concurrentes","Una técnica para acelerar la ejecución de hilos mediante priorización","Un tipo de prueba automatizada que mide tiempos de respuesta"], correct:1, fb:"Una condición de carrera ocurre cuando dos o más procesos/hilos acceden y modifican un recurso compartido al mismo tiempo, y el resultado final depende del orden de ejecución, generando comportamientos no deterministas."},
+    {q:"¿Qué ventaja aporta escribir pruebas unitarias (unit tests)?", opts:["Permiten detectar regresiones tempranamente al verificar que unidades de código funcionen como se espera de forma aislada","Eliminan por completo la necesidad de hacer pruebas de integración o end-to-end","Garantizan que el código nunca tendrá errores una vez desplegado a producción","Reducen automáticamente el tiempo de compilación del proyecto"], correct:0, fb:"Las pruebas unitarias validan el comportamiento de unidades pequeñas de código (funciones, métodos) de forma aislada, lo que permite detectar errores o regresiones rápidamente cuando se modifica el sistema. No sustituyen a las pruebas de integración, que verifican la interacción entre componentes."},
+    {q:"¿Qué es la normalización de bases de datos?", opts:["Un proceso para organizar datos y reducir la redundancia dividiendo la información en tablas relacionadas","Una técnica para comprimir el tamaño físico de los archivos de la base de datos","Un proceso que convierte automáticamente una base NoSQL en relacional","Un método para encriptar campos sensibles antes de almacenarlos"], correct:0, fb:"La normalización organiza los datos en tablas relacionadas siguiendo reglas (formas normales) que minimizan la redundancia y previenen inconsistencias al actualizar la información."},
+    {q:"En arquitectura de software, ¿qué caracteriza a un sistema 'desacoplado'?", opts:["Que todos sus módulos comparten una única base de código sin separación","Que sus componentes tienen baja dependencia mutua, permitiendo modificar uno sin afectar gravemente a los demás","Que está diseñado exclusivamente para ejecutarse en un solo servidor físico","Que no necesita pruebas automatizadas porque sus partes son independientes"], correct:1, fb:"Un sistema desacoplado divide responsabilidades en componentes con baja dependencia entre sí, lo que facilita modificar, reemplazar o escalar partes individuales sin generar efectos en cascada sobre el resto. Esto no elimina la necesidad de pruebas."},
+    {q:"¿Qué problema resuelve principalmente el uso de caché (caching)?", opts:["Garantizar que los datos almacenados sean siempre la versión más reciente posible","Reducir el tiempo de respuesta evitando recalcular u obtener de nuevo datos que ya se solicitaron recientemente","Aumentar el nivel de seguridad de las credenciales de acceso","Sustituir por completo la necesidad de una base de datos persistente"], correct:1, fb:"El caché almacena temporalmente resultados de operaciones costosas (consultas, cálculos) para servirlos rápidamente en solicitudes posteriores, reduciendo latencia y carga sobre el sistema de origen. Justamente por almacenar una copia, introduce el riesgo de servir datos ligeramente desactualizados."},
+    {q:"¿Qué es la 'deuda técnica'?", opts:["El costo monetario de las licencias de software utilizadas en el proyecto","El conjunto de tareas pendientes generadas al elegir soluciones rápidas en vez de las más correctas, que deberán resolverse después","Un indicador que mide la cantidad de líneas de código de un proyecto","Un tipo de error que impide que el programa compile"], correct:1, fb:"La deuda técnica representa el costo futuro (en tiempo y esfuerzo) de haber optado por una solución más rápida pero menos óptima en el corto plazo, que tarde o temprano requerirá ser corregida o refactorizada."},
+    {q:"¿Qué diferencia hay entre integración continua (CI) y despliegue continuo (CD)?", opts:["CI automatiza la integración y prueba frecuente de cambios de código; CD automatiza además su despliegue a producción","CD automatiza las pruebas unitarias; CI se encarga exclusivamente del despliegue","Son dos nombres distintos para describir exactamente el mismo proceso","CI solo es aplicable cuando se usan contenedores como Docker"], correct:0, fb:"La integración continua automatiza la fusión y prueba frecuente del código de distintos desarrolladores. El despliegue continuo extiende esa automatización hasta llevar los cambios validados directamente a producción."},
+    {q:"¿Qué representa el acrónimo CRUD en desarrollo de software?", opts:["Un protocolo de comunicación segura entre cliente y servidor","Las operaciones básicas de persistencia: Crear, Leer, Actualizar y Borrar (Create, Read, Update, Delete)","Un estándar de codificación de caracteres para texto internacional","Un patrón de diseño usado exclusivamente en interfaces gráficas"], correct:1, fb:"CRUD describe las cuatro operaciones fundamentales que un sistema realiza sobre los datos persistentes: crearlos, leerlos, actualizarlos y eliminarlos."},
+    {q:"¿Por qué es importante manejar adecuadamente las excepciones (try/catch) en el código?", opts:["Porque el código no puede compilarse si no incluye al menos un bloque try/catch","Porque permiten anticipar errores esperables y evitar que el programa colapse abruptamente, dando una respuesta controlada","Porque eliminan automáticamente la necesidad de validar datos de entrada","Porque mejoran de forma directa la velocidad de ejecución del programa"], correct:1, fb:"El manejo de excepciones permite capturar errores previsibles durante la ejecución y responder de forma controlada (mostrando un mensaje, reintentando, registrando el error) en vez de que el programa termine abruptamente. No reemplaza a la validación de datos, que previene errores antes de que ocurran."},
+    {q:"¿Qué significa que una API sea 'idempotente' en una operación como GET o PUT?", opts:["Que la operación requiere obligatoriamente autenticación para ejecutarse","Que ejecutar la misma operación múltiples veces produce el mismo resultado que ejecutarla una sola vez","Que la operación solo puede invocarse una única vez durante toda la sesión","Que el servidor responde siempre con el mismo código de estado HTTP, sin excepción"], correct:1, fb:"La idempotencia implica que repetir la misma solicitud varias veces tiene el mismo efecto que hacerla una sola vez, lo cual es clave para diseñar APIs robustas frente a reintentos por fallas de red."}
   ],
   senior: [
-    {q:"Un sistema en producción presenta degradación de performance solo bajo alta carga, pero las pruebas en staging no la reproducen. ¿Cuál es el enfoque más adecuado?", opts:["Asumir que es un problema de hardware y solicitar más servidores de inmediato","Replicar condiciones de carga similares a producción mediante pruebas de stress/carga y analizar métricas (CPU, memoria, I/O, locks de base de datos) bajo ese escenario","Reescribir el módulo más reciente sin investigar más","Ignorarlo hasta que un cliente se queje formalmente"], correct:1, fb:"La degradación bajo carga suele revelar cuellos de botella (locks, pooling de conexiones, garbage collection, I/O) que no aparecen con tráfico bajo. Reproducir condiciones similares con pruebas de carga y observabilidad es el camino más confiable antes de actuar sobre hipótesis no verificadas."},
-    {q:"¿Cuál es la diferencia clave entre escalabilidad horizontal y vertical, y cuándo preferirías cada una?", opts:["Son lo mismo, solo cambia el nombre según el proveedor cloud","Vertical agrega más potencia a una máquina (CPU/RAM); horizontal agrega más máquinas. Horizontal suele preferirse para alta disponibilidad y tolerancia a fallos","Horizontal siempre es más barata que vertical en cualquier escenario","Vertical solo aplica a bases de datos NoSQL"], correct:1, fb:"Escalar verticalmente aumenta los recursos de una sola máquina, con un límite físico y un único punto de falla. Escalar horizontalmente distribuye la carga entre varias máquinas, lo que mejora la tolerancia a fallos y permite crecer de forma más flexible, aunque introduce complejidad de coordinación."},
-    {q:"Como responsable técnico, detectás que un error de diseño propio —ya en producción— será costoso de corregir y nadie más lo notó. ¿Cuál es la conducta profesionalmente correcta?", opts:["Quedarse callado mientras el sistema siga funcionando aparentemente bien","Comunicarlo proactivamente al equipo y a quien corresponda, evaluando impacto, riesgo y plan de mitigación, aunque implique exponer un error propio","Corregirlo en secreto fuera de horario para que nadie lo note","Culpar a otro integrante del equipo para evitar consecuencias"], correct:1, fb:"La responsabilidad profesional en roles de alto impacto exige transparencia: comunicar el riesgo con un plan de mitigación protege al proyecto y a la organización, incluso cuando admitir el error propio es incómodo. Ocultarlo multiplica el riesgo y erosiona la confianza del equipo."},
-    {q:"¿Qué problema concreto resuelve un patrón de arquitectura de microservicios frente a un monolito, y qué costo introduce?", opts:["Resuelve todos los problemas de performance sin ningún costo adicional","Permite desplegar y escalar componentes de forma independiente, pero introduce complejidad de comunicación entre servicios, consistencia de datos y observabilidad distribuida","Elimina por completo la necesidad de bases de datos","Solo es útil para aplicaciones móviles"], correct:1, fb:"Los microservicios permiten desarrollo, despliegue y escalado independientes por dominio, pero a costa de mayor complejidad operativa: comunicación entre servicios (latencia, fallos parciales), consistencia eventual de datos y la necesidad de observabilidad distribuida robusta (trazas, logs centralizados)."},
-    {q:"Un cliente solicita una funcionalidad que compromete la seguridad de los datos de otros usuarios. ¿Cómo se aborda esta situación desde un rol de liderazgo técnico?", opts:["Implementarla igual porque el cliente siempre tiene razón","Negarse sin dar explicaciones y cerrar la conversación","Explicar técnicamente el riesgo concreto, proponer alternativas que cumplan el objetivo de negocio sin comprometer la seguridad, y documentar la decisión","Implementarla pero ocultarle el riesgo al cliente"], correct:2, fb:"Un rol de responsabilidad técnica implica traducir el riesgo en términos comprensibles para el cliente, ofrecer alternativas viables que satisfagan la necesidad de negocio sin sacrificar la seguridad, y dejar constancia documentada de la decisión tomada, sea cual sea el resultado."},
-    {q:"¿Qué es el principio de 'menor privilegio' (least privilege) y por qué es central en el diseño de sistemas seguros?", opts:["Dar a cada usuario o proceso solo los permisos mínimos necesarios para cumplir su función, reduciendo la superficie de ataque","Otorgar acceso de administrador a todos los empleados para simplificar el soporte","Es un principio exclusivo de redes físicas, no aplica a software","Significa que el sistema debe tener la menor cantidad de líneas de código posible"], correct:0, fb:"El principio de menor privilegio limita los permisos de cada usuario, proceso o servicio al mínimo indispensable para su función. Esto reduce drásticamente el daño potencial si una credencial o componente es comprometido."},
-    {q:"En un proyecto legacy sin documentación y con el autor original ya desvinculado, ¿cuál es la estrategia más sólida para comenzar a intervenir el código con seguridad?", opts:["Reescribir todo el sistema desde cero antes de tocar nada","Empezar a modificar directamente lo que el cliente pide, sin más análisis","Mapear el comportamiento actual (pruebas de caracterización), identificar zonas críticas y de mayor riesgo, y avanzar con cambios incrementales validados por pruebas","Eliminar las partes que no se entiendan"], correct:2, fb:"Frente a código legacy sin documentación, escribir pruebas de caracterización (que capturan el comportamiento actual, sea correcto o no) antes de modificar permite refactorizar con una red de seguridad. Reescribir todo desde cero suele subestimar reglas de negocio ocultas en el código existente."},
-    {q:"¿Qué distingue a la consistencia eventual de la consistencia fuerte en sistemas distribuidos, y en qué escenario aceptarías la primera?", opts:["No hay diferencia real entre ambas","Consistencia fuerte garantiza que todas las réplicas vean el mismo dato al instante; eventual permite una ventana temporal de divergencia. Esta última es aceptable cuando la disponibilidad y latencia importan más que la exactitud inmediata","La consistencia eventual significa que el sistema nunca será consistente","Solo las bases relacionales ofrecen consistencia eventual"], correct:1, fb:"La consistencia fuerte asegura que toda lectura posterior a una escritura refleje el valor más reciente en todas las réplicas, a costa de latencia o disponibilidad. La consistencia eventual tolera una ventana de desincronización entre réplicas, lo cual es aceptable en sistemas donde la disponibilidad y el rendimiento son prioritarios (por ejemplo, contadores de likes en redes sociales)."},
-    {q:"¿Cómo justificarías, ante un equipo o un cliente, la decisión de invertir tiempo en refactorizar código que 'funciona' actualmente?", opts:["No se puede justificar, refactorizar es siempre una pérdida de tiempo","Argumentando el costo creciente de mantenimiento, el riesgo de errores futuros y la menor velocidad de desarrollo que genera no abordarlo, idealmente con métricas o ejemplos concretos","Diciendo simplemente que el código 'se ve feo'","Haciendo la refactorización sin avisar a nadie para evitar la conversación"], correct:1, fb:"La justificación efectiva conecta la deuda técnica con impacto de negocio tangible: tiempo de desarrollo futuro, frecuencia de bugs, dificultad de onboarding de nuevos desarrolladores. Presentar evidencia concreta (tiempos de entrega, incidentes recurrentes) hace la conversación mucho más persuasiva que un argumento estético."},
-    {q:"¿Qué rol cumple un 'circuit breaker' (cortacircuitos) en arquitecturas de servicios distribuidos?", opts:["Es un componente de hardware que protege los servidores físicos de sobrecargas eléctricas","Es un patrón de software que detecta fallos repetidos en una dependencia y deja de llamarla temporalmente, evitando que el fallo se propague en cascada","Es una herramienta exclusiva para encriptar contraseñas","Sirve únicamente para limitar el tamaño de archivos subidos"], correct:1, fb:"El patrón circuit breaker monitorea las fallas de una dependencia externa; si supera un umbral, 'abre el circuito' y deja de intentar llamadas durante un período, evitando que un servicio caído arrastre a todo el sistema en una falla en cascada."},
-    {q:"Frente a un plazo de entrega imposible de cumplir sin omitir pruebas críticas, ¿qué curso de acción demuestra mayor criterio profesional?", opts:["Omitir las pruebas en silencio y entregar a tiempo sin avisar a nadie","Negarse a entregar nada hasta que el plazo se extienda indefinidamente","Comunicar el riesgo con datos concretos (qué se deja sin probar y su impacto potencial), y negociar una alternativa: reducir alcance, extender plazo, o aceptar el riesgo de forma explícita y documentada con quien tiene autoridad para decidirlo","Renunciar al proyecto inmediatamente"], correct:2, fb:"La decisión correcta no es unilateral: implica exponer el trade-off real con claridad (qué riesgo se asume, qué impacto tendría) y dejar que la decisión final, si implica asumir riesgo, sea tomada conscientemente por quien tiene la autoridad y visión de negocio para hacerlo, con respaldo documentado."},
-    {q:"¿Qué ventaja aporta el versionado semántico (semantic versioning, ej. 2.4.1) en librerías o APIs públicas?", opts:["Permite saber instantáneamente cuántas líneas de código tiene el proyecto","Comunica de forma estandarizada el impacto de un cambio (mayor: rompe compatibilidad, menor: nueva funcionalidad compatible, parche: corrección) facilitando decisiones de actualización a quienes consumen la librería","Es solo una convención estética sin impacto funcional","Determina automáticamente la licencia de uso del software"], correct:1, fb:"El versionado semántico (MAYOR.MENOR.PARCHE) comunica de forma predecible el tipo de cambio introducido, permitiendo a los equipos que consumen una API o librería decidir con información si pueden actualizar de forma segura o si deben revisar compatibilidad."},
-    {q:"En un equipo de desarrollo, ¿qué objetivo principal cumple una revisión de código (code review) más allá de detectar bugs?", opts:["Ningún otro objetivo relevante, solo sirve para encontrar errores de sintaxis","Transferir conocimiento del dominio y del sistema entre integrantes del equipo, mantener consistencia de estándares, y fomentar responsabilidad colectiva sobre la calidad del código","Determinar quién es el mejor programador del equipo","Reemplazar completamente la necesidad de pruebas automatizadas"], correct:1, fb:"Más allá de la detección de errores, el code review distribuye conocimiento sobre el sistema entre el equipo, refuerza estándares compartidos de calidad, y construye una cultura de responsabilidad colectiva sobre el código, reduciendo dependencia de una sola persona."},
-    {q:"¿Cómo evaluarías técnicamente si conviene construir una solución propia o adoptar una herramienta/servicio de terceros (build vs. buy)?", opts:["Siempre construir todo internamente, sin excepciones, para tener control total","Siempre comprar o adoptar terceros, nunca construir nada propio","Evaluar si la funcionalidad es diferenciadora para el negocio o un commodity, el costo total de mantenimiento propio versus la dependencia y el riesgo de un proveedor externo, y el tiempo de llegada al mercado","Decidir exclusivamente según el precio de la licencia, sin otro criterio"], correct:2, fb:"La decisión build vs. buy pondera si la funcionalidad aporta ventaja competitiva real (justifica inversión propia) o es un problema ya resuelto por el mercado (conviene adoptar), sumado al costo de mantenimiento a largo plazo, el riesgo de dependencia de terceros, y la urgencia de tiempo al mercado."},
-    {q:"¿Qué significa 'observabilidad' en un sistema en producción, y por qué es más amplia que simplemente tener logs?", opts:["Es exactamente lo mismo que tener logs de errores guardados en un archivo","Es la capacidad de entender el estado interno de un sistema a partir de sus señales externas, combinando logs, métricas y trazas distribuidas para diagnosticar problemas sin necesidad de reproducirlos manualmente","Se refiere únicamente a la interfaz visual que ven los usuarios finales","Es un sinónimo de tener buena documentación técnica"], correct:1, fb:"La observabilidad integra tres pilares —logs, métricas y trazas (traces)— para permitir inferir el comportamiento interno de un sistema complejo a partir de sus salidas, facilitando diagnosticar incidentes en producción sin depender de reproducir manualmente cada escenario."}
+    {q:"Un sistema en producción presenta degradación de performance solo bajo alta carga, pero las pruebas en staging no la reproducen. ¿Cuál es el enfoque más adecuado?", opts:["Asumir que el problema es de hardware y solicitar de inmediato más servidores","Replicar condiciones de carga similares a producción mediante pruebas de stress/carga y analizar métricas (CPU, memoria, I/O, locks de base de datos) bajo ese escenario","Aumentar los timeouts de las peticiones para que el sistema tolere mejor la lentitud","Esperar a que el problema se repita en staging de forma espontánea antes de actuar"], correct:1, fb:"La degradación bajo carga suele revelar cuellos de botella (locks, pooling de conexiones, garbage collection, I/O) que no aparecen con tráfico bajo. Reproducir condiciones similares con pruebas de carga y observabilidad es el camino más confiable antes de actuar sobre hipótesis no verificadas, como asumir un problema de hardware sin evidencia."},
+    {q:"¿Cuál es la diferencia clave entre escalabilidad horizontal y vertical, y cuándo preferirías cada una?", opts:["Vertical agrega más máquinas; horizontal agrega más potencia a una sola máquina","Vertical agrega más potencia a una máquina (CPU/RAM); horizontal agrega más máquinas, y suele preferirse para alta disponibilidad y tolerancia a fallos","Ambas formas de escalar son equivalentes en costo y complejidad operativa","Horizontal solo es viable en bases de datos relacionales tradicionales"], correct:1, fb:"Escalar verticalmente aumenta los recursos de una sola máquina, con un límite físico y un único punto de falla. Escalar horizontalmente distribuye la carga entre varias máquinas, lo que mejora la tolerancia a fallos, aunque introduce complejidad de coordinación y suele tener un costo operativo distinto."},
+    {q:"Como responsable técnico, detectás que un error de diseño propio —ya en producción— será costoso de corregir y nadie más lo notó. ¿Cuál es la conducta profesionalmente correcta?", opts:["Esperar a ver si el sistema sigue funcionando aparentemente bien antes de decir algo","Comunicarlo proactivamente al equipo y a quien corresponda, evaluando impacto, riesgo y plan de mitigación, aunque implique exponer un error propio","Corregirlo de forma discreta fuera de horario, sin necesidad de informar a nadie ya que se va a resolver igual","Documentar el error internamente para uso futuro, pero sin comunicarlo mientras no genere síntomas visibles"], correct:1, fb:"La responsabilidad profesional en roles de alto impacto exige transparencia: comunicar el riesgo con un plan de mitigación protege al proyecto y a la organización, incluso cuando admitir el error propio es incómodo. Corregirlo en silencio o esperar a que se manifieste multiplica el riesgo si la corrección falla o el impacto era mayor de lo estimado."},
+    {q:"¿Qué problema concreto resuelve un patrón de arquitectura de microservicios frente a un monolito, y qué costo introduce?", opts:["Permite desplegar y escalar componentes de forma independiente, pero introduce complejidad de comunicación entre servicios, consistencia de datos y observabilidad distribuida","Elimina la necesidad de bases de datos al delegar el almacenamiento a cada servicio de forma automática","Reduce a cero la latencia de red porque cada servicio responde de forma local","Garantiza que un fallo en un servicio nunca pueda afectar a los demás, sin necesidad de patrones adicionales"], correct:0, fb:"Los microservicios permiten desarrollo, despliegue y escalado independientes por dominio, pero a costa de mayor complejidad operativa: comunicación entre servicios (latencia, fallos parciales), consistencia eventual de datos y la necesidad de observabilidad distribuida robusta. La resiliencia frente a fallos de un servicio individual requiere patrones adicionales (como circuit breakers), no es automática."},
+    {q:"Un cliente solicita una funcionalidad que compromete la seguridad de los datos de otros usuarios. ¿Cómo se aborda esta situación desde un rol de liderazgo técnico?", opts:["Implementarla de todas formas, dejando una nota interna de que la decisión fue del cliente","Explicar técnicamente el riesgo concreto, proponer alternativas que cumplan el objetivo de negocio sin comprometer la seguridad, y documentar la decisión","Posponer la conversación indefinidamente para evitar un conflicto directo con el cliente","Implementar una versión parcial de la funcionalidad sin mencionar que reduce el riesgo de seguridad"], correct:1, fb:"Un rol de responsabilidad técnica implica traducir el riesgo en términos comprensibles para el cliente, ofrecer alternativas viables que satisfagan la necesidad de negocio sin sacrificar la seguridad, y dejar constancia documentada de la decisión tomada. Evadir la conversación o implementar cambios sin explicitar el trade-off no protege a nadie."},
+    {q:"¿Qué es el principio de 'menor privilegio' (least privilege) y por qué es central en el diseño de sistemas seguros?", opts:["Dar a cada usuario o proceso solo los permisos mínimos necesarios para cumplir su función, reduciendo la superficie de ataque","Otorgar acceso de administrador por defecto y revocarlo solo si se detecta un uso indebido","Es un principio que aplica únicamente a la seguridad física de los centros de datos","Significa minimizar la cantidad de servicios que un sistema expone públicamente, sin relación con permisos de usuarios"], correct:0, fb:"El principio de menor privilegio limita los permisos de cada usuario, proceso o servicio al mínimo indispensable para su función. Esto reduce drásticamente el daño potencial si una credencial o componente es comprometido, a diferencia de otorgar acceso amplio por defecto."},
+    {q:"En un proyecto legacy sin documentación y con el autor original ya desvinculado, ¿cuál es la estrategia más sólida para comenzar a intervenir el código con seguridad?", opts:["Reescribir el sistema completo desde cero antes de realizar cualquier cambio solicitado","Mapear el comportamiento actual (pruebas de caracterización), identificar zonas críticas y de mayor riesgo, y avanzar con cambios incrementales validados por pruebas","Modificar directamente el código solicitado por el cliente, confiando en que los tests existentes (si los hay) detectarán cualquier problema","Aislar el módulo legacy por completo y construir uno nuevo en paralelo sin integrarlo hasta el final del proyecto"], correct:1, fb:"Frente a código legacy sin documentación, escribir pruebas de caracterización (que capturan el comportamiento actual, sea correcto o no) antes de modificar permite refactorizar con una red de seguridad. Reescribir todo desde cero suele subestimar reglas de negocio ocultas en el código existente, y confiar ciegamente en tests preexistentes asume una cobertura que rara vez existe en proyectos legacy."},
+    {q:"¿Qué distingue a la consistencia eventual de la consistencia fuerte en sistemas distribuidos, y en qué escenario aceptarías la primera?", opts:["Consistencia fuerte garantiza que todas las réplicas vean el mismo dato al instante; eventual permite una ventana temporal de divergencia, aceptable cuando la disponibilidad y latencia importan más que la exactitud inmediata","Consistencia eventual significa que los datos nunca llegan a sincronizarse entre réplicas","Consistencia fuerte solo puede lograrse en bases de datos NoSQL distribuidas geográficamente","La elección entre ambas depende exclusivamente del lenguaje de programación usado en el backend"], correct:0, fb:"La consistencia fuerte asegura que toda lectura posterior a una escritura refleje el valor más reciente en todas las réplicas, a costa de latencia o disponibilidad. La consistencia eventual tolera una ventana de desincronización entre réplicas, lo cual es aceptable en sistemas donde la disponibilidad y el rendimiento son prioritarios, como un contador de 'likes' en una red social."},
+    {q:"¿Cómo justificarías, ante un equipo o un cliente, la decisión de invertir tiempo en refactorizar código que 'funciona' actualmente?", opts:["Argumentando el costo creciente de mantenimiento, el riesgo de errores futuros y la menor velocidad de desarrollo que genera no abordarlo, idealmente con métricas o ejemplos concretos","Señalando que el código actual no sigue las convenciones de estilo más recientes del lenguaje","Indicando que otros equipos de la industria ya migraron a patrones más modernos","Proponiendo hacerlo sin avisar, integrándolo como parte de otra tarea ya aprobada"], correct:0, fb:"La justificación efectiva conecta la deuda técnica con impacto de negocio tangible: tiempo de desarrollo futuro, frecuencia de bugs, dificultad de onboarding de nuevos desarrolladores. Presentar evidencia concreta (tiempos de entrega, incidentes recurrentes) es mucho más persuasivo que argumentos de estilo, tendencias de la industria, o decisiones tomadas sin transparencia."},
+    {q:"¿Qué rol cumple un 'circuit breaker' (cortacircuitos) en arquitecturas de servicios distribuidos?", opts:["Es un componente de hardware que protege los servidores físicos de sobrecargas eléctricas","Es un patrón de software que detecta fallos repetidos en una dependencia y deja de llamarla temporalmente, evitando que el fallo se propague en cascada","Es una técnica para balancear la carga entre múltiples instancias de un mismo servicio","Es un mecanismo que cifra automáticamente la comunicación entre microservicios"], correct:1, fb:"El patrón circuit breaker monitorea las fallas de una dependencia externa; si supera un umbral, 'abre el circuito' y deja de intentar llamadas durante un período, evitando que un servicio caído arrastre a todo el sistema en una falla en cascada. No debe confundirse con balanceo de carga ni con cifrado de comunicación."},
+    {q:"Frente a un plazo de entrega imposible de cumplir sin omitir pruebas críticas, ¿qué curso de acción demuestra mayor criterio profesional?", opts:["Omitir las pruebas y entregar a tiempo, documentando internamente qué quedó sin probar para resolverlo más adelante sin involucrar a nadie más","Comunicar el riesgo con datos concretos (qué se deja sin probar y su impacto potencial), y negociar una alternativa: reducir alcance, extender plazo, o aceptar el riesgo de forma explícita y documentada con quien tiene autoridad para decidirlo","Pedir a otro integrante del equipo que asuma la responsabilidad de las pruebas faltantes sin informar el motivo real","Cumplir el plazo igualmente y dejar la decisión de probar o no a criterio personal de cada desarrollador del equipo"], correct:1, fb:"La decisión correcta no es unilateral: implica exponer el trade-off real con claridad (qué riesgo se asume, qué impacto tendría) y dejar que la decisión final, si implica asumir riesgo, sea tomada conscientemente por quien tiene la autoridad y visión de negocio para hacerlo, con respaldo documentado. Decidir en solitario sin informar traslada un riesgo no consentido a la organización."},
+    {q:"¿Qué ventaja aporta el versionado semántico (semantic versioning, ej. 2.4.1) en librerías o APIs públicas?", opts:["Determina automáticamente qué licencia de uso aplica al software publicado","Comunica de forma estandarizada el impacto de un cambio (mayor: rompe compatibilidad, menor: nueva funcionalidad compatible, parche: corrección), facilitando decisiones de actualización a quienes consumen la librería","Calcula de forma automática cuántas pruebas unitarias tiene cada versión publicada","Sirve principalmente para ordenar alfabéticamente los releases en un repositorio"], correct:1, fb:"El versionado semántico (MAYOR.MENOR.PARCHE) comunica de forma predecible el tipo de cambio introducido, permitiendo a los equipos que consumen una API o librería decidir con información si pueden actualizar de forma segura o si deben revisar compatibilidad."},
+    {q:"En un equipo de desarrollo, ¿qué objetivo principal cumple una revisión de código (code review) más allá de detectar bugs?", opts:["Determinar de forma objetiva quién es el integrante más productivo del equipo","Transferir conocimiento del dominio y del sistema entre integrantes del equipo, mantener consistencia de estándares, y fomentar responsabilidad colectiva sobre la calidad del código","Reemplazar por completo la necesidad de pruebas automatizadas en el proyecto","Servir exclusivamente como requisito administrativo antes de fusionar una rama"], correct:1, fb:"Más allá de la detección de errores, el code review distribuye conocimiento sobre el sistema entre el equipo, refuerza estándares compartidos de calidad, y construye una cultura de responsabilidad colectiva sobre el código, reduciendo dependencia de una sola persona. No sustituye a las pruebas automatizadas, son complementarios."},
+    {q:"¿Cómo evaluarías técnicamente si conviene construir una solución propia o adoptar una herramienta/servicio de terceros (build vs. buy)?", opts:["Decidir exclusivamente en función de cuál tiene la licencia más económica en el corto plazo","Evaluar si la funcionalidad es diferenciadora para el negocio o un commodity, el costo total de mantenimiento propio versus la dependencia y el riesgo de un proveedor externo, y el tiempo de llegada al mercado","Construir siempre internamente cuando el equipo tiene la capacidad técnica disponible, sin considerar otros factores","Adoptar siempre la opción de terceros más popular entre empresas similares del sector"], correct:1, fb:"La decisión build vs. buy pondera si la funcionalidad aporta ventaja competitiva real (justifica inversión propia) o es un problema ya resuelto por el mercado (conviene adoptar), sumado al costo de mantenimiento a largo plazo, el riesgo de dependencia de terceros, y la urgencia de tiempo al mercado. El costo de licencia o la popularidad de una opción son solo una parte del análisis."},
+    {q:"¿Qué significa 'observabilidad' en un sistema en producción, y por qué es más amplia que simplemente tener logs?", opts:["Es la capacidad de entender el estado interno de un sistema a partir de sus señales externas, combinando logs, métricas y trazas distribuidas para diagnosticar problemas sin necesidad de reproducirlos manualmente","Es un sinónimo técnico de tener un buen sistema de monitoreo de uptime del servidor","Se refiere a la capacidad del equipo de soporte de acceder físicamente a los servidores en caso de falla","Es la documentación formal que describe la arquitectura del sistema para nuevos integrantes"], correct:0, fb:"La observabilidad integra tres pilares —logs, métricas y trazas (traces)— para permitir inferir el comportamiento interno de un sistema complejo a partir de sus salidas, facilitando diagnosticar incidentes en producción sin depender de reproducir manualmente cada escenario. Es más amplia que el monitoreo de uptime, que solo indica si el sistema está arriba o caído."}
+  ]
+};
+
+const CREATIVE_BANKS = {
+  junior: [
+    {
+      q:"Te piden crear una calculadora simple para una pequeña tienda de barrio que no tiene acceso confiable a internet. ¿Cómo plantearías la solución, qué tecnología elegirías y por qué?",
+      criteria:["Reconoce que sin internet confiable conviene una solución local (de escritorio o app sin dependencia de red) en vez de una web que requiera conexión constante","Justifica la elección tecnológica en función del contexto real del usuario (simplicidad, dispositivos disponibles, mantenimiento), no solo por preferencia personal","Considera la facilidad de uso para alguien sin conocimientos técnicos, no solo la implementación"]
+    },
+    {
+      q:"Imaginá que tenés que explicarle a tu abuela qué es una 'base de datos' usando una metáfora de la vida cotidiana. Escribí la explicación que le darías.",
+      criteria:["La metáfora elegida es coherente y mapea correctamente los conceptos clave (organización, búsqueda, almacenamiento) a algo cotidiano","El lenguaje es accesible, sin jerga técnica encubierta dentro de la metáfora","Demuestra que entiende el concepto profundamente, no solo que memorizó una definición"]
+    },
+    {
+      q:"Encontrás un error en un programa pero no tenés acceso a internet para buscar la solución. Describí, paso a paso, cómo intentarías resolverlo solo con las herramientas que ya tenés (el código, la consola, la documentación local).",
+      criteria:["Propone un método sistemático (aislar el problema, revisar logs/consola, probar partes del código por separado) en vez de prueba y error sin estructura","Muestra capacidad de leer mensajes de error y razonar sobre ellos","No depende exclusivamente de 'buscarlo en internet' como única estrategia de resolución de problemas"]
+    },
+    {
+      q:"Proponé una forma original (puede ser poco convencional) de enseñarle lógica de programación a un grupo de niños de 10 años sin usar computadoras.",
+      criteria:["La propuesta traduce conceptos abstractos (secuencias, condicionales, bucles) a actividades físicas o lúdicas concretas y reconocibles","Es realista de implementar con recursos simples, no solo una idea vaga","Muestra comprensión real de los conceptos de programación que se buscan enseñar, más allá de la creatividad de la actividad"]
+    }
+  ],
+  semi: [
+    {
+      q:"Diseñá, a alto nivel, un sistema para que una pequeña biblioteca de barrio gestione préstamos de libros, sabiendo que el local pierde conexión a internet con frecuencia. ¿Qué componentes usarías y cómo resolverías la sincronización?",
+      criteria:["Propone una arquitectura local-first (datos guardados localmente, sincronización posterior) en vez de depender de conexión constante","Anticipa el problema de conflictos al sincronizar (por ejemplo, dos préstamos del mismo libro registrados offline) y propone alguna estrategia de resolución","La solución es proporcional a la escala real del problema (no sobrediseña con tecnología innecesariamente compleja para una biblioteca pequeña)"]
+    },
+    {
+      q:"Tu equipo debe reducir el tiempo de carga de una aplicación web sin agregar más servidores ni aumentar el presupuesto de infraestructura. Proponé al menos dos estrategias concretas y poco obvias (más allá de 'comprimir imágenes').",
+      criteria:["Las estrategias propuestas son técnicamente viables y van más allá de las respuestas más repetidas en la industria","Considera el trade-off de cada estrategia (qué se sacrifica a cambio de la mejora de velocidad)","Demuestra entender en qué parte del sistema (frontend, backend, red) actúa cada propuesta"]
+    },
+    {
+      q:"Te asignan un proyecto heredado (legacy), sin documentación, escrito por alguien que ya no trabaja en la empresa, y con un cliente que pide una nueva funcionalidad urgente. Planteá tu estrategia de las primeras dos semanas, día por día o por etapas.",
+      criteria:["Prioriza entender el sistema (mapear comportamiento, identificar riesgos) antes de modificar código a ciegas","Equilibra la presión del cliente con la necesidad de no romper el sistema existente, sin ignorar ninguna de las dos","La estrategia es realista en tiempos: no asume que se puede 'entender todo' el sistema en pocos días"]
+    },
+    {
+      q:"Un cliente pide que el sistema notifique a los usuarios por email cada vez que alguien visualiza su perfil, pero esto podría sentirse invasivo o generar quejas. ¿Cómo resolverías esta tensión entre el pedido del cliente y la experiencia del usuario final?",
+      criteria:["Identifica el conflicto real entre el pedido literal y el impacto en la experiencia de usuario, sin simplemente ejecutar la orden sin cuestionarla","Propone alternativas concretas (configuración opcional, resumen periódico en vez de notificación inmediata, etc.) en vez de un simple 'no' o un simple 'sí'","Plantea cómo comunicaría esta tensión al cliente de forma constructiva"]
+    }
+  ],
+  senior: [
+    {
+      q:"Te piden diseñar la arquitectura de un sistema de notificaciones que debe soportar millones de usuarios, con la restricción de que el equipo es pequeño (4 desarrolladores) y el presupuesto de infraestructura es limitado. ¿Qué decisiones de diseño tomarías y qué sacrificarías deliberadamente?",
+      criteria:["Reconoce explícitamente los trade-offs (qué se sacrifica: latencia, consistencia, complejidad operativa) en vez de proponer una solución 'ideal' sin restricciones","La arquitectura propuesta es proporcional al tamaño real del equipo (evita sobrediseño que el equipo no podría mantener)","Justifica las decisiones en términos de negocio y operación, no solo de tecnología por sí misma"]
+    },
+    {
+      q:"Un sistema crítico debe seguir funcionando incluso si la base de datos principal se cae por completo durante varias horas. Proponé una estrategia de diseño para tolerar esa falla, considerando qué funcionalidades podrían degradarse de forma controlada en vez de caerse por completo.",
+      criteria:["Propone el concepto de degradación elegante (graceful degradation): qué funciones se mantienen con datos en caché o modo limitado, y cuáles se desactivan temporalmente","Considera mecanismos concretos (réplicas, colas de mensajes, caché local) y no solo una idea abstracta de 'tener un respaldo'","Anticipa cómo se comunicaría el estado degradado a los usuarios o a otros sistemas dependientes"]
+    },
+    {
+      q:"Liderás un equipo y notás que la calidad del código viene bajando porque el equipo prioriza siempre la velocidad de entrega. ¿Qué cambios propondrías, más allá de simplemente 'pedir que vayan más despacio'?",
+      criteria:["Propone cambios de proceso o incentivos concretos (métricas, definición de 'terminado', revisión de código, presupuesto de tiempo para deuda técnica) en vez de una solicitud genérica de comportamiento","Considera las causas estructurales de la presión por velocidad, no solo el síntoma","Plantea cómo mediría si la intervención propuesta realmente funcionó"]
+    },
+    {
+      q:"Imaginá que debés diseñar, desde cero y de forma poco convencional, un mecanismo para detectar fraude en transacciones de un sistema de pagos, sin usar machine learning (por restricción del cliente). ¿Qué enfoque alternativo propondrías?",
+      criteria:["Propone heurísticas o reglas de negocio razonadas (patrones de comportamiento, límites, correlaciones temporales o geográficas) como alternativa válida a ML","Reconoce las limitaciones de su propio enfoque (falsos positivos/negativos) en vez de presentarlo como infalible","La propuesta es original y no simplemente 'usar las reglas más obvias del libro de texto'"]
+    }
   ]
 };
 
@@ -577,10 +767,12 @@ const LEVEL_META = {
 
 let currentLevel = null;
 let answers = {};
+let creativeDone = {};
 
 function startTest(level){
   currentLevel = level;
   answers = {};
+  creativeDone = {};
   document.getElementById('screen-menu').classList.remove('active');
   document.getElementById('screen-test').classList.add('active');
   document.getElementById('results').style.display = 'none';
@@ -590,6 +782,7 @@ function startTest(level){
   pill.className = 'level-pill ' + LEVEL_META[level].cls;
 
   renderQuestions(level);
+  renderCreative(level);
   updateProgress();
   window.scrollTo({top:0, behavior:'smooth'});
 }
@@ -604,6 +797,7 @@ function renderQuestions(level){
   const list = document.getElementById('q-list');
   list.innerHTML = '';
   const bank = BANKS[level];
+  const total = bank.length;
 
   bank.forEach((item, idx) => {
     const card = document.createElement('div');
@@ -619,7 +813,7 @@ function renderQuestions(level){
 
     card.innerHTML = `
       <div class="q-head" onclick="toggleCard(${idx})">
-        <span class="q-num">BLK · ${String(idx+1).padStart(2,'0')}/15</span>
+        <span class="q-num">BLK · ${String(idx+1).padStart(2,'0')}/${total}</span>
         <span class="q-text">${item.q}</span>
         <span class="q-toggle">+</span>
       </div>
@@ -630,6 +824,62 @@ function renderQuestions(level){
     `;
     list.appendChild(card);
   });
+}
+
+function renderCreative(level){
+  const list = document.getElementById('c-list');
+  list.innerHTML = '';
+  const bank = CREATIVE_BANKS[level];
+
+  bank.forEach((item, idx) => {
+    const card = document.createElement('div');
+    card.className = 'c-card';
+    card.id = 'c-card-' + idx;
+
+    const criteriaHtml = item.criteria.map(c => `<li>${c}</li>`).join('');
+
+    card.innerHTML = `
+      <span class="c-num">DESAFÍO · ${String(idx+1).padStart(2,'0')}/4</span>
+      <p class="c-text">${item.q}</p>
+      <textarea class="c-textarea" id="c-input-${idx}" placeholder="Escribí tu respuesta y razonamiento acá..." oninput="updateCharCount(${idx})"></textarea>
+      <div class="c-actions">
+        <span class="c-charcount" id="c-count-${idx}">0 caracteres</span>
+        <button class="c-submit" id="c-submit-${idx}" onclick="submitCreative(${idx})" disabled>Enviar y ver criterio</button>
+      </div>
+      <div class="c-criteria" id="c-criteria-${idx}">
+        <span class="c-criteria-label">Qué buscaba evaluar este desafío</span>
+        <ul>${criteriaHtml}</ul>
+      </div>
+    `;
+    list.appendChild(card);
+  });
+}
+
+function updateCharCount(idx){
+  const textarea = document.getElementById('c-input-' + idx);
+  const count = textarea.value.length;
+  document.getElementById('c-count-' + idx).textContent = count + ' caracteres';
+  document.getElementById('c-submit-' + idx).disabled = count < 15;
+}
+
+function submitCreative(idx){
+  if (creativeDone[idx]) return;
+  creativeDone[idx] = true;
+
+  const textarea = document.getElementById('c-input-' + idx);
+  textarea.disabled = true;
+  document.getElementById('c-submit-' + idx).disabled = true;
+  document.getElementById('c-submit-' + idx).textContent = 'Respuesta enviada';
+  document.getElementById('c-criteria-' + idx).classList.add('show');
+
+  const card = document.getElementById('c-card-' + idx);
+  card.classList.add('done');
+  if (!card.querySelector('.c-done-tag')){
+    const tag = document.createElement('span');
+    tag.className = 'c-done-tag';
+    tag.textContent = '✓ completado';
+    card.querySelector('.c-num').after(tag);
+  }
 }
 
 function toggleCard(idx){
@@ -657,11 +907,6 @@ function selectOption(qIdx, oIdx){
   document.getElementById('fb-' + qIdx).classList.add('show');
 
   updateProgress();
-
-  const answeredCount = Object.keys(answers).length;
-  if (answeredCount === BANKS[currentLevel].length){
-    setTimeout(showResults, 400);
-  }
 }
 
 function updateProgress(){
@@ -675,6 +920,10 @@ function updateProgress(){
   document.getElementById('progress-text').textContent = `${answered} / ${total} respondidas`;
   document.getElementById('progress-score').textContent = `${correct} correctas`;
   document.getElementById('progress-fill').style.width = (answered/total*100) + '%';
+
+  if (answered === total){
+    setTimeout(showResults, 400);
+  }
 }
 
 function showResults(){
@@ -686,15 +935,16 @@ function showResults(){
 
   const pct = correct / total;
   let verdict = '';
-  if (pct >= 0.85) verdict = 'Desempeño sobresaliente. El candidato demuestra dominio sólido de los conceptos evaluados para este nivel.';
-  else if (pct >= 0.65) verdict = 'Desempeño satisfactorio. Hay base suficiente para el nivel, con algunas áreas a reforzar.';
-  else if (pct >= 0.4) verdict = 'Desempeño parcial. Se recomienda profundizar en los temas señalados como incorrectos antes de avanzar de nivel.';
-  else verdict = 'Desempeño por debajo de lo esperado para este nivel. Se sugiere revisión exhaustiva de fundamentos.';
+  if (pct >= 0.85) verdict = 'Desempeño sobresaliente en el bloque de opción múltiple. El candidato demuestra dominio sólido de los conceptos evaluados para este nivel.';
+  else if (pct >= 0.65) verdict = 'Desempeño satisfactorio en el bloque de opción múltiple. Hay base suficiente para el nivel, con algunas áreas a reforzar.';
+  else if (pct >= 0.4) verdict = 'Desempeño parcial en el bloque de opción múltiple. Se recomienda profundizar en los temas señalados como incorrectos antes de avanzar de nivel.';
+  else verdict = 'Desempeño por debajo de lo esperado para este nivel en el bloque de opción múltiple. Se sugiere revisión exhaustiva de fundamentos.';
+
+  verdict += ' No olvides revisar el bloque de desafíos creativos más abajo: su evaluación es cualitativa y complementa este puntaje.';
 
   document.getElementById('results-score').textContent = `${correct}/${total}`;
   document.getElementById('results-verdict').textContent = verdict;
   document.getElementById('results').style.display = 'block';
-  document.getElementById('results').scrollIntoView({behavior:'smooth', block:'center'});
 }
 </script>
 
