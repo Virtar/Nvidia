@@ -443,15 +443,19 @@
     hintUsed: [],
     muted: false,
     timeLeft: TIME_PER_QUESTION,
-    timerHandle: null
+    timerHandle: null,
+    optionOrder: null
   };
 
   var root = document.getElementById('game-root');
 
   function shuffleOptionsForQuestion(q, seed){
     var idxs = [0,1,2,3];
-    var rand = seededRandom(seed + 1);
-    return shuffleArray(idxs, rand);
+    for (var i = idxs.length - 1; i > 0; i--){
+      var j = Math.floor(Math.random() * (i + 1));
+      var t = idxs[i]; idxs[i] = idxs[j]; idxs[j] = t;
+    }
+    return idxs;
   }
 
   function vitalsClass(){
@@ -547,7 +551,7 @@
       nextBtn.style.display = 'inline-block';
       nextBtn.textContent = state.finished ? 'Ver resultado final' : 'Siguiente alerta';
       nextBtn.addEventListener('click', function(){
-        if (!state.finished){ state.idx += 1; state.answered = false; state.timeLeft = TIME_PER_QUESTION; }
+        if (!state.finished){ state.idx += 1; state.answered = false; state.timeLeft = TIME_PER_QUESTION; state.optionOrder = null; }
         render();
       });
     }
@@ -559,7 +563,10 @@
   function render(){
     if (state.finished){ renderEnd(); return; }
     var q = state.questions[state.idx];
-    var order = shuffleOptionsForQuestion(q, state.idx + 5);
+    if (!state.optionOrder){
+      state.optionOrder = shuffleOptionsForQuestion(q, state.idx + 5);
+    }
+    var order = state.optionOrder;
     var vClass = vitalsClass();
     var hintActive = state.hintUsed[state.idx] === true;
 
@@ -679,7 +686,7 @@
         nextBtn.style.display = 'inline-block';
         nextBtn.textContent = state.finished ? 'Ver resultado final' : 'Siguiente alerta';
         nextBtn.addEventListener('click', function(){
-          if (!state.finished){ state.idx += 1; state.answered = false; state.timeLeft = TIME_PER_QUESTION; }
+          if (!state.finished){ state.idx += 1; state.answered = false; state.timeLeft = TIME_PER_QUESTION; state.optionOrder = null; }
           render();
         });
 
@@ -732,7 +739,7 @@
     root.innerHTML = html;
     document.getElementById('restart-btn').addEventListener('click', function(){
       var wasMuted = state.muted;
-      state = { questions: pickQuestionsBalanced(), idx:0, lives:3, score:0, streak:0, answered:false, finished:false, history:[], hintUsed:[], muted: wasMuted, timeLeft: TIME_PER_QUESTION, timerHandle: null };
+      state = { questions: pickQuestionsBalanced(), idx:0, lives:3, score:0, streak:0, answered:false, finished:false, history:[], hintUsed:[], muted: wasMuted, timeLeft: TIME_PER_QUESTION, timerHandle: null, optionOrder: null };
       render();
     });
   }
