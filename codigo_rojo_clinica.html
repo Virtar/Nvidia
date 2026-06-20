@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Código Rojo: Clínica San Andrés — Repaso 2do parcial TIC</title>
+<style>
+  :root{
+    --bg: #F4F2EC;
+    --card: #FFFFFF;
+    --border: rgba(20,20,18,0.12);
+    --text: #20201D;
+    --text-secondary: #5F5E5A;
+    --text-tertiary: #888780;
+    --green-bg: #EAF3DE; --green-text: #173404; --green-border: #639922;
+    --amber-bg: #FAEEDA; --amber-text: #412402; --amber-border: #BA7517;
+    --red-bg: #FCEBEB; --red-text: #501313; --red-border: #A32D2D;
+    --gray-bg: #F1EFE8;
+    --radius-md: 8px;
+    --radius-lg: 12px;
+  }
+  *{ box-sizing: border-box; }
+  body{
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    display: flex;
+    justify-content: center;
+    padding: 24px 16px;
+    line-height: 1.5;
+  }
+  .wrap{ width: 100%; max-width: 640px; }
+  .card{
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 24px;
+  }
+  h1{ font-size: 18px; font-weight: 600; margin: 0 0 4px; }
+  .subtitle{ font-size: 13px; color: var(--text-secondary); margin: 0 0 20px; }
+  .topbar{ display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; flex-wrap:wrap; gap:8px; }
+  .topbar-left{ display:flex; align-items:center; gap:8px; font-size:14px; font-weight:600; color: var(--text-secondary); }
+  .qcounter{ font-size:13px; color: var(--text-tertiary); }
+  .vitals{ border-radius: var(--radius-lg); padding:14px 16px; margin-bottom:18px; transition: background 0.3s; }
+  .vitals.green{ background: var(--green-bg); color: var(--green-text); }
+  .vitals.amber{ background: var(--amber-bg); color: var(--amber-text); }
+  .vitals.red{ background: var(--red-bg); color: var(--red-text); }
+  .vitals-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:6px; }
+  .vitals-label{ font-size:13px; font-weight:600; }
+  .hearts{ display:flex; gap:6px; font-size: 14px; }
+  .heart-off{ opacity: 0.25; }
+  svg.ecg{ width:100%; height:56px; display:block; }
+  .topic-pill{ display:inline-block; font-size:12px; font-weight:600; padding:3px 10px; border-radius: var(--radius-md); background: var(--gray-bg); color: var(--text-secondary); margin-bottom: 10px; }
+  .stem{ font-size:16px; line-height:1.6; margin: 8px 0 16px; }
+  .options{ display:flex; flex-direction:column; gap:8px; }
+  button{
+    font-family: inherit;
+    font-size: 14px;
+    cursor: pointer;
+    border-radius: var(--radius-md);
+    transition: background 0.15s, border-color 0.15s, opacity 0.15s;
+  }
+  .opt-btn{
+    text-align:left;
+    padding:12px 14px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    color: var(--text);
+    line-height: 1.5;
+  }
+  .opt-btn:hover:not(:disabled){ background: var(--gray-bg); }
+  .opt-btn:disabled{ cursor: default; }
+  .opt-btn.correct{ border-color: var(--green-border); background: var(--green-bg); color: var(--green-text); }
+  .opt-btn.wrong{ border-color: var(--red-border); background: var(--red-bg); color: var(--red-text); }
+  .opt-btn.faded{ opacity: 0.45; }
+  .feedback{ margin-top:14px; }
+  .feedback-box{ display:flex; gap:8px; align-items:flex-start; padding:10px 12px; border-radius: var(--radius-md); font-size:14px; }
+  .feedback-box.ok{ background: var(--green-bg); color: var(--green-text); }
+  .feedback-box.bad{ background: var(--red-bg); color: var(--red-text); }
+  .hint-box{ display:flex; gap:8px; align-items:flex-start; padding:10px 12px; border-radius: var(--radius-md); font-size:13px; background: var(--amber-bg); color: var(--amber-text); margin-top:8px; }
+  .bottom-row{ display:flex; justify-content:space-between; align-items:center; margin-top:18px; padding-top:14px; border-top:1px solid var(--border); flex-wrap: wrap; gap: 10px; }
+  .score-line{ font-size:13px; color: var(--text-tertiary); }
+  .btn-primary{ padding:10px 18px; background: var(--text); color: var(--card); border: none; font-weight: 600; }
+  .btn-primary:hover{ opacity: 0.88; }
+  .btn-ghost{ padding:8px 14px; background: transparent; border: 1px solid var(--border); color: var(--text-secondary); font-weight: 600; }
+  .btn-ghost:hover:not(:disabled){ background: var(--gray-bg); }
+  .btn-ghost:disabled{ opacity: 0.4; cursor: default; }
+  .end-box{ border-radius: var(--radius-lg); padding:24px; text-align:center; margin-bottom:18px; }
+  .end-box.green{ background: var(--green-bg); color: var(--green-text); }
+  .end-box.amber{ background: var(--amber-bg); color: var(--amber-text); }
+  .end-box.red{ background: var(--red-bg); color: var(--red-text); }
+  .end-title{ font-size:18px; font-weight:700; margin:10px 0 4px; }
+  .end-sub{ font-size:14px; margin:0; }
+  .topic-review-title{ font-size:13px; font-weight:600; color: var(--text-secondary); margin:0 0 8px; }
+  .topic-row{ display:flex; justify-content:space-between; align-items:center; padding:8px 12px; border-radius: var(--radius-md); background: var(--gray-bg); margin-bottom:6px; font-size:13px; }
+  .topic-ok{ color: var(--green-border); font-weight:700; }
+  .topic-bad{ color: var(--red-border); font-weight:700; }
+  .footnote{ font-size:12px; color: var(--text-tertiary); margin: 16px 0 20px; }
+  .full-btn{ width:100%; padding:12px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="card">
+    <h1>Código rojo: Clínica San Andrés</h1>
+    <p class="subtitle">Repaso del 2do parcial · DNS, criptografía, seguridad en redes y virus</p>
+    <div id="game-root"></div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var ALL_QUESTIONS = [
+    { topic: "DNS", stem: "El servidor de la clínica no logra resolver el nombre farmacia.clinicasanandres.com.ar. ¿Qué componente del DNS es responsable de traducir ese nombre a una dirección IP?",
+      options: ["Un servidor de nombres autoritativo para ese dominio","El firewall perimetral de la clínica","El protocolo HTTPS del sitio","La tarjeta de red del servidor"],
+      correct: 0, explain: "El sistema de nombres de dominio resuelve nombres a IP a través de servidores de nombres; el firewall, HTTPS y la NIC no traducen nombres.",
+      hint: "Pensá en qué parte del DNS guarda la relación nombre → IP y responde por ese dominio." },
+    { topic: "DNS", stem: "La clínica organiza su dominio en subdominios: turnos.clinicasanandres.com.ar, historiales.clinicasanandres.com.ar. ¿Cómo se llama esa estructura jerárquica del DNS?",
+      options: ["Espacio de nombres de dominio","Tabla de enrutamiento","Lista de control de acceso","Tabla ARP"],
+      correct: 0, explain: "La jerarquía de dominios y subdominios constituye el espacio de nombres de dominio.",
+      hint: "Es el mismo concepto que organiza todo internet en dominios y subdominios, no algo exclusivo de la clínica." },
+    { topic: "DNS", stem: "El administrador de la clínica agrega un registro que asocia el subdominio webmail.clinicasanandres.com.ar con su dirección IP correspondiente. ¿Qué elemento del DNS acaba de crear?",
+      options: ["Un registro de recursos","Una regla de firewall","Una clave de cifrado","Un certificado digital"],
+      correct: 0, explain: "Los registros de recursos son las entradas dentro del espacio de nombres que asocian un nombre con datos, como una dirección IP.",
+      hint: "Es la unidad mínima de información que vive dentro del espacio de nombres de dominio." },
+    { topic: "DNS", stem: "Cuando ningún servidor local conoce la IP de un dominio externo, la consulta se reenvía siguiendo la jerarquía hasta encontrar la respuesta. ¿Qué tipo de servidor resuelve finalmente ese tipo de consultas externas?",
+      options: ["Un servidor de nombres dentro de la jerarquía DNS","Un servidor de correo (SMTP)","Un servidor de impresión","Un proxy de caché de imágenes"],
+      correct: 0, explain: "Los servidores de nombres trabajan de forma jerárquica y delegada para resolver consultas que no pueden responder localmente.",
+      hint: "Pensá en la cadena de consultas que sube desde el servidor local hasta la raíz del DNS." },
+    { topic: "Criptografía", stem: "Un historial clínico se cifra y descifra con la misma clave secreta compartida entre el servidor y el médico autorizado. ¿Qué principio criptográfico aplica?",
+      options: ["Criptografía simétrica","Criptografía asimétrica","Función de resumen (hash)","Esteganografía"],
+      correct: 0, explain: "Cuando la misma clave cifra y descifra, se trata de criptografía simétrica (de clave secreta compartida).",
+      hint: "La pista está en la palabra 'misma clave' para ambas operaciones." },
+    { topic: "Criptografía", stem: "Para enviar resultados de laboratorio sin compartir antes ninguna clave secreta, el sistema usa una clave pública del destinatario para cifrar, y este descifra con su clave privada. ¿Qué principio es este?",
+      options: ["Criptografía asimétrica (clave pública)","Criptografía simétrica","Cifrado César","Compresión de datos"],
+      correct: 0, explain: "El uso de un par clave pública/clave privada, sin necesidad de acuerdo previo, es el segundo principio fundamental: criptografía de clave pública.",
+      hint: "Hay dos claves distintas en juego, una para cifrar y otra para descifrar." },
+    { topic: "Criptografía", stem: "La clínica necesita distribuir de forma confiable las claves públicas de sus médicos para que pacientes y otros sistemas puedan verificarlas sin suplantaciones. ¿Qué proceso se encarga específicamente de esto?",
+      options: ["Administración de claves públicas","Compresión de archivos","Balanceo de carga del servidor","Asignación dinámica de IP"],
+      correct: 0, explain: "La administración de claves públicas (incluyendo certificados y autoridades certificadoras) garantiza que una clave pública realmente pertenece a quien dice ser.",
+      hint: "Pensá en certificados digitales y autoridades certificadoras." },
+    { topic: "Firmas digitales", stem: "El director médico firma digitalmente una orden para validar que él la emitió y que no fue alterada. ¿Qué garantiza principalmente una firma digital?",
+      options: ["Autenticidad e integridad del mensaje","Velocidad de transmisión de la red","Compresión del archivo","Disponibilidad del servidor"],
+      correct: 0, explain: "La firma digital permite verificar quién originó el mensaje y que no fue modificado: autenticidad e integridad.",
+      hint: "No tiene que ver con velocidad ni tamaño de archivo, sino con confianza en el origen y el contenido." },
+    { topic: "Resúmenes de mensajes", stem: "Antes de firmar un archivo grande de historiales, el sistema genera primero un resumen de longitud fija del documento. ¿Qué función cumple ese paso?",
+      options: ["Función hash o resumen de mensaje","Enrutamiento de paquetes","Asignación de IP dinámica","Traducción de direcciones (NAT)"],
+      correct: 0, explain: "Las funciones hash generan un resumen de tamaño fijo que luego se firma, en lugar de firmar el documento completo.",
+      hint: "Es más eficiente firmar un resumen corto que el documento entero." },
+    { topic: "Resúmenes de mensajes", stem: "El equipo de sistemas debate qué familia de funciones hash usar para los resúmenes de los historiales: una más antigua y hoy considerada débil, y otra más robusta y vigente. ¿Cuál de estas opciones describe correctamente esa comparación?",
+      options: ["SHA-1 es más débil y SHA-2 es la opción más robusta","SHA-1 y SHA-2 son exactamente el mismo algoritmo con distinto nombre","SHA-2 es un protocolo de enrutamiento, no una función hash","Ninguna de las dos genera un resumen de longitud fija"],
+      correct: 0, explain: "SHA-1 quedó obsoleto frente a colisiones encontradas, mientras que la familia SHA-2 ofrece mayor robustez y se usa hoy como estándar.",
+      hint: "El número más alto, en este caso, sí indica una versión más segura y vigente." },
+    { topic: "Firewalls", stem: "Se detecta tráfico sospechoso intentando ingresar a la red interna de la clínica desde una IP externa desconocida. ¿Qué dispositivo de seguridad está diseñado para filtrar ese tráfico según reglas definidas?",
+      options: ["Firewall","Switch no administrado","Servidor DNS","Punto de acceso Wi-Fi"],
+      correct: 0, explain: "El firewall filtra el tráfico entrante y saliente de la red según políticas de seguridad establecidas.",
+      hint: "Es el dispositivo cuyo nombre en español literalmente significa 'cortafuegos'." },
+    { topic: "Firewalls", stem: "El equipo de redes configura reglas para que solo determinados puertos y direcciones puedan comunicarse con el servidor de historiales clínicos, bloqueando todo lo demás por defecto. ¿Qué estrategia de seguridad están aplicando?",
+      options: ["Una política de firewall restrictiva (deniega por defecto)","Una política de DNS dinámico","Una estrategia de respaldo de datos","Una técnica de compresión de paquetes"],
+      correct: 0, explain: "Definir qué tráfico se permite explícitamente y bloquear el resto por defecto es una política clásica de configuración de firewall.",
+      hint: "No tiene relación con nombres de dominio ni con copias de seguridad." },
+    { topic: "VPN", stem: "Un médico necesita acceder de forma segura al sistema interno de la clínica desde su casa, a través de un túnel cifrado sobre Internet pública. ¿Qué tecnología resuelve esto?",
+      options: ["Red privada virtual (VPN)","Servidor DHCP","Protocolo ARP","Switch capa 2"],
+      correct: 0, explain: "Una VPN crea un túnel cifrado sobre una red pública, dando acceso remoto seguro como si el dispositivo estuviera en la red interna.",
+      hint: "La palabra clave es 'túnel cifrado' sobre una red que no es propia." },
+    { topic: "Redes inalámbricas", stem: "La red Wi-Fi de la sala de espera de la clínica usa una clave compartida débil y es vulnerable a intrusos. ¿Qué área del programa aborda específicamente este riesgo?",
+      options: ["Seguridad en redes inalámbricas","Calidad de servicio en redes","Procesamiento de datos en la nube","Arquitectura de la computadora"],
+      correct: 0, explain: "La seguridad en redes inalámbricas cubre justamente los riesgos de protocolos de cifrado débiles en Wi-Fi.",
+      hint: "Pensá en el medio físico involucrado: ondas de radio, no cables." },
+    { topic: "Redes inalámbricas", stem: "Un atacante cercano al edificio intenta interceptar las señales Wi-Fi de la clínica para capturar tráfico sin estar conectado físicamente a la red. ¿Por qué las redes inalámbricas requieren medidas de seguridad adicionales respecto a las cableadas?",
+      options: ["Porque la señal viaja por el aire y puede ser interceptada sin acceso físico al cableado","Porque no pueden usar ningún tipo de cifrado","Porque no tienen dirección IP asignada","Porque no pasan por ningún protocolo de capa de enlace"],
+      correct: 0, explain: "Al propagarse por el aire, el medio inalámbrico es más expuesto a intercepción que un cableado físico, por eso necesita cifrado y autenticación reforzados.",
+      hint: "Compará el medio de transmisión: aire versus cable físico." },
+    { topic: "Autenticación", stem: "Para que un médico inicie sesión, el sistema le pide contraseña y además un código temporal enviado a su teléfono. ¿Qué objetivo cumple este protocolo de autenticación reforzado?",
+      options: ["Verificar de forma más confiable la identidad del usuario","Acelerar la velocidad de descarga","Reducir el consumo de ancho de banda","Comprimir los archivos del historial"],
+      correct: 0, explain: "Los protocolos de autenticación buscan confirmar que quien intenta ingresar es realmente quien dice ser; sumar un segundo factor refuerza esa verificación.",
+      hint: "Es un segundo factor de verificación, no algo relacionado con velocidad de red." },
+    { topic: "Seguridad web", stem: "El sitio donde los pacientes piden turnos online no usa HTTPS, por lo que sus datos viajan sin cifrar. ¿Qué riesgo de seguridad web se presenta?",
+      options: ["Interceptación de datos en tránsito","Saturación de la fuente tipográfica","Sobrecalentamiento del servidor","Pérdida de la dirección MAC"],
+      correct: 0, explain: "Sin cifrado en tránsito (HTTPS/TLS), los datos pueden ser interceptados por terceros en la red.",
+      hint: "Pensá en qué pasa con los datos mientras viajan de la PC del paciente al servidor." },
+    { topic: "Seguridad web", stem: "El portal de turnos de la clínica recibe código malicioso incrustado en un formulario que se ejecuta luego en el navegador de otros pacientes. ¿En qué categoría general de problemas de seguridad web entra esto?",
+      options: ["Vulnerabilidad de seguridad web por código no validado","Falla de hardware de red","Error de resolución DNS","Falla del protocolo de enrutamiento"],
+      correct: 0, explain: "La ejecución de código no controlado dentro de una página (como inyecciones de script) es un problema clásico de seguridad web por validación insuficiente de entradas.",
+      hint: "El problema nace en el formulario web, no en el hardware ni en el DNS." },
+    { topic: "Seguridad de código móvil", stem: "La clínica lanza una app móvil para que los pacientes vean turnos y resultados. Antes de publicarla, el equipo revisa que el código no tenga permisos excesivos ni ejecute acciones no autorizadas en el dispositivo del paciente. ¿Qué área de la seguridad cubre esta revisión?",
+      options: ["Seguridad de código móvil","Calidad de servicio en redes","Administración de DNS","Arquitectura de periféricos"],
+      correct: 0, explain: "La seguridad de código móvil se enfoca en los riesgos de ejecutar aplicaciones en dispositivos móviles, incluyendo permisos y comportamiento del código.",
+      hint: "Se trata de una app que corre en el teléfono del paciente." },
+    { topic: "Virus", stem: "Una PC de administración empieza a replicarse a sí misma adjuntándose a archivos ejecutables sin que el usuario lo note. ¿Qué tipo de amenaza describe mejor esta naturaleza?",
+      options: ["Virus informático","Firewall mal configurado","Servidor DNS caído","Certificado digital vencido"],
+      correct: 0, explain: "Un virus se caracteriza por replicarse insertándose en otros programas o archivos ejecutables.",
+      hint: "Pensá en la definición clásica: necesita 'adjuntarse' a otro archivo para propagarse." },
+    { topic: "Tipos de virus", stem: "El equipo de soporte identifica que la amenaza detectada no se adjunta a archivos ejecutables, sino que se propaga sola por la red explotando una vulnerabilidad, sin necesitar que el usuario abra nada. ¿Qué tipo de amenaza describe esto, distinta de un virus clásico?",
+      options: ["Un gusano (worm)","Un firewall","Un servidor proxy","Una VPN"],
+      correct: 0, explain: "A diferencia del virus, que necesita adjuntarse a un programa, el gusano se propaga de forma autónoma por la red sin intervención del usuario.",
+      hint: "Es otro tipo de malware, distinto del virus clásico, que no necesita un archivo huésped." },
+    { topic: "Estrategias antivirus", stem: "El antivirus de la clínica compara archivos contra una base de patrones conocidos de código malicioso para detectarlos. ¿Qué estrategia antivirus está usando principalmente?",
+      options: ["Detección basada en firmas","Cifrado de extremo a extremo","Segmentación de subredes","Balanceo de carga"],
+      correct: 0, explain: "La detección basada en firmas compara el código contra una base de patrones de virus ya identificados.",
+      hint: "Es la estrategia más tradicional: comparar contra una 'base de datos' de amenazas conocidas." },
+    { topic: "Estrategias antivirus", stem: "Además de comparar firmas conocidas, el antivirus de la clínica observa si un programa nuevo intenta comportarse de forma sospechosa, como cifrar archivos masivamente sin permiso. ¿Qué estrategia complementaria es esta?",
+      options: ["Detección basada en comportamiento (heurística)","Resolución de nombres DNS","Enrutamiento estático","Traducción de direcciones de red (NAT)"],
+      correct: 0, explain: "La detección heurística o por comportamiento identifica actividad sospechosa aunque el código no coincida con una firma conocida previamente.",
+      hint: "No compara contra una base de firmas, sino que observa cómo 'actúa' el programa." },
+    { topic: "Criptografía", stem: "El equipo de sistemas necesita decidir si cifrar las comunicaciones internas con un esquema rápido pero que exige compartir antes una clave secreta entre ambas puntas, ideal para grandes volúmenes de datos. ¿Qué principio criptográfico encaja con esa descripción?",
+      options: ["Criptografía simétrica","Criptografía asimétrica","Firma digital sin clave","Resumen de mensaje sin clave"],
+      correct: 0, explain: "La criptografía simétrica es más rápida para grandes volúmenes de datos, pero requiere que ambas partes compartan la misma clave secreta de antemano.",
+      hint: "Es rápida, pero exige acordar antes una única clave compartida." }
+  ];
+
+  var GAME_LENGTH = 12;
+
+  function seededRandom(seed){
+    var s = seed % 2147483647;
+    if (s <= 0) s += 2147483646;
+    return function(){
+      s = (s * 16807) % 2147483647;
+      return (s - 1) / 2147483646;
+    };
+  }
+
+  function shuffleArray(arr, rand){
+    var a = arr.slice();
+    for (var i = a.length - 1; i > 0; i--){
+      var j = Math.floor(rand() * (i + 1));
+      var t = a[i]; a[i] = a[j]; a[j] = t;
+    }
+    return a;
+  }
+
+  function pickQuestionsBalanced(){
+    var seed = Date.now() % 1000000 + 1;
+    var rand = seededRandom(seed);
+
+    var byTopic = {};
+    ALL_QUESTIONS.forEach(function(q){
+      if (!byTopic[q.topic]) byTopic[q.topic] = [];
+      byTopic[q.topic].push(q);
+    });
+    var topics = shuffleArray(Object.keys(byTopic), rand);
+
+    var picked = [];
+    var pickedSet = new Set();
+
+    topics.forEach(function(t){
+      var pool = shuffleArray(byTopic[t], rand);
+      if (pool.length > 0){
+        picked.push(pool[0]);
+        pickedSet.add(pool[0]);
+      }
+    });
+
+    var remaining = ALL_QUESTIONS.filter(function(q){ return !pickedSet.has(q); });
+    remaining = shuffleArray(remaining, rand);
+
+    var idx = 0;
+    while (picked.length < Math.min(GAME_LENGTH, ALL_QUESTIONS.length) && idx < remaining.length){
+      picked.push(remaining[idx]);
+      idx++;
+    }
+
+    return shuffleArray(picked.slice(0, GAME_LENGTH), rand);
+  }
+
+  var state = {
+    questions: pickQuestionsBalanced(),
+    idx: 0,
+    lives: 3,
+    score: 0,
+    streak: 0,
+    answered: false,
+    finished: false,
+    history: [],
+    hintUsed: []
+  };
+
+  var root = document.getElementById('game-root');
+
+  function shuffleOptionsForQuestion(q, seed){
+    var idxs = [0,1,2,3];
+    var rand = seededRandom(seed + 1);
+    return shuffleArray(idxs, rand);
+  }
+
+  function vitalsClass(){
+    if (state.lives >= 3) return 'green';
+    if (state.lives === 2) return 'amber';
+    return 'red';
+  }
+
+  function ecgPath(lives, justWrong){
+    if (justWrong){
+      return "M0,40 L40,40 L52,8 L64,68 L76,20 L88,40 L120,40 L132,40 L150,40 L162,10 L174,70 L186,30 L200,40 L240,40 L252,40 L264,8 L276,68 L288,20 L300,40 L340,40";
+    }
+    if (lives >= 3){
+      return "M0,40 L40,40 L52,40 L60,18 L68,52 L76,40 L100,40 L150,40 L162,40 L170,18 L178,52 L186,40 L210,40 L260,40 L272,40 L280,18 L288,52 L296,40 L340,40";
+    }
+    if (lives === 2){
+      return "M0,42 L40,42 L52,42 L58,26 L64,52 L70,42 L120,42 L150,42 L162,42 L168,26 L174,52 L180,42 L230,42 L260,42 L272,42 L278,26 L284,52 L290,42 L340,42";
+    }
+    return "M0,44 L40,44 L48,36 L56,48 L64,44 L160,44 L168,36 L176,48 L184,44 L260,44 L268,36 L276,48 L284,44 L340,44";
+  }
+
+  function escapeHtml(str){
+    var div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  function render(){
+    if (state.finished){ renderEnd(); return; }
+    var q = state.questions[state.idx];
+    var order = shuffleOptionsForQuestion(q, state.idx + 5);
+    var vClass = vitalsClass();
+    var hintActive = state.hintUsed[state.idx] === true;
+
+    var html = '';
+    html += '<div class="topbar">';
+    html += '<div class="topbar-left">Clínica San Andrés &middot; código rojo</div>';
+    html += '<div class="qcounter">Pregunta ' + (state.idx+1) + ' de ' + state.questions.length + '</div>';
+    html += '</div>';
+
+    html += '<div class="vitals ' + vClass + '">';
+    html += '<div class="vitals-head">';
+    html += '<span class="vitals-label">Signos vitales del sistema</span>';
+    html += '<div class="hearts">';
+    for (var L=0; L<3; L++){
+      html += '<span class="' + (L < state.lives ? '' : 'heart-off') + '">&#9829;</span>';
+    }
+    html += '</div></div>';
+    html += '<svg class="ecg" viewBox="0 0 340 80"><path d="' + ecgPath(state.lives, state.history[state.history.length-1]===false) + '" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/></svg>';
+    html += '</div>';
+
+    html += '<div class="topic-pill">' + escapeHtml(q.topic) + '</div>';
+    html += '<p class="stem">' + escapeHtml(q.stem) + '</p>';
+
+    html += '<div class="options" id="options">';
+    for (var k=0; k<4; k++){
+      var oi = order[k];
+      html += '<button type="button" class="opt-btn" data-oi="' + oi + '">' + escapeHtml(q.options[oi]) + '</button>';
+    }
+    html += '</div>';
+
+    if (hintActive && !state.answered){
+      html += '<div class="hint-box"><span>&#128161;</span><span>' + escapeHtml(q.hint) + '</span></div>';
+    }
+
+    html += '<div class="feedback" id="feedback"></div>';
+
+    html += '<div class="bottom-row">';
+    html += '<span class="score-line">Aciertos: ' + state.score + ' &middot; Racha: ' + state.streak + '</span>';
+    html += '<div style="display:flex; gap:8px;">';
+    html += '<button type="button" class="btn-ghost" id="hint-btn" ' + (hintActive || state.answered ? 'disabled' : '') + '>Pedir pista (&minus;1 punto)</button>';
+    html += '<button type="button" class="btn-primary" id="next-btn" style="display:none;">Siguiente alerta</button>';
+    html += '</div></div>';
+
+    root.innerHTML = html;
+
+    var hintBtn = document.getElementById('hint-btn');
+    hintBtn.addEventListener('click', function(){
+      state.hintUsed[state.idx] = true;
+      state.score = Math.max(0, state.score - 1);
+      render();
+    });
+
+    var buttons = root.querySelectorAll('.opt-btn');
+    buttons.forEach(function(btn){
+      btn.addEventListener('click', function(){
+        if (state.answered) return;
+        state.answered = true;
+        var chosen = parseInt(btn.getAttribute('data-oi'), 10);
+        var isCorrect = chosen === q.correct;
+        state.history.push(isCorrect);
+
+        buttons.forEach(function(b){
+          var bi = parseInt(b.getAttribute('data-oi'), 10);
+          b.disabled = true;
+          if (bi === q.correct){ b.classList.add('correct'); }
+          else if (bi === chosen){ b.classList.add('wrong'); }
+          else { b.classList.add('faded'); }
+        });
+
+        var fb = document.getElementById('feedback');
+        if (isCorrect){
+          if (!state.hintUsed[state.idx]) state.score += 1;
+          state.streak += 1;
+          fb.innerHTML = '<div class="feedback-box ok"><span>&#10003;</span><span>Sistema estabilizado. ' + escapeHtml(q.explain) + '</span></div>';
+        } else {
+          state.lives -= 1;
+          state.streak = 0;
+          fb.innerHTML = '<div class="feedback-box bad"><span>&#9888;</span><span>Alerta en el sistema. ' + escapeHtml(q.explain) + '</span></div>';
+        }
+
+        document.getElementById('hint-btn').disabled = true;
+
+        if (state.lives <= 0){
+          state.finished = true; state.outcome = 'down';
+        } else if (state.idx === state.questions.length - 1){
+          state.finished = true; state.outcome = 'completed';
+        }
+
+        var nextBtn = document.getElementById('next-btn');
+        nextBtn.style.display = 'inline-block';
+        nextBtn.textContent = state.finished ? 'Ver resultado final' : 'Siguiente alerta';
+        nextBtn.addEventListener('click', function(){
+          if (!state.finished){ state.idx += 1; state.answered = false; }
+          render();
+        });
+
+        var ecgSvgPath = root.querySelector('svg.ecg path');
+        if (!isCorrect && ecgSvgPath){ ecgSvgPath.setAttribute('d', ecgPath(state.lives, true)); }
+      });
+    });
+  }
+
+  function renderEnd(){
+    var total = state.questions.length;
+    var pct = Math.round((state.score / total) * 100);
+    var vClass = state.outcome === 'down' ? 'red' : (pct >= 75 ? 'green' : 'amber');
+    var title = state.outcome === 'down'
+      ? 'El sistema de la clínica colapsó'
+      : (pct >= 90 ? 'Sistema completamente estabilizado' : (pct >= 75 ? 'Sistema estabilizado' : 'Sistema recuperado, con secuelas'));
+
+    var html = '';
+    html += '<div class="end-box ' + vClass + '">';
+    html += '<div style="font-size:28px;">' + (state.outcome === 'down' ? '&#9888;' : '&#128737;') + '</div>';
+    html += '<p class="end-title">' + title + '</p>';
+    html += '<p class="end-sub">Resolviste ' + state.score + ' de ' + total + ' incidentes (' + pct + '%)</p>';
+    html += '</div>';
+
+    var byTopic = {};
+    state.questions.forEach(function(q, i){
+      if (!byTopic[q.topic]) byTopic[q.topic] = { ok:0, total:0 };
+      byTopic[q.topic].total += 1;
+      if (state.history[i]) byTopic[q.topic].ok += 1;
+    });
+
+    html += '<p class="topic-review-title">Repaso por tema (esta partida)</p>';
+    Object.keys(byTopic).forEach(function(t){
+      var d = byTopic[t];
+      var weak = d.ok < d.total;
+      html += '<div class="topic-row"><span>' + escapeHtml(t) + '</span><span class="' + (weak ? 'topic-bad' : 'topic-ok') + '">' + d.ok + '/' + d.total + '</span></div>';
+    });
+
+    html += '<p class="footnote">Banco total: ' + ALL_QUESTIONS.length + ' preguntas, repartidas en 9 temas. Cada partida sortea ' + GAME_LENGTH + ' garantizando al menos una de cada tema. Jugá de nuevo para repasar otras combinaciones.</p>';
+
+    html += '<button type="button" class="btn-primary full-btn" id="restart-btn">Jugar otra ronda</button>';
+
+    root.innerHTML = html;
+    document.getElementById('restart-btn').addEventListener('click', function(){
+      state = { questions: pickQuestionsBalanced(), idx:0, lives:3, score:0, streak:0, answered:false, finished:false, history:[], hintUsed:[] };
+      render();
+    });
+  }
+
+  render();
+})();
+</script>
+</body>
+</html>
