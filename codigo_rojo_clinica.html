@@ -41,7 +41,16 @@
   .subtitle{ font-size: 13px; color: var(--text-secondary); margin: 0 0 20px; }
   .topbar{ display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; flex-wrap:wrap; gap:8px; }
   .topbar-left{ display:flex; align-items:center; gap:8px; font-size:14px; font-weight:600; color: var(--text-secondary); }
+  .topbar-right{ display:flex; align-items:center; gap:10px; }
   .qcounter{ font-size:13px; color: var(--text-tertiary); }
+  .mute-btn{ background: transparent; border: 1px solid var(--border); border-radius: var(--radius-md); width:32px; height:32px; display:flex; align-items:center; justify-content:center; font-size:15px; color: var(--text-secondary); padding:0; }
+  .mute-btn:hover{ background: var(--gray-bg); }
+  .timer-row{ display:flex; align-items:center; gap:10px; margin-bottom:14px; }
+  .timer-track{ flex:1; height:8px; border-radius:4px; background: var(--gray-bg); overflow:hidden; }
+  .timer-fill{ height:100%; border-radius:4px; background: var(--green-border); transition: width 1s linear, background 0.3s; }
+  .timer-fill.amber{ background: var(--amber-border); }
+  .timer-fill.red{ background: var(--red-border); }
+  .timer-num{ font-size:13px; font-weight:600; color: var(--text-secondary); min-width:28px; text-align:right; }
   .vitals{ border-radius: var(--radius-lg); padding:14px 16px; margin-bottom:18px; transition: background 0.3s; }
   .vitals.green{ background: var(--green-bg); color: var(--green-text); }
   .vitals.amber{ background: var(--amber-bg); color: var(--amber-text); }
@@ -211,6 +220,61 @@
   ];
 
   var GAME_LENGTH = 12;
+  var TIME_PER_QUESTION = 20;
+
+  var audioCtx = null;
+  function getAudioCtx(){
+    if (!audioCtx){
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    return audioCtx;
+  }
+
+  function playTone(freq, duration, type, gainPeak, when){
+    if (state.muted) return;
+    try{
+      var ctx = getAudioCtx();
+      var t0 = ctx.currentTime + (when || 0);
+      var osc = ctx.createOscillator();
+      var gain = ctx.createGain();
+      osc.type = type || 'sine';
+      osc.frequency.setValueAtTime(freq, t0);
+      gain.gain.setValueAtTime(0.0001, t0);
+      gain.gain.exponentialRampToValueAtTime(gainPeak || 0.12, t0 + 0.01);
+      gain.gain.exponentialRampToValueAtTime(0.0001, t0 + duration);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(t0);
+      osc.stop(t0 + duration + 0.02);
+    } catch(e){}
+  }
+
+  function soundTick(urgent){
+    playTone(urgent ? 1100 : 880, 0.05, 'square', urgent ? 0.07 : 0.045);
+  }
+  function soundCorrect(){
+    playTone(523.25, 0.1, 'sine', 0.1, 0);
+    playTone(659.25, 0.1, 'sine', 0.1, 0.09);
+    playTone(783.99, 0.16, 'sine', 0.1, 0.18);
+  }
+  function soundWrong(){
+    playTone(220, 0.18, 'sawtooth', 0.09, 0);
+    playTone(160, 0.22, 'sawtooth', 0.09, 0.1);
+  }
+  function soundTimeout(){
+    playTone(180, 0.3, 'sawtooth', 0.1, 0);
+  }
+  function soundWin(){
+    playTone(523.25, 0.12, 'sine', 0.1, 0);
+    playTone(659.25, 0.12, 'sine', 0.1, 0.12);
+    playTone(783.99, 0.12, 'sine', 0.1, 0.24);
+    playTone(1046.5, 0.22, 'sine', 0.11, 0.36);
+  }
+  function soundLose(){
+    playTone(300, 0.18, 'sawtooth', 0.1, 0);
+    playTone(240, 0.18, 'sawtooth', 0.1, 0.14);
+    playTone(160, 0.3, 'sawtooth', 0.11, 0.28);
+  }
 
   function seededRandom(seed){
     var s = seed % 2147483647;
@@ -273,7 +337,10 @@
     answered: false,
     finished: false,
     history: [],
-    hintUsed: []
+    hintUsed: [],
+    muted: false,
+    timeLeft: TIME_PER_QUESTION,
+    timerHandle: null
   };
 
   var root = document.getElementById('game-root');
@@ -309,6 +376,83 @@
     return div.innerHTML;
   }
 
+  function stopTimer(){
+    if (state.timerHandle){
+      clearInterval(state.timerHandle);
+      state.timerHandle = null;
+    }
+  }
+
+  function startTimer(){
+    stopTimer();
+    var fill = document.getElementById('timer-fill');
+    var num = document.getElementById('timer-num');
+    state.timerHandle = setInterval(function(){
+      state.timeLeft -= 1;
+      if (num) num.textContent = state.timeLeft + 's';
+      if (fill){
+        var pct = Math.max(0, (state.timeLeft / TIME_PER_QUESTION) * 100);
+        fill.style.width = pct + '%';
+        fill.classList.remove('amber','red');
+        if (state.timeLeft <= 5) fill.classList.add('red');
+        else if (state.timeLeft <= 10) fill.classList.add('amber');
+      }
+      if (state.timeLeft <= 5 && state.timeLeft > 0){
+        soundTick(true);
+      } else if (state.timeLeft > 5){
+        soundTick(false);
+      }
+      if (state.timeLeft <= 0){
+        stopTimer();
+        handleTimeout();
+      }
+    }, 1000);
+  }
+
+  function handleTimeout(){
+    if (state.answered) return;
+    state.answered = true;
+    var q = state.questions[state.idx];
+    state.history.push(false);
+    state.lives -= 1;
+    state.streak = 0;
+    soundTimeout();
+
+    var buttons = root.querySelectorAll('.opt-btn');
+    buttons.forEach(function(b){
+      b.disabled = true;
+      var bi = parseInt(b.getAttribute('data-oi'), 10);
+      if (bi === q.correct){ b.classList.add('correct'); }
+      else { b.classList.add('faded'); }
+    });
+
+    var fb = document.getElementById('feedback');
+    if (fb){
+      fb.innerHTML = '<div class="feedback-box bad"><span>&#9203;</span><span>Se acabó el tiempo. ' + escapeHtml(q.explain) + '</span></div>';
+    }
+    var hintBtn = document.getElementById('hint-btn');
+    if (hintBtn) hintBtn.disabled = true;
+
+    if (state.lives <= 0){
+      state.finished = true; state.outcome = 'down';
+    } else if (state.idx === state.questions.length - 1){
+      state.finished = true; state.outcome = 'completed';
+    }
+
+    var nextBtn = document.getElementById('next-btn');
+    if (nextBtn){
+      nextBtn.style.display = 'inline-block';
+      nextBtn.textContent = state.finished ? 'Ver resultado final' : 'Siguiente alerta';
+      nextBtn.addEventListener('click', function(){
+        if (!state.finished){ state.idx += 1; state.answered = false; state.timeLeft = TIME_PER_QUESTION; }
+        render();
+      });
+    }
+
+    var ecgSvgPath = root.querySelector('svg.ecg path');
+    if (ecgSvgPath){ ecgSvgPath.setAttribute('d', ecgPath(state.lives, true)); }
+  }
+
   function render(){
     if (state.finished){ renderEnd(); return; }
     var q = state.questions[state.idx];
@@ -316,10 +460,23 @@
     var vClass = vitalsClass();
     var hintActive = state.hintUsed[state.idx] === true;
 
+    if (state.timeLeft === undefined || state.timeLeft === null){
+      state.timeLeft = TIME_PER_QUESTION;
+    }
+    var timerPct = Math.max(0, (state.timeLeft / TIME_PER_QUESTION) * 100);
+    var timerClass = state.timeLeft <= 5 ? 'red' : (state.timeLeft <= 10 ? 'amber' : '');
+
     var html = '';
     html += '<div class="topbar">';
     html += '<div class="topbar-left">Clínica San Andrés &middot; código rojo</div>';
-    html += '<div class="qcounter">Pregunta ' + (state.idx+1) + ' de ' + state.questions.length + '</div>';
+    html += '<div class="topbar-right">';
+    html += '<span class="qcounter">Pregunta ' + (state.idx+1) + ' de ' + state.questions.length + '</span>';
+    html += '<button type="button" class="mute-btn" id="mute-btn" aria-label="' + (state.muted ? 'Activar sonido' : 'Silenciar sonido') + '">' + (state.muted ? '&#128263;' : '&#128266;') + '</button>';
+    html += '</div></div>';
+
+    html += '<div class="timer-row">';
+    html += '<div class="timer-track"><div class="timer-fill ' + timerClass + '" id="timer-fill" style="width:' + timerPct + '%;"></div></div>';
+    html += '<span class="timer-num" id="timer-num">' + state.timeLeft + 's</span>';
     html += '</div>';
 
     html += '<div class="vitals ' + vClass + '">';
@@ -358,6 +515,13 @@
 
     root.innerHTML = html;
 
+    var muteBtn = document.getElementById('mute-btn');
+    muteBtn.addEventListener('click', function(){
+      state.muted = !state.muted;
+      muteBtn.innerHTML = state.muted ? '&#128263;' : '&#128266;';
+      muteBtn.setAttribute('aria-label', state.muted ? 'Activar sonido' : 'Silenciar sonido');
+    });
+
     var hintBtn = document.getElementById('hint-btn');
     hintBtn.addEventListener('click', function(){
       state.hintUsed[state.idx] = true;
@@ -365,11 +529,16 @@
       render();
     });
 
+    if (!state.answered){
+      startTimer();
+    }
+
     var buttons = root.querySelectorAll('.opt-btn');
     buttons.forEach(function(btn){
       btn.addEventListener('click', function(){
         if (state.answered) return;
         state.answered = true;
+        stopTimer();
         var chosen = parseInt(btn.getAttribute('data-oi'), 10);
         var isCorrect = chosen === q.correct;
         state.history.push(isCorrect);
@@ -386,10 +555,12 @@
         if (isCorrect){
           if (!state.hintUsed[state.idx]) state.score += 1;
           state.streak += 1;
+          soundCorrect();
           fb.innerHTML = '<div class="feedback-box ok"><span>&#10003;</span><span>Sistema estabilizado. ' + escapeHtml(q.explain) + '</span></div>';
         } else {
           state.lives -= 1;
           state.streak = 0;
+          soundWrong();
           fb.innerHTML = '<div class="feedback-box bad"><span>&#9888;</span><span>Alerta en el sistema. ' + escapeHtml(q.explain) + '</span></div>';
         }
 
@@ -405,7 +576,7 @@
         nextBtn.style.display = 'inline-block';
         nextBtn.textContent = state.finished ? 'Ver resultado final' : 'Siguiente alerta';
         nextBtn.addEventListener('click', function(){
-          if (!state.finished){ state.idx += 1; state.answered = false; }
+          if (!state.finished){ state.idx += 1; state.answered = false; state.timeLeft = TIME_PER_QUESTION; }
           render();
         });
 
@@ -416,12 +587,18 @@
   }
 
   function renderEnd(){
+    stopTimer();
     var total = state.questions.length;
     var pct = Math.round((state.score / total) * 100);
     var vClass = state.outcome === 'down' ? 'red' : (pct >= 75 ? 'green' : 'amber');
     var title = state.outcome === 'down'
       ? 'El sistema de la clínica colapsó'
       : (pct >= 90 ? 'Sistema completamente estabilizado' : (pct >= 75 ? 'Sistema estabilizado' : 'Sistema recuperado, con secuelas'));
+
+    if (!state.endSoundPlayed){
+      state.endSoundPlayed = true;
+      if (state.outcome === 'down'){ soundLose(); } else { soundWin(); }
+    }
 
     var html = '';
     html += '<div class="end-box ' + vClass + '">';
@@ -444,13 +621,14 @@
       html += '<div class="topic-row"><span>' + escapeHtml(t) + '</span><span class="' + (weak ? 'topic-bad' : 'topic-ok') + '">' + d.ok + '/' + d.total + '</span></div>';
     });
 
-    html += '<p class="footnote">Banco total: ' + ALL_QUESTIONS.length + ' preguntas, repartidas en 9 temas. Cada partida sortea ' + GAME_LENGTH + ' garantizando al menos una de cada tema. Jugá de nuevo para repasar otras combinaciones.</p>';
+    html += '<p class="footnote">Banco total: ' + ALL_QUESTIONS.length + ' preguntas, repartidas en 9 temas. Cada partida sortea ' + GAME_LENGTH + ' garantizando al menos una de cada tema. Tenés ' + TIME_PER_QUESTION + ' segundos por pregunta. Jugá de nuevo para repasar otras combinaciones.</p>';
 
     html += '<button type="button" class="btn-primary full-btn" id="restart-btn">Jugar otra ronda</button>';
 
     root.innerHTML = html;
     document.getElementById('restart-btn').addEventListener('click', function(){
-      state = { questions: pickQuestionsBalanced(), idx:0, lives:3, score:0, streak:0, answered:false, finished:false, history:[], hintUsed:[] };
+      var wasMuted = state.muted;
+      state = { questions: pickQuestionsBalanced(), idx:0, lives:3, score:0, streak:0, answered:false, finished:false, history:[], hintUsed:[], muted: wasMuted, timeLeft: TIME_PER_QUESTION, timerHandle: null };
       render();
     });
   }
