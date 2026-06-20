@@ -220,9 +220,11 @@
   ];
 
   var GAME_LENGTH = 12;
-  var TIME_PER_QUESTION = 20;
+  var TIME_PER_QUESTION = 30;
 
   var audioCtx = null;
+  var audioUnlocked = false;
+
   function getAudioCtx(){
     if (!audioCtx){
       audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -230,10 +232,33 @@
     return audioCtx;
   }
 
-  function playTone(freq, duration, type, gainPeak, when){
-    if (state.muted) return;
+  function unlockAudio(){
+    if (audioUnlocked) return;
     try{
       var ctx = getAudioCtx();
+      if (ctx.state === 'suspended'){
+        ctx.resume();
+      }
+      var osc = ctx.createOscillator();
+      var gain = ctx.createGain();
+      gain.gain.setValueAtTime(0.0001, ctx.currentTime);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(ctx.currentTime);
+      osc.stop(ctx.currentTime + 0.01);
+      audioUnlocked = true;
+    } catch(e){}
+  }
+
+  document.addEventListener('click', unlockAudio, { once: false });
+  document.addEventListener('keydown', unlockAudio, { once: false });
+  document.addEventListener('touchstart', unlockAudio, { once: false });
+
+  function playTone(freq, duration, type, gainPeak, when){
+    if (state.muted || !audioUnlocked) return;
+    try{
+      var ctx = getAudioCtx();
+      if (ctx.state === 'suspended'){ ctx.resume(); }
       var t0 = ctx.currentTime + (when || 0);
       var osc = ctx.createOscillator();
       var gain = ctx.createGain();
