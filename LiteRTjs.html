@@ -76,6 +76,13 @@
   button:disabled { background: var(--line); color: var(--muted); cursor: not-allowed; }
   button:focus-visible { outline: 2px solid var(--amber); outline-offset: 2px; }
   button.big { width: 100%; padding: 13px; font-size: 1rem; margin-top: 14px; }
+  button.ghost {
+    width: 100%; margin-bottom: 12px; padding: 12px;
+    background: transparent; color: var(--cyan);
+    border: 1.5px solid var(--cyan); font-size: 0.92rem;
+  }
+  button.ghost:hover:not(:disabled) { background: #14222d; }
+  button.ghost:disabled { border-color: var(--line); background: transparent; }
 
   .detail {
     font-family: 'IBM Plex Mono', monospace; font-size: 0.78rem;
@@ -123,7 +130,8 @@
 
   <div class="card">
     <h2>1 · Modelo (.tflite)</h2>
-    <div class="drop" id="model-drop" tabindex="0">Arrastra un archivo .tflite aquí o haz clic para elegirlo</div>
+    <button class="ghost" id="model-example">⚡ Cargar modelo de ejemplo (MobileNet V2 · 14 MB)</button>
+    <div class="drop" id="model-drop" tabindex="0">…o arrastra tu propio .tflite aquí / haz clic para elegirlo</div>
     <input type="file" id="model-file" accept=".tflite" hidden>
     <div class="row">
       <input type="url" id="model-url" placeholder="…o pega la URL de un modelo (HuggingFace, Kaggle, tu servidor)">
@@ -197,6 +205,15 @@ modelDrop.onkeydown = (e) => { if (e.key === 'Enter') $('model-file').click(); }
 $('model-file').onchange = async (e) => {
   const f = e.target.files[0]; if (!f) return;
   loadModel(new Uint8Array(await f.arrayBuffer()), f.name);
+};
+const EXAMPLE_URL = 'https://huggingface.co/litert-community/MobileNet-v2/resolve/main/mobilenet_v2.tflite';
+$('model-example').onclick = async () => {
+  const btn = $('model-example');
+  btn.disabled = true; btn.textContent = 'Descargando MobileNet V2…';
+  $('model-url').value = EXAMPLE_URL;
+  $('imagenet-norm').checked = true; // el ejemplo viene de PyTorch Vision
+  await loadModel(EXAMPLE_URL, 'mobilenet_v2.tflite (ejemplo)');
+  btn.disabled = false; btn.textContent = '⚡ Cargar modelo de ejemplo (MobileNet V2 · 14 MB)';
 };
 $('model-load-url').onclick = () => {
   const u = $('model-url').value.trim();
