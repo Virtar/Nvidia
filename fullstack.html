@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ruta full-stack con IA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0E1B2A;
+    --panel:#16283D;
+    --panel-2:#1D3350;
+    --paper:#EAF0F4;
+    --front:#F2A65A;   /* frontend – ámbar */
+    --back:#4FD1C5;    /* backend – menta */
+    --muted:#7C99B4;
+    --line:rgba(124,153,180,.18);
+    --display:'Space Grotesk',system-ui,sans-serif;
+    --body:'Inter',system-ui,sans-serif;
+    --mono:'JetBrains Mono',ui-monospace,monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    background:
+      radial-gradient(1200px 600px at 15% -10%, rgba(242,166,90,.10), transparent 60%),
+      radial-gradient(1100px 600px at 100% 0%, rgba(79,209,197,.10), transparent 55%),
+      var(--ink);
+    color:var(--paper);
+    font-family:var(--body);
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:940px;margin:0 auto;padding:0 22px}
+
+  /* ---------- HERO ---------- */
+  header.hero{padding:64px 0 28px}
+  .eyebrow{
+    font-family:var(--mono);font-size:.72rem;letter-spacing:.22em;
+    text-transform:uppercase;color:var(--muted);margin-bottom:20px;
+  }
+  .eyebrow b{color:var(--front)}
+  .eyebrow i{color:var(--back);font-style:normal}
+  h1{
+    font-family:var(--display);font-weight:700;
+    font-size:clamp(2.1rem,6vw,3.5rem);line-height:1.04;
+    letter-spacing:-.02em;margin-bottom:18px;
+  }
+  h1 .amp{
+    background:linear-gradient(90deg,var(--front),var(--back));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  .lede{color:#C6D4E0;font-size:1.06rem;max-width:60ch}
+
+  /* ---------- METER (signature) ---------- */
+  .meter{margin:38px 0 6px;background:var(--panel);border:1px solid var(--line);
+    border-radius:18px;padding:26px 24px}
+  .meter-top{display:flex;justify-content:space-between;align-items:flex-end;
+    gap:16px;flex-wrap:wrap;margin-bottom:18px}
+  .meter-figure{font-family:var(--display);font-weight:700;font-size:2.6rem;
+    line-height:1;letter-spacing:-.02em}
+  .meter-figure span{font-size:1.1rem;color:var(--muted);font-weight:500;margin-left:4px}
+  .meter-label{font-family:var(--mono);font-size:.72rem;letter-spacing:.18em;
+    text-transform:uppercase;color:var(--muted);margin-top:8px}
+  .bar{position:relative;height:20px;border-radius:999px;background:var(--panel-2);
+    overflow:hidden;box-shadow:inset 0 1px 3px rgba(0,0,0,.35)}
+  .bar .fill{position:absolute;top:0;bottom:0;transition:width .55s cubic-bezier(.4,0,.2,1)}
+  .bar .fill.front{left:0;background:linear-gradient(90deg,#E88A34,var(--front))}
+  .bar .fill.back{right:0;background:linear-gradient(270deg,#2CB5A9,var(--back))}
+  .bar .seam{position:absolute;left:50%;top:-4px;bottom:-4px;width:2px;
+    transform:translateX(-1px);background:var(--line)}
+  .legend{display:flex;gap:22px;margin-top:16px;flex-wrap:wrap}
+  .legend div{display:flex;align-items:center;gap:9px;font-size:.85rem;color:#C6D4E0}
+  .legend .dot{width:11px;height:11px;border-radius:3px}
+  .legend .front .dot{background:var(--front)}
+  .legend .back .dot{background:var(--back)}
+  .legend b{font-variant-numeric:tabular-nums}
+
+  /* ---------- PHASES ---------- */
+  section.roadmap{padding:34px 0 8px}
+  .section-head{font-family:var(--mono);font-size:.72rem;letter-spacing:.2em;
+    text-transform:uppercase;color:var(--muted);margin:26px 0 16px}
+  .phase{background:var(--panel);border:1px solid var(--line);border-radius:16px;
+    margin-bottom:14px;overflow:hidden;opacity:0;transform:translateY(14px);
+    animation:rise .6s ease forwards}
+  @keyframes rise{to{opacity:1;transform:none}}
+  .phase-head{display:flex;align-items:center;gap:16px;padding:18px 20px;
+    cursor:pointer;user-select:none;border-left:3px solid transparent}
+  .phase[data-track="front"] .phase-head{border-left-color:var(--front)}
+  .phase[data-track="back"] .phase-head{border-left-color:var(--back)}
+  .phase[data-track="full"] .phase-head{border-left-color:#B9A5E8}
+  .phase-num{font-family:var(--mono);font-weight:700;font-size:.82rem;color:var(--muted);
+    min-width:44px}
+  .phase-titles{flex:1;min-width:0}
+  .phase-title{font-family:var(--display);font-weight:600;font-size:1.12rem;letter-spacing:-.01em}
+  .phase-meta{font-family:var(--mono);font-size:.68rem;letter-spacing:.06em;
+    color:var(--muted);text-transform:uppercase;margin-top:2px}
+  .phase-track-tag{font-family:var(--mono);font-size:.62rem;letter-spacing:.12em;
+    text-transform:uppercase;padding:4px 9px;border-radius:999px;white-space:nowrap;
+    border:1px solid var(--line)}
+  .phase[data-track="front"] .phase-track-tag{color:var(--front)}
+  .phase[data-track="back"] .phase-track-tag{color:var(--back)}
+  .phase[data-track="full"] .phase-track-tag{color:#C7B8F0}
+  .phase[data-track="core"] .phase-track-tag{color:var(--muted)}
+  .phase-count{font-family:var(--mono);font-size:.72rem;color:var(--muted);
+    min-width:38px;text-align:right}
+  .chev{color:var(--muted);transition:transform .3s ease;flex-shrink:0}
+  .phase.open .chev{transform:rotate(90deg)}
+  .tasks{max-height:0;overflow:hidden;transition:max-height .4s ease}
+  .tasks ul{list-style:none;padding:2px 20px 14px 20px}
+  .task{display:flex;gap:13px;align-items:flex-start;padding:11px 0;
+    border-top:1px solid var(--line);cursor:pointer}
+  .task:first-child{border-top:none}
+  .box{flex-shrink:0;width:21px;height:21px;border-radius:6px;border:1.5px solid var(--muted);
+    margin-top:2px;display:grid;place-items:center;transition:.18s ease}
+  .box svg{width:12px;height:12px;opacity:0;transform:scale(.5);transition:.18s ease}
+  .task.done .box{background:linear-gradient(135deg,var(--front),var(--back));border-color:transparent}
+  .task.done .box svg{opacity:1;transform:none}
+  .task-text{font-size:.96rem;color:#D3DEE8;transition:.18s ease}
+  .task.done .task-text{color:var(--muted);text-decoration:line-through;
+    text-decoration-color:var(--line)}
+  .task .kbd{font-family:var(--mono);font-size:.7rem;color:var(--muted);
+    background:var(--panel-2);border:1px solid var(--line);border-radius:5px;
+    padding:1px 6px;margin-left:auto;white-space:nowrap;align-self:center}
+
+  /* ---------- PROMPTS ---------- */
+  section.prompts{padding:30px 0}
+  .prompt{background:var(--panel);border:1px solid var(--line);border-radius:14px;
+    padding:18px 18px 14px;margin-bottom:12px}
+  .prompt h4{font-family:var(--display);font-weight:600;font-size:1rem;margin-bottom:4px}
+  .prompt p.why{color:var(--muted);font-size:.85rem;margin-bottom:12px}
+  .prompt-row{display:flex;gap:10px;align-items:stretch}
+  .prompt code{font-family:var(--mono);font-size:.82rem;color:#CFE8E4;background:var(--ink);
+    border:1px solid var(--line);border-radius:9px;padding:11px 13px;flex:1;
+    line-height:1.5;white-space:pre-wrap;word-break:break-word}
+  .copy{font-family:var(--mono);font-size:.72rem;letter-spacing:.06em;color:var(--paper);
+    background:var(--panel-2);border:1px solid var(--line);border-radius:9px;
+    padding:0 15px;cursor:pointer;white-space:nowrap;transition:.18s ease}
+  .copy:hover{background:#26456b;border-color:var(--back)}
+  .copy.ok{color:var(--back);border-color:var(--back)}
+
+  /* ---------- RULES / FOOTER ---------- */
+  section.rules{padding:22px 0 10px}
+  .rule{display:flex;gap:14px;padding:14px 0;border-top:1px solid var(--line)}
+  .rule:first-of-type{border-top:none}
+  .rule .n{font-family:var(--mono);color:var(--front);font-weight:700;font-size:.9rem;min-width:26px}
+  .rule .n.b{color:var(--back)}
+  .rule p{color:#D3DEE8;font-size:.96rem}
+  .rule p b{color:var(--paper)}
+  footer{padding:34px 0 60px;color:var(--muted);font-size:.9rem;border-top:1px solid var(--line);
+    margin-top:26px}
+  footer .cta{color:#D3DEE8}
+  .reset{margin-top:14px;font-family:var(--mono);font-size:.72rem;color:var(--muted);
+    background:none;border:1px solid var(--line);border-radius:8px;padding:7px 12px;cursor:pointer}
+  .reset:hover{color:var(--front);border-color:var(--front)}
+
+  a{color:var(--back)}
+  :focus-visible{outline:2px solid var(--back);outline-offset:3px;border-radius:4px}
+  @media (prefers-reduced-motion:reduce){
+    *{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+  }
+  @media (max-width:560px){
+    .task .kbd{display:none}
+    .phase-track-tag{display:none}
+    .meter-figure{font-size:2.1rem}
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="eyebrow">Ruta guiada · <b>frontend</b> <i>+ backend</i> · con IA de copiloto</div>
+    <h1>Aprende a construir de punta&nbsp;<span class="amp">&amp;</span>&nbsp;punta, con la IA de tu lado</h1>
+    <p class="lede">Un plan de ~12 semanas para pasar de cero a full-stack. La IA acelera, pero tú entiendes cada pieza. Marca lo que completes: la barra de abajo se llena desde los dos extremos hasta que ambos mundos se encuentran en el centro.</p>
+
+    <div class="meter" aria-label="Tu progreso">
+      <div class="meter-top">
+        <div>
+          <div class="meter-figure" id="pctOverall">0<span>% full-stack</span></div>
+          <div class="meter-label">Progreso total</div>
+        </div>
+      </div>
+      <div class="bar">
+        <div class="fill front" id="fillFront" style="width:0%"></div>
+        <div class="fill back"  id="fillBack"  style="width:0%"></div>
+        <div class="seam"></div>
+      </div>
+      <div class="legend">
+        <div class="front"><span class="dot"></span>Frontend&nbsp;·&nbsp;<b id="pctFront">0%</b></div>
+        <div class="back"><span class="dot"></span>Backend&nbsp;·&nbsp;<b id="pctBack">0%</b></div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<section class="roadmap">
+  <div class="wrap">
+    <div class="section-head">La ruta · toca una fase para desplegar sus tareas</div>
+    <div id="phases"></div>
+  </div>
+</section>
+
+<section class="prompts">
+  <div class="wrap">
+    <div class="section-head">Tu flujo con IA · 4 prompts que enseñan (no solo resuelven)</div>
+    <div id="promptList"></div>
+  </div>
+</section>
+
+<section class="rules">
+  <div class="wrap">
+    <div class="section-head">Reglas de oro</div>
+    <div class="rule"><span class="n">01</span><p><b>Escribe tú primero, luego pide revisión.</b> Intenta resolverlo, aunque falle. La IA revisa y explica; así el aprendizaje se queda contigo.</p></div>
+    <div class="rule"><span class="n b">02</span><p><b>Pega el error completo.</b> Cuando algo se rompa, pregunta la <i>causa</i> antes que la solución. Entender el "por qué" evita repetir el fallo.</p></div>
+    <div class="rule"><span class="n">03</span><p><b>Construye proyectos, no solo tutoriales.</b> Un proyecto completo enseña más que diez tutoriales sueltos. Cada fase termina en algo que funciona.</p></div>
+    <div class="rule"><span class="n b">04</span><p><b>Si no puedes explicarlo con tus palabras, aún no lo aprendiste.</b> Esa es la única prueba real. Léelo antes de aceptar cualquier código.</p></div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <p class="cta">¿Listo para empezar? Podemos construir juntos el proyecto de la Fase&nbsp;1, o armar tu entorno de la Fase&nbsp;0 paso a paso. Dime por dónde arrancamos.</p>
+    <button class="reset" id="resetBtn">Reiniciar mi progreso</button>
+  </div>
+</footer>
+
+<script>
+const PHASES = [
+  { num:"F0", track:"core", title:"Fundamentos y entorno", weeks:"Semana 1", tasks:[
+    "Instala VS Code, Node.js y Git; crea tu cuenta de GitHub",
+    "Entiende cómo funciona la web: cliente, servidor, HTTP, request y response",
+    "Configura una IA de copiloto (Copilot, Cursor o Claude Code)",
+    "Aprende a preguntar bien: pide analogías, ejemplos y explicaciones línea por línea",
+    "Haz tu primer commit y súbelo a un repositorio en GitHub",
+  ]},
+  { num:"F1", track:"front", title:"Frontend base", weeks:"Semanas 2–3", tasks:[
+    "HTML semántico: estructura, etiquetas y accesibilidad básica",
+    "CSS: box model, Flexbox, Grid y diseño responsive",
+    "JavaScript: variables, funciones, arrays, objetos y manipulación del DOM",
+    "Fetch: consume una API pública y muestra los datos en pantalla",
+    "Proyecto: app del clima que consulta una API y se ve bien en móvil",
+  ]},
+  { num:"F2", track:"front", title:"Frontend moderno con React", weeks:"Semanas 4–5", tasks:[
+    "Componentes, props y estado con useState",
+    "useEffect y el ciclo de vida de un componente",
+    "Manejo de formularios y eventos",
+    "Enrutamiento entre vistas con React Router",
+    "Proyecto: interfaz de lista de tareas (crear, completar, borrar)",
+  ]},
+  { num:"F3", track:"back", title:"Backend base", weeks:"Semanas 6–7", tasks:[
+    "Node + Express (o Python + FastAPI): levanta tu primer servidor",
+    "Rutas y endpoints REST: qué es y cómo se diseña",
+    "Métodos HTTP: GET, POST, PUT y DELETE en la práctica",
+    "Middleware y manejo de errores",
+    "Proyecto: API de tareas que responde en JSON",
+  ]},
+  { num:"F4", track:"back", title:"Base de datos y autenticación", weeks:"Semanas 8–9", tasks:[
+    "SQL básico y PostgreSQL: tablas, relaciones y consultas",
+    "Conecta el backend a la BD con un ORM (Prisma o SQLAlchemy)",
+    "CRUD completo contra la base de datos real",
+    "Autenticación: registro, login, hashing de contraseñas y JWT",
+    "Variables de entorno y buenas prácticas de seguridad",
+  ]},
+  { num:"F5", track:"full", title:"Full-stack e integración", weeks:"Semanas 10–12", tasks:[
+    "Conecta tu frontend con tu propio backend",
+    "Manejo de estado, carga y errores en la app real",
+    "Despliegue: frontend en Vercel, backend en Render o Railway",
+    "Git en equipo, README claro y tu proyecto en el portafolio",
+    "Proyecto final integrador: app con login, base de datos y despliegue en vivo",
+  ]},
+];
+
+const PROMPTS = [
+  { h:"Para entender un concepto",
+    why:"Convierte a la IA en tu tutor, no en tu respuesta.",
+    code:"Explícame [concepto] como si empezara desde cero.\nUsa una analogía y un ejemplo mínimo. Al final, pregúntame\nalgo para comprobar si lo entendí." },
+  { h:"Para revisar código sin depender",
+    why:"Primero entender, después reescribir.",
+    code:"Revisa este código y explícame qué hace línea por línea.\nNo lo reescribas todavía. Señala qué mejorarías y por qué:\n\n[pega tu código]" },
+  { h:"Para depurar un error",
+    why:"La causa importa más que el parche.",
+    code:"Tengo este error. Explícame la causa antes de darme la\nsolución, y dime cómo evitarlo la próxima vez:\n\n[pega el error completo]" },
+  { h:"Para practicar de verdad",
+    why:"Aprender haciendo, con el andamiaje justo.",
+    code:"Dame un mini-proyecto para practicar [tema].\nEscribe los requisitos claros pero NO me des el código:\nquiero intentarlo yo y luego pedirte revisión." },
+];
+
+/* ---- estado ---- */
+let done = {};                    // { "F1-2": true, ... }
+const KEY = "fullstack-progress-v1";
+const id = (p,i)=> p.num+"-"+i;
+
+/* ---- persistencia (window.storage si existe, si no en memoria) ---- */
+async function load(){
+  try{ if(window.storage){ const r=await window.storage.get(KEY); if(r&&r.value) done=JSON.parse(r.value);} }catch(e){}
+}
+async function save(){
+  try{ if(window.storage){ await window.storage.set(KEY, JSON.stringify(done)); } }catch(e){}
+}
+
+/* ---- render ---- */
+const phasesEl=document.getElementById("phases");
+const trackTag={core:"Base",front:"Frontend",back:"Backend",full:"Full-stack"};
+
+function render(){
+  phasesEl.innerHTML="";
+  PHASES.forEach((p,pi)=>{
+    const total=p.tasks.length;
+    const count=p.tasks.filter((_,i)=>done[id(p,i)]).length;
+    const el=document.createElement("div");
+    el.className="phase";
+    el.dataset.track=p.track;
+    el.style.animationDelay=(pi*0.06)+"s";
+    el.innerHTML=`
+      <div class="phase-head" role="button" tabindex="0" aria-expanded="false">
+        <span class="phase-num">${p.num}</span>
+        <span class="phase-titles">
+          <span class="phase-title">${p.title}</span>
+          <span class="phase-meta">${p.weeks}</span>
+        </span>
+        <span class="phase-track-tag">${trackTag[p.track]}</span>
+        <span class="phase-count">${count}/${total}</span>
+        <svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+      </div>
+      <div class="tasks"><ul>
+        ${p.tasks.map((t,i)=>`
+          <li class="task ${done[id(p,i)]?'done':''}" data-id="${id(p,i)}">
+            <span class="box"><svg viewBox="0 0 24 24" fill="none" stroke="#0E1B2A" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></span>
+            <span class="task-text">${t}</span>
+          </li>`).join("")}
+      </ul></div>`;
+    phasesEl.appendChild(el);
+
+    const head=el.querySelector(".phase-head");
+    const tasksBox=el.querySelector(".tasks");
+    const toggle=()=>{
+      const open=el.classList.toggle("open");
+      head.setAttribute("aria-expanded",open);
+      tasksBox.style.maxHeight=open?tasksBox.scrollHeight+"px":"0";
+    };
+    head.addEventListener("click",toggle);
+    head.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();toggle();}});
+
+    el.querySelectorAll(".task").forEach(task=>{
+      task.addEventListener("click",()=>{
+        const k=task.dataset.id;
+        done[k]=!done[k];
+        task.classList.toggle("done",done[k]);
+        head.querySelector(".phase-count").textContent=
+          p.tasks.filter((_,i)=>done[id(p,i)]).length+"/"+total;
+        if(el.classList.contains("open")) tasksBox.style.maxHeight=tasksBox.scrollHeight+"px";
+        save(); updateMeter();
+      });
+    });
+  });
+  updateMeter();
+}
+
+function pct(list){ if(!list.length) return 0; return Math.round(list.filter(k=>done[k]).length/list.length*100); }
+
+function updateMeter(){
+  const frontKeys=[], backKeys=[], allKeys=[];
+  PHASES.forEach(p=>p.tasks.forEach((_,i)=>{
+    const k=id(p,i); allKeys.push(k);
+    if(p.track==="front"||p.track==="full") frontKeys.push(k);
+    if(p.track==="back"||p.track==="full") backKeys.push(k);
+  }));
+  const f=pct(frontKeys), b=pct(backKeys), o=pct(allKeys);
+  document.getElementById("fillFront").style.width=(f/2)+"%";
+  document.getElementById("fillBack").style.width=(b/2)+"%";
+  document.getElementById("pctFront").textContent=f+"%";
+  document.getElementById("pctBack").textContent=b+"%";
+  document.getElementById("pctOverall").innerHTML=o+'<span>% full-stack</span>';
+}
+
+/* ---- prompts ---- */
+const pl=document.getElementById("promptList");
+PROMPTS.forEach(p=>{
+  const el=document.createElement("div");
+  el.className="prompt";
+  el.innerHTML=`
+    <h4>${p.h}</h4>
+    <p class="why">${p.why}</p>
+    <div class="prompt-row">
+      <code>${p.code.replace(/</g,"&lt;")}</code>
+      <button class="copy">Copiar</button>
+    </div>`;
+  const btn=el.querySelector(".copy");
+  btn.addEventListener("click",async()=>{
+    try{ await navigator.clipboard.writeText(p.code); }catch(e){}
+    btn.textContent="Copiado"; btn.classList.add("ok");
+    setTimeout(()=>{btn.textContent="Copiar";btn.classList.remove("ok");},1400);
+  });
+  pl.appendChild(el);
+});
+
+/* ---- reset ---- */
+document.getElementById("resetBtn").addEventListener("click",()=>{
+  done={}; save(); render();
+});
+
+/* ---- init ---- */
+(async()=>{ await load(); render(); })();
+</script>
+</body>
+</html>
