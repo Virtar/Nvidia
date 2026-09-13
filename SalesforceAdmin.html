@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Salesforce Platform Administrator · Guía de estudio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#032D60; --blue:#0B5CAB; --sky:#1B96FF; --mist:#EAF5FE; --cloud:#F6FAFE;
+  --ink:#181818; --ink2:#444; --ink3:#6B7280; --line:#D6E4F2;
+  --ok:#2E844A; --okbg:#E6F4EA; --bad:#BA0517; --badbg:#FDE8EA; --sun:#FE9339;
+  --r:14px;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;font-family:"Plus Jakarta Sans",system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:var(--ink);background:var(--cloud);line-height:1.5;font-size:16px}
+button{font:inherit;cursor:pointer}
+h1,h2,h3{margin:0;line-height:1.15}
+p{margin:0 0 .75em}
+a{color:var(--blue)}
+
+/* hero */
+.hero{background:var(--navy);color:#fff;padding:28px 20px 22px}
+.hero .wrap{max-width:720px;margin:0 auto}
+.hero small{display:block;opacity:.75;font-size:14px;margin-bottom:6px}
+.hero h1{font-size:28px;font-weight:800;letter-spacing:-.01em}
+.hero p{margin:10px 0 0;opacity:.85;font-size:15px;max-width:60ch}
+.facts{display:flex;flex-wrap:wrap;gap:8px 18px;margin-top:16px;font-size:14px}
+.facts span b{font-weight:700;color:#fff}
+.facts span{opacity:.9}
+
+/* tabs */
+.tabs{position:sticky;top:0;z-index:5;background:#fff;border-bottom:1px solid var(--line);display:flex;overflow-x:auto;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tabs .wrap{max-width:720px;margin:0 auto;display:flex;width:100%}
+.tab{flex:1 0 auto;background:none;border:0;padding:14px 16px;font-weight:600;color:var(--ink3);border-bottom:3px solid transparent;white-space:nowrap}
+.tab[aria-selected=true]{color:var(--navy);border-color:var(--sky)}
+.tab:focus-visible{outline:2px solid var(--sky);outline-offset:-2px}
+
+main{max-width:720px;margin:0 auto;padding:20px 16px 60px}
+section[hidden]{display:none}
+.lead{color:var(--ink2);font-size:15px}
+
+/* domains */
+.dom{background:#fff;border:1px solid var(--line);border-radius:var(--r);margin-bottom:12px;overflow:hidden}
+.dom>button{width:100%;text-align:left;background:none;border:0;padding:14px 16px;display:grid;grid-template-columns:52px 1fr 20px;gap:12px;align-items:center;color:var(--ink)}
+.dom .pct{font-size:22px;font-weight:800;color:var(--navy);letter-spacing:-.02em}
+.dom .name{font-weight:700;font-size:16px}
+.dom .en{display:block;font-weight:400;font-size:13px;color:var(--ink3);margin-top:2px}
+.dom .chev{color:var(--ink3);transition:transform .2s}
+.dom[open] .chev{transform:rotate(180deg)}
+.dom .bar{height:4px;background:var(--mist)}
+.dom .bar i{display:block;height:100%;background:var(--sky)}
+.dom .body{padding:4px 16px 16px;display:none;font-size:15px}
+.dom[open] .body{display:block}
+.dom .body h3{font-size:14px;color:var(--blue);margin:14px 0 6px;font-weight:700}
+.dom .body ul{margin:0;padding-left:18px}
+.dom .body li{margin-bottom:6px}
+.dom .body .tip{background:var(--mist);border-left:3px solid var(--sky);padding:10px 12px;border-radius:0 8px 8px 0;margin-top:12px}
+.dom .body .tip b{color:var(--navy)}
+
+/* accordion "piensa en" */
+.acc{background:#fff;border:1px solid var(--line);border-radius:12px;margin-bottom:8px;overflow:hidden}
+.acc>button{width:100%;text-align:left;background:none;border:0;padding:12px 14px;display:flex;gap:10px;align-items:flex-start;color:var(--ink)}
+.acc .q{flex:1;font-size:15px}
+.acc .q em{font-style:normal;color:var(--ink3);font-weight:600;font-size:13px;display:block;margin-bottom:2px}
+.acc .a{display:none;padding:0 14px 14px 14px;font-size:15px}
+.acc[open] .a{display:block}
+.acc .a strong{color:var(--navy)}
+.acc .a .why{color:var(--ink2);font-size:14px;margin-top:6px}
+.filters{display:flex;gap:6px;flex-wrap:wrap;margin:12px 0 14px}
+.chip{border:1px solid var(--line);background:#fff;border-radius:999px;padding:6px 12px;font-size:13px;font-weight:600;color:var(--ink2)}
+.chip[aria-pressed=true]{background:var(--navy);color:#fff;border-color:var(--navy)}
+
+/* glossary */
+.search{width:100%;padding:12px 14px;border:1px solid var(--line);border-radius:12px;font:inherit;font-size:16px;margin:10px 0 14px;background:#fff}
+.gl{background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:8px}
+.gl .t{display:flex;justify-content:space-between;gap:12px;align-items:baseline;flex-wrap:wrap}
+.gl .es{font-weight:700;color:var(--navy)}
+.gl .enw{font-weight:600;color:var(--sky);font-size:14px}
+.gl .d{font-size:14px;color:var(--ink2);margin-top:4px}
+
+/* simulator */
+.card{background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:16px}
+.opt-row{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0 14px}
+.seg{display:flex;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.seg button{border:0;background:#fff;padding:9px 14px;font-weight:600;color:var(--ink2);border-right:1px solid var(--line)}
+.seg button:last-child{border-right:0}
+.seg button[aria-pressed=true]{background:var(--navy);color:#fff}
+label.l{display:block;font-size:13px;font-weight:700;color:var(--ink3);margin-top:12px}
+.btn{background:var(--sky);color:#fff;border:0;border-radius:12px;padding:13px 20px;font-weight:700;font-size:16px;width:100%}
+.btn.secondary{background:#fff;color:var(--navy);border:1px solid var(--line)}
+.btn:disabled{opacity:.5;cursor:default}
+.progress{display:flex;justify-content:space-between;font-size:13px;color:var(--ink3);margin-bottom:8px;font-weight:600}
+.pbar{height:6px;background:var(--mist);border-radius:99px;overflow:hidden;margin-bottom:16px}
+.pbar i{display:block;height:100%;background:var(--sky);transition:width .25s}
+.qdom{font-size:13px;color:var(--blue);font-weight:700}
+.qtype{font-size:13px;color:var(--ink3);margin-left:8px}
+.qtext{font-size:17px;font-weight:600;margin:6px 0 14px;line-height:1.4}
+.choice{display:flex;gap:12px;align-items:flex-start;width:100%;text-align:left;background:#fff;border:1.5px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:8px;color:var(--ink);font-size:15px;line-height:1.4}
+.choice .k{flex:0 0 26px;height:26px;border-radius:50%;border:1.5px solid var(--line);display:grid;place-items:center;font-size:13px;font-weight:700;color:var(--ink3)}
+.choice[aria-pressed=true]{border-color:var(--sky);background:var(--mist)}
+.choice[aria-pressed=true] .k{background:var(--sky);border-color:var(--sky);color:#fff}
+.choice.correct{border-color:var(--ok);background:var(--okbg)}
+.choice.correct .k{background:var(--ok);border-color:var(--ok);color:#fff}
+.choice.wrong{border-color:var(--bad);background:var(--badbg)}
+.choice.wrong .k{background:var(--bad);border-color:var(--bad);color:#fff}
+.choice:disabled{cursor:default}
+.expl{border-radius:12px;padding:12px 14px;margin:8px 0 14px;font-size:15px}
+.expl.ok{background:var(--okbg);border-left:4px solid var(--ok)}
+.expl.bad{background:var(--badbg);border-left:4px solid var(--bad)}
+.expl b{display:block;margin-bottom:4px}
+.score{text-align:center;padding:10px 0 18px}
+.score .big{font-size:56px;font-weight:800;letter-spacing:-.03em;color:var(--navy);line-height:1}
+.score .pass{display:inline-block;margin-top:8px;padding:6px 14px;border-radius:999px;font-weight:700;font-size:14px}
+.score .pass.y{background:var(--okbg);color:var(--ok)}
+.score .pass.n{background:var(--badbg);color:var(--bad)}
+.byd{margin:10px 0 18px}
+.byd .row{display:grid;grid-template-columns:1fr 70px;gap:10px;align-items:center;font-size:14px;margin-bottom:8px}
+.byd .row .bar{height:8px;background:var(--mist);border-radius:99px;overflow:hidden}
+.byd .row .bar i{display:block;height:100%;background:var(--sky)}
+.byd .row .n{text-align:right;font-weight:700;color:var(--navy)}
+.review{margin-top:16px}
+.review .r{border-top:1px solid var(--line);padding:12px 0;font-size:14px}
+.review .r b{display:block;font-weight:600;margin-bottom:4px}
+.review .r .ok{color:var(--ok)} .review .r .bad{color:var(--bad)}
+.hint{font-size:13px;color:var(--ink3);margin-top:10px}
+.footer{color:var(--ink3);font-size:13px;margin-top:28px;border-top:1px solid var(--line);padding-top:14px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+@media (min-width:600px){.hero h1{font-size:34px}.btn{width:auto}}
+</style>
+</head>
+<body>
+
+<header class="hero"><div class="wrap">
+  <small>Guía de estudio en español · versión del examen: Summer '25 (guía vigente en sep 2026)</small>
+  <h1>Salesforce Certified Platform Administrator</h1>
+  <p>Ocho dominios ordenados por peso, un acordeón «si la pregunta dice… piensa en…», un glosario ES↔EN y un simulador con dos bancos de preguntas.</p>
+  <div class="facts">
+    <span><b>60</b> preguntas (+5 sin puntuar)</span>
+    <span><b>105</b> minutos</span>
+    <span><b>68 %</b> para aprobar</span>
+    <span><b>US$200</b> · repetición US$100</span>
+  </div>
+</div></header>
+
+<nav class="tabs" role="tablist"><div class="wrap">
+  <button class="tab" role="tab" aria-selected="true" data-t="guia">Guía</button>
+  <button class="tab" role="tab" aria-selected="false" data-t="piensa">Piensa en…</button>
+  <button class="tab" role="tab" aria-selected="false" data-t="glosario">Glosario</button>
+  <button class="tab" role="tab" aria-selected="false" data-t="simulador">Simulador</button>
+</div></nav>
+
+<main>
+<section id="guia">
+  <p class="lead">Estudia en este orden. Los tres primeros dominios suman el 47 % del examen; Agentforce es nuevo desde diciembre de 2025 y casi ningún curso de 2024 lo cubre.</p>
+  <div id="domains"></div>
+  <div class="footer">Fuente: guía oficial del examen en Salesforce Help (Summer '25). Los pesos y objetivos están tomados tal cual; las explicaciones y consejos son míos.</div>
+</section>
+
+<section id="piensa" hidden>
+  <p class="lead">Las preguntas del examen describen un escenario y esconden la palabra clave. Este acordeón entrena el reflejo: leer la pista y saltar a la herramienta correcta.</p>
+  <div class="filters" id="pfilters"></div>
+  <div id="piensaList"></div>
+</section>
+
+<section id="glosario" hidden>
+  <p class="lead">El examen está en inglés. Aprende el término en inglés y entiende qué hace; en la pregunta aparecerá siempre en inglés.</p>
+  <input class="search" id="gsearch" type="search" placeholder="Buscar en español o inglés…" autocomplete="off">
+  <div id="glist"></div>
+</section>
+
+<section id="simulador">
+  <div id="simSetup" class="card">
+    <h2 style="font-size:20px;color:var(--navy)">Simulador</h2>
+    <p class="lead" style="margin-top:6px">Dos bancos independientes con formato de examen real: opción única y selección múltiple («Choose 2/3 answers»). La distribución por dominio sigue los pesos oficiales.</p>
+    <label class="l">Banco</label>
+    <div class="opt-row"><div class="seg" id="bankSeg">
+      <button aria-pressed="true" data-v="A">Banco A</button>
+      <button aria-pressed="false" data-v="B">Banco B</button>
+      <button aria-pressed="false" data-v="AB">A + B</button>
+    </div></div>
+    <label class="l">Cantidad de preguntas</label>
+    <div class="opt-row"><div class="seg" id="numSeg">
+      <button aria-pressed="false" data-v="10">10</button>
+      <button aria-pressed="true" data-v="20">20</button>
+      <button aria-pressed="false" data-v="30">30</button>
+      <button aria-pressed="false" data-v="60">60</button>
+    </div></div>
+    <label class="l">Modo</label>
+    <div class="opt-row"><div class="seg" id="modeSeg">
+      <button aria-pressed="true" data-v="study">Estudio (explica cada respuesta)</button>
+      <button aria-pressed="false" data-v="exam">Examen (corrige al final)</button>
+    </div></div>
+    <label class="l">Dominio</label>
+    <div class="opt-row"><div class="seg" id="domSeg" style="flex-wrap:wrap"></div></div>
+    <button class="btn" id="startBtn">Empezar</button>
+    <p class="hint" id="bankInfo"></p>
+  </div>
+
+  <div id="simRun" class="card" hidden>
+    <div class="progress"><span id="pCount"></span><span id="pTimer"></span></div>
+    <div class="pbar"><i id="pFill" style="width:0%"></i></div>
+    <div><span class="qdom" id="qDom"></span><span class="qtype" id="qType"></span></div>
+    <div class="qtext" id="qText"></div>
+    <div id="choices"></div>
+    <div id="expl"></div>
+    <button class="btn" id="nextBtn">Comprobar</button>
+    <button class="btn secondary" id="quitBtn" style="margin-top:8px">Abandonar</button>
+  </div>
+
+  <div id="simResult" class="card" hidden>
+    <div class="score">
+      <div class="big" id="rPct"></div>
+      <div id="rSub" class="lead"></div>
+      <div id="rPass"></div>
+    </div>
+    <h3 style="font-size:15px;color:var(--navy);margin-bottom:8px">Por dominio</h3>
+    <div class="byd" id="rByDom"></div>
+    <button class="btn" id="againBtn">Nuevo intento</button>
+    <div class="review" id="rReview"></div>
+  </div>
+</section>
+</main>
+
+<script>
+const DOMAINS=[
+{id:'data',pct:17,short:'Datos y analítica',es:'Gestión de datos y analítica',en:'Data and Analytics Management',
+ obj:['Consideraciones al importar, actualizar, transferir, borrar en masa, exportar y respaldar datos (Archival, Data Loader, Import Wizard).','Capacidades e implicaciones de las herramientas de validación de datos (reglas de duplicados y coincidencia, reglas de validación).','Opciones al crear o personalizar un informe o tipo de informe (unir objetos, con o sin registros, renombrar campos, fórmulas, buckets, informes conjuntos, gráficos, ocultar detalles, totales por agrupación).','Impacto del modelo de compartición en los informes (visibilidad, carpetas, campos compartidos).','Opciones al crear y modificar dashboards (widgets, fuentes, tipos de gráfico, suscripciones, dashboards dinámicos, límites de licencia, "ver como", programación, filtros).'],
+ key:['Data Import Wizard: hasta 50 000 registros, solo objetos estándar comunes (Account, Contact, Lead, Solution, Campaign Member) y custom; no soporta Opportunities ni Cases. Data Loader: hasta 5 millones, todos los objetos, incluye delete/hard delete/export.','Un tipo de informe define objetos y campos disponibles. «With» = registros del hijo obligatorios (inner join); «with or without» = outer join.','Los cuatro formatos de informe: Tabular, Summary (agrupa filas), Matrix (agrupa filas y columnas), Joined (varios bloques). Bucket fields agrupan valores sin fórmula.','Dashboard: hasta 20 componentes (en Lightning, más), un dashboard tiene un «running user». Dynamic dashboard = se ve con los permisos de quien lo abre; límite por edición (p. ej. 5 en Enterprise, 10 en Unlimited).','Reglas de duplicados usan reglas de coincidencia; pueden bloquear o solo alertar, y funcionan en creación/edición, no en importación masiva por defecto (excepto con la opción activada).','Mass Transfer, Mass Delete y Data Export (mensual o semanal según edición). Campos de fórmula no se pueden usar como criterio de coincidencia.'],
+ tip:'Cuando la pregunta mencione «más de 50 000 registros», «Opportunities», «borrar» o «programar», la respuesta es Data Loader; si dice «sin instalar nada» y objetos simples, Import Wizard.'},
+{id:'config',pct:15,short:'Configuración',es:'Configuración y ajustes',en:'Configuration and Setup',
+ obj:['Información de Company Settings (año fiscal, horario laboral, gestión de divisas, valores por defecto).','Configuración declarativa de la UI (ajustes UI/UX, menú de apps, list views, acciones globales, Lightning App Builder).','Configuración y mantenimiento de usuarios (username único, locales, licencias, no se puede borrar un usuario, implicaciones de desactivar, freeze, feature licenses, métodos de login).','Controles de seguridad de la org (verificación de identidad, Setup Audit Trail, Login Hours, Session Settings, acceso de agentes).','Aplicar el modelo de compartición (Teams, jerarquía, public groups, OWD, roles, subordinados, carpetas de informes).','Cuándo usar un perfil personalizado o un permission set (permission set groups y muting).'],
+ key:['Modelo de acceso en capas: Org (login hours, IP ranges) → Objeto (perfil / permission set) → Campo (FLS) → Registro (OWD → role hierarchy → sharing rules → manual sharing → teams).','OWD solo puede restringir; todo lo demás abre. Private / Public Read Only / Public Read-Write / Public Read-Write-Transfer / Controlled by Parent.','Los usuarios no se borran: se desactivan. Freeze bloquea el login sin liberar la licencia. Un username debe ser único en toda Salesforce.','Perfil = base (una por usuario); permission set = añade permisos; permission set group = agrupa y permite «mute» para quitar un permiso del grupo.','Setup Audit Trail: 180 días de cambios de configuración. Login History: 6 meses. Trusted IP ranges evitan la verificación de identidad.','Login Hours en el perfil expulsan al usuario cuando terminan; Login IP Ranges en el perfil bloquean el acceso fuera del rango.'],
+ tip:'Si el escenario pide dar acceso a un solo usuario o a unos pocos, la respuesta es un permission set, nunca crear un perfil nuevo.'},
+{id:'auto',pct:15,short:'Automatización',es:'Automatización',en:'Automation',
+ obj:['Identificar la solución de automatización adecuada según la herramienta (reglas de escalado, de asignación de casos y de leads, usuario de automatización por defecto, IA).','Capacidades, casos de uso y configuración de Flow (screen flows, record-triggered, autolaunched, orden de ejecución).','Capacidades, casos de uso y configuración del proceso de aprobación (criterios, aprobadores, rechazos, aprobaciones).'],
+ key:['Workflow Rules y Process Builder ya no se soportan (fin: 31 dic 2025). Toda automatización nueva = Flow.','Tipos de flujo: Screen Flow (con interacción), Record-Triggered (before-save para actualizar el mismo registro rápido; after-save para crear/actualizar otros registros, emails, etc.), Schedule-Triggered, Autolaunched, Platform Event-Triggered.','Orden de ejecución simplificado: before-save flows → reglas de validación → duplicados → guardado → after-save flows → assignment rules → auto-response → workflow/escalation → roll-up → commit.','Approval Process: entry criteria, aprobador (usuario, cola, gestor del rol, relacionado), acciones iniciales/finales/de rechazo/recall, bloqueo del registro. Un registro solo puede entrar en un proceso a la vez.','Assignment/auto-response/escalation rules: reglas específicas de Lead y Case, con orden y entradas; solo la primera entrada que coincide se ejecuta.','Flow Orchestration para procesos con varios pasos y personas; el «default automation user» ejecuta flujos sin contexto de usuario.'],
+ tip:'«Actualizar un campo del mismo registro justo antes de guardar» = record-triggered flow before-save (fast field update). «Necesita aprobación de un gerente» = approval process, no flow.'},
+{id:'object',pct:15,short:'Objetos y App Builder',es:'Object Manager y Lightning App Builder',en:'Object Manager and Lightning App Builder',
+ obj:['Arquitectura de objetos estándar y modelo de relaciones (padre/hijo, master-detail, lookup, junction, record types, Schema Builder).','Crear, borrar y personalizar campos y page layouts; implicaciones de borrar campos (roll-up summaries, fórmulas cross-object, dependencias de picklist, campos de relación).','Crear y asignar page layouts, visibilidad en Lightning pages, record types y business processes (quick actions, global actions).'],
+ key:['Master-Detail: el hijo hereda seguridad y propietario, se borra en cascada, permite Roll-Up Summary (COUNT, SUM, MIN, MAX), máximo 2 por objeto. Lookup: independiente, opcional, hasta 40 por objeto.','Objeto de unión (junction) = objeto custom con dos master-detail → relación muchos a muchos.','Record Type controla valores de picklist, page layout y business process (Sales/Support/Lead/Solution) según el perfil.','Page layout: campos, secciones, related lists, botones. Lightning Record Page (App Builder): componentes, reglas de visibilidad de componentes, asignación por app/record type/perfil. Dynamic Forms: campos con visibilidad condicional.','Borrar un campo lo envía a la papelera 15 días; no se puede borrar si lo usa un roll-up, una fórmula o un tipo de informe custom sin quitar la referencia.','Campos de fórmula son de solo lectura y no ocupan almacenamiento; un picklist dependiente necesita un campo controlador (picklist o checkbox).'],
+ tip:'Si dice «sumar el importe de los hijos en el padre», es master-detail + roll-up summary. Si dice «el hijo debe existir aunque el padre se borre», es lookup.'},
+{id:'sales',pct:10,short:'Ventas y marketing',es:'Aplicaciones de ventas y marketing',en:'Sales and Marketing Applications',
+ obj:['Capacidades e implicaciones del proceso de ventas (leads, opportunities, path).','Funciones de productividad de ventas con herramientas de oportunidad (dashboards, lead scoring, Einstein for Sales, opportunity scoring, home page assistant, forecasting, territory management).','Herramientas de automatización de leads y gestión de campañas (leads, conversión, reglas de asignación, campañas y campaign members).'],
+ key:['Lead convert crea Account + Contact + (opcional) Opportunity. Campos custom de Lead se mapean manualmente en Lead Field Mapping.','Sales Path guía por etapas; Opportunity Stage controla Probability y Forecast Category. Products, Price Books (estándar y custom), Quotes.','Campaign: jerarquía, campaign members con estados, ROI. Lead Assignment Rules asignan a usuario o cola; Web-to-Lead crea leads desde un formulario.','Forecasting: Collaborative Forecasts basado en jerarquía de roles o territorios. Territory Management asigna cuentas por reglas.','Einstein Lead/Opportunity Scoring: predicciones basadas en datos históricos de la org.'],
+ tip:'«Un lead viene de la web y debe ir al comercial de su región» = Web-to-Lead + Lead Assignment Rule. «Qué probabilidad de cierre» = Opportunity Stage / Einstein Opportunity Scoring.'},
+{id:'service',pct:10,short:'Servicio y soporte',es:'Aplicaciones de servicio y soporte',en:'Service and Support Applications',
+ obj:['Capacidades de la gestión de casos (case, reglas de asignación, colas).','Automatizar la gestión de casos (support process, auto-response rules, escalation, Einstein for Service).'],
+ key:['Case Assignment Rules → usuario o cola; Queue = grupo de usuarios que toman casos; Auto-Response Rules envían un email según criterios (solo Web-to-Case / Email-to-Case).','Escalation Rules escalan por tiempo sin respuesta, con business hours; pueden reasignar y notificar.','Email-to-Case (agente instalado, límite 2500 emails/día, adjuntos hasta 25 MB) vs On-Demand Email-to-Case (sin instalar, adjuntos hasta 25 MB con límite total). Web-to-Case: hasta 5000 casos/día.','Support Process = etapas de Status disponibles por record type. Entitlements y Milestones para SLA. Knowledge para artículos. Omni-Channel para enrutar trabajo.','Case Teams, Case Comments, Case Feed y Macros para productividad del agente.'],
+ tip:'«Enviar un email automático al cliente cuando crea el caso» = Auto-Response Rule. «Si nadie lo atiende en 2 horas, avisar al supervisor» = Escalation Rule.'},
+{id:'prod',pct:10,short:'Productividad',es:'Productividad y colaboración',en:'Productivity and Collaboration',
+ obj:['Gestión de actividades (tareas, eventos).','Funciones de Chatter (grupos, acceso, usuarios internos y externos).','Salesforce mobile app (Lightning page, modificar la app, navegador, menú, visibilidad, branding, launchpad).','Casos de uso de AppExchange (paquetes gestionados y no gestionados, quién publica, prompts en AgentExchange, flujos).'],
+ key:['Task = sin hora fija, con fecha límite; Event = con inicio y fin, aparece en calendario. Ambas viven en Activity, se ven en la Activity Timeline.','Chatter: grupos públicos, privados, unlisted; grupos con clientes (external users). Feed tracking, @menciones, topics.','Mobile: navegación configurable, Lightning pages con visibilidad por tipo de dispositivo, quick actions, branding con Mobile Publisher.','Managed package: no editable, actualizable por el proveedor, protege el código. Unmanaged: editable, sin actualizaciones. AgentExchange para agentes, acciones y prompts.'],
+ tip:'«Instalar sin poder modificar el código y recibir actualizaciones» = paquete gestionado. «Recordatorio para mañana sin hora concreta» = Task.'},
+{id:'agent',pct:8,short:'Agentforce',es:'Agentforce',en:'Agentforce',
+ obj:['Capacidades y casos de uso de Agentforce (cuándo usar IA, seguridad, resolución de problemas de permisos del agente).','Mantener, actualizar o instalar prompts e instrucciones en Agent Builder (pruebas ligeras, vista previa de conversación).'],
+ key:['Agentforce = agentes autónomos que razonan con LLM (Atlas Reasoning Engine) y ejecutan acciones: flujos, Apex, prompt templates, APIs.','Estructura: Agent → Topics (qué puede hacer, con instrucciones) → Actions (cómo lo hace). Se configura en Agent Builder; los prompts en Prompt Builder.','Einstein Trust Layer: enmascara PII, zero data retention con el LLM, detección de toxicidad, auditoría. La IA respeta permisos: el agente actúa con los permisos del usuario que lo ejecuta o de su Agent User.','Tipos: Agentforce Service Agent (clientes), Sales Development Rep, Sales Coach, Employee Agent. Probar con Conversation Preview antes de activar.','Si el agente no encuentra datos, revisar permisos del Agent User (object/FLS), no el prompt.'],
+ tip:'«El agente responde que no tiene acceso a un campo» = revisar permisos del usuario del agente. «Probar el agente antes de publicar» = Conversation Preview en Agent Builder.'}
+];
+
+const PIENSA=[
+{d:'data',q:'«Importar 80 000 contactos desde un CSV»',a:'Data Loader',w:'Import Wizard llega a 50 000. Por encima, o para Opportunities/Cases, siempre Data Loader.'},
+{d:'data',q:'«Importar 2 000 leads sin instalar software»',a:'Data Import Wizard',w:'Web, sin instalación, objetos estándar comunes y custom, con detección de duplicados integrada.'},
+{d:'data',q:'«Borrar registros de forma permanente sin pasar por la papelera»',a:'Data Loader con Hard Delete',w:'Hard Delete requiere el permiso «Bulk API Hard Delete» y activarlo en Data Loader.'},
+{d:'data',q:'«Evitar que se creen cuentas repetidas»',a:'Duplicate Rule + Matching Rule',w:'La matching rule define qué es un duplicado; la duplicate rule decide bloquear o alertar y si aplica a crear/editar.'},
+{d:'data',q:'«Que el campo X sea obligatorio solo cuando la etapa es Closed Won»',a:'Validation Rule',w:'Una regla de validación con fórmula condicional. Marcar el campo como requerido en el layout lo haría obligatorio siempre.'},
+{d:'data',q:'«Un informe que muestre cuentas aunque no tengan oportunidades»',a:'Custom Report Type «with or without»',w:'La relación A «with or without» B es un outer join; A «with» B exige que exista B.'},
+{d:'data',q:'«Agrupar oportunidades por rangos de importe sin crear un campo»',a:'Bucket field',w:'Los buckets agrupan valores numéricos, picklist o texto directamente en el informe.'},
+{d:'data',q:'«Ver en un solo informe dos bloques con objetos distintos»',a:'Joined report',w:'Un joined report une hasta 5 bloques con tipos de informe distintos que compartan un campo común.'},
+{d:'data',q:'«Que cada gerente vea el dashboard con sus propios datos»',a:'Dynamic dashboard',w:'El running user es «el que lo ve». Hay un límite de dashboards dinámicos por edición.'},
+{d:'data',q:'«Copia de seguridad semanal de todos los datos»',a:'Data Export (Setup)',w:'Export mensual en la mayoría de ediciones; semanal en Enterprise+, Performance y Unlimited.'},
+{d:'data',q:'«Cambiar el propietario de todas las cuentas de un comercial que se va»',a:'Mass Transfer Records',w:'Herramienta de Setup para transferir en masa cuentas, leads y objetos custom.'},
+{d:'config',q:'«Dar a tres usuarios permiso para exportar informes»',a:'Permission Set',w:'Los permisos puntuales para pocos usuarios van en permission sets; los perfiles son la base común.'},
+{d:'config',q:'«Un usuario se va de la empresa»',a:'Desactivar (nunca borrar)',w:'No existe borrar usuarios. Desactivar libera la licencia y conserva el historial.'},
+{d:'config',q:'«Bloquear temporalmente el acceso mientras se transfieren sus registros»',a:'Freeze user',w:'Freeze impide el login pero no libera la licencia ni permite desactivar hasta resolver dependencias.'},
+{d:'config',q:'«Nadie puede ver los registros de otros salvo su jefe»',a:'OWD Private + Role Hierarchy',w:'OWD restringe; la jerarquía de roles abre hacia arriba automáticamente (si Grant Access Using Hierarchies está activo).'},
+{d:'config',q:'«Compartir todos los casos de tipo VIP con el equipo de retención»',a:'Criteria-based Sharing Rule',w:'Las sharing rules abren acceso a grupos/roles por propietario o por criterio de campo.'},
+{d:'config',q:'«Compartir un registro concreto con un compañero»',a:'Manual Sharing',w:'Solo disponible si el OWD es más restrictivo que Public Read/Write; lo hace el propietario o alguien por encima en la jerarquía.'},
+{d:'config',q:'«Que nadie entre desde fuera de la oficina»',a:'Login IP Ranges en el perfil',w:'IP ranges en perfil bloquean el acceso. Trusted IP ranges (nivel org) solo evitan la verificación de identidad.'},
+{d:'config',q:'«Que los usuarios de almacén solo entren de 8 a 18»',a:'Login Hours en el perfil',w:'Al terminar el horario, la sesión se cierra.'},
+{d:'config',q:'«Averiguar quién cambió un ajuste de configuración el mes pasado»',a:'Setup Audit Trail',w:'Guarda 180 días de cambios de Setup con usuario y fecha.'},
+{d:'config',q:'«Un usuario ve el campo pero no puede editarlo»',a:'Field-Level Security',w:'FLS por perfil o permission set: visible / read-only. El page layout también puede marcarlo read-only, pero FLS manda.'},
+{d:'config',q:'«Quitar un permiso a un usuario que lo recibe por un permission set group»',a:'Muting Permission Set',w:'El mute se añade dentro del group y anula permisos concretos sin editar los sets originales.'},
+{d:'config',q:'«Habilitar diferentes divisas»',a:'Multiple Currencies (Company Settings)',w:'Se activa en Company Information; no se puede desactivar después. Advanced Currency Management añade tipos de cambio por fecha.'},
+{d:'auto',q:'«Actualizar un campo del propio registro cuando se crea»',a:'Record-Triggered Flow before-save',w:'Es la opción más rápida y sin DML extra. After-save es para tocar otros registros o enviar emails.'},
+{d:'auto',q:'«Crear una tarea cuando la oportunidad pasa a Closed Won»',a:'Record-Triggered Flow after-save',w:'Crear otros registros requiere after-save. Workflow Rules y Process Builder ya no se soportan.'},
+{d:'auto',q:'«Guiar al usuario con pantallas paso a paso»',a:'Screen Flow',w:'Único tipo con interacción. Se lanza desde un botón, quick action, Lightning page o utility bar.'},
+{d:'auto',q:'«Revisar cada noche los contratos que vencen»',a:'Schedule-Triggered Flow',w:'Corre a una hora fija sobre un conjunto de registros; no tiene pantallas.'},
+{d:'auto',q:'«El descuento mayor del 20 % necesita el visto bueno del director»',a:'Approval Process',w:'Entry criteria + aprobador + acciones. El registro se bloquea mientras está pendiente.'},
+{d:'auto',q:'«Si el caso no se atiende en 4 horas laborables, pasarlo al supervisor»',a:'Case Escalation Rule',w:'Escalado por tiempo con business hours; puede reasignar y notificar.'},
+{d:'auto',q:'«Un flujo debe ejecutar acciones sin depender del usuario que lo dispara»',a:'Default Automation User / System context',w:'El automation user ejecuta con permisos propios; el flujo puede correr en system context sin compartir.'},
+{d:'auto',q:'«Un proceso con varios pasos que pasan por varias personas»',a:'Flow Orchestration',w:'Coordina etapas, pasos interactivos y asignaciones a usuarios o colas.'},
+{d:'object',q:'«Sumar el total de las oportunidades en la cuenta»',a:'Roll-Up Summary (requiere Master-Detail)',w:'Roll-up solo funciona sobre la relación master-detail. Account–Opportunity ya lo permite.'},
+{d:'object',q:'«Un registro puede estar relacionado con muchos de A y muchos de B»',a:'Junction Object',w:'Objeto custom con dos master-detail. Al borrar un padre se borra el registro de unión.'},
+{d:'object',q:'«Al borrar la cuenta, borrar también sus registros hijos»',a:'Master-Detail',w:'Cascade delete es propio de master-detail; en lookup el hijo queda huérfano (o se puede impedir el borrado).'},
+{d:'object',q:'«Los comerciales ven unos campos y soporte otros, en el mismo objeto»',a:'Page Layouts + Record Types (o perfiles)',w:'El layout se asigna por perfil y record type. Para ocultar campos de verdad, FLS.'},
+{d:'object',q:'«Valores de picklist distintos según el tipo de cliente»',a:'Record Type',w:'Cada record type define qué valores del picklist están disponibles.'},
+{d:'object',q:'«Mostrar un componente solo cuando la etapa sea Negotiation»',a:'Component Visibility en Lightning App Builder',w:'Las reglas de visibilidad pueden usar valores del registro, perfil, dispositivo, etc.'},
+{d:'object',q:'«El picklist Ciudad depende del picklist País»',a:'Dependent Picklist',w:'El controlador puede ser picklist o checkbox; el dependiente solo picklist o multi-select.'},
+{d:'object',q:'«Ver el modelo de datos gráficamente y crear campos desde ahí»',a:'Schema Builder',w:'Permite crear objetos y campos custom arrastrando; no borra ni edita todos los atributos.'},
+{d:'object',q:'«Un campo que muestre el nombre del propietario de la cuenta en el contacto»',a:'Cross-Object Formula',w:'Las fórmulas pueden subir hasta 10 niveles por lookup/master-detail.'},
+{d:'sales',q:'«Convertir un interesado en cliente con oportunidad»',a:'Lead Conversion',w:'Crea Account, Contact y opcionalmente Opportunity; los campos custom necesitan Lead Field Mapping.'},
+{d:'sales',q:'«Leads del formulario web asignados al comercial de su país»',a:'Web-to-Lead + Lead Assignment Rules',w:'La regla evalúa entradas en orden y asigna a usuario o cola.'},
+{d:'sales',q:'«Medir qué evento generó más oportunidades»',a:'Campaign + Campaign Members + Campaign Influence',w:'Los miembros de campaña vinculan leads/contactos; el campo Primary Campaign Source atribuye la oportunidad.'},
+{d:'sales',q:'«Guiar al comercial por las etapas con consejos»',a:'Sales Path',w:'Path muestra etapas, campos clave y guía por cada paso.'},
+{d:'sales',q:'«Previsión de ingresos por jerarquía de roles»',a:'Collaborative Forecasts',w:'Forecast Category depende de la etapa; se puede prever por cantidad, ingreso o producto.'},
+{d:'sales',q:'«Asignar cuentas por región a distintos equipos»',a:'Enterprise Territory Management',w:'Territorios con reglas de asignación; también afectan a forecasting.'},
+{d:'sales',q:'«Distintos precios para el mismo producto según el cliente»',a:'Price Books (custom)',w:'Un producto puede estar en varios price books con precios distintos.'},
+{d:'service',q:'«Responder automáticamente al cliente al crear el caso por email»',a:'Case Auto-Response Rule',w:'Solo para casos que entran por Web-to-Case o Email-to-Case.'},
+{d:'service',q:'«Que los casos de facturación caigan en un grupo de agentes»',a:'Queue + Case Assignment Rule',w:'La cola es propietaria hasta que un agente acepta el caso.'},
+{d:'service',q:'«Crear casos desde una dirección de soporte sin instalar nada»',a:'On-Demand Email-to-Case',w:'Email-to-Case «normal» requiere el agente instalado; On-Demand no.'},
+{d:'service',q:'«Cumplir un SLA de primera respuesta de 1 hora»',a:'Entitlements + Milestones',w:'Los milestones miden tiempos dentro de un entitlement process.'},
+{d:'service',q:'«Enrutar chats y casos al agente disponible con menos carga»',a:'Omni-Channel',w:'Enrutamiento por capacidad, habilidad o cola.'},
+{d:'service',q:'«Base de artículos para agentes y clientes»',a:'Salesforce Knowledge',w:'Artículos con versiones, categorías de datos y visibilidad por canal.'},
+{d:'service',q:'«Los estados del caso deben ser distintos para soporte técnico y para devoluciones»',a:'Support Process + Record Type',w:'El support process fija los valores de Status; se asigna a través del record type.'},
+{d:'prod',q:'«Recordar llamar mañana, sin hora concreta»',a:'Task',w:'Event tiene fecha y hora de inicio/fin; Task solo fecha límite.'},
+{d:'prod',q:'«Un espacio de colaboración con un cliente externo»',a:'Chatter Group con Customers',w:'Los customers solo ven el grupo, no otros datos de la org.'},
+{d:'prod',q:'«Instalar una app de terceros que reciba actualizaciones»',a:'Managed Package (AppExchange)',w:'Unmanaged = código visible y editable, sin upgrades.'},
+{d:'prod',q:'«Los usuarios móviles necesitan una página distinta a la de escritorio»',a:'Lightning Record Page con filtros por Form Factor',w:'Se pueden asignar páginas diferentes por dispositivo o usar reglas de visibilidad por form factor.'},
+{d:'prod',q:'«Reutilizar prompts o agentes construidos por partners»',a:'AgentExchange',w:'Marketplace de acciones, agentes, prompts y plantillas para Agentforce.'},
+{d:'agent',q:'«El agente dice que no puede ver los datos de la cuenta»',a:'Permisos del Agent User',w:'El agente respeta CRUD/FLS del usuario con el que se ejecuta. El prompt no da acceso.'},
+{d:'agent',q:'«Probar cómo responde el agente antes de activarlo»',a:'Conversation Preview en Agent Builder',w:'Permite ver el razonamiento (topic y action elegidos) en cada turno.'},
+{d:'agent',q:'«Que el agente pueda crear un caso»',a:'Agent Action basada en un Flow',w:'Las acciones se construyen con flujos, Apex, prompt templates o APIs y se agrupan en topics.'},
+{d:'agent',q:'«Evitar que datos personales lleguen al modelo de lenguaje»',a:'Einstein Trust Layer (data masking)',w:'Enmascara PII, aplica zero data retention y guarda auditoría.'},
+{d:'agent',q:'«Definir qué debe y no debe hacer el agente»',a:'Topic instructions',w:'Los topics contienen la descripción, el alcance, las instrucciones y las acciones disponibles.'},
+{d:'agent',q:'«¿Conviene usar IA aquí?»',a:'Tareas repetitivas y con datos en la org; no para decisiones críticas sin revisión humana',w:'El examen premia el juicio: IA para resumir, redactar, clasificar y responder FAQ; humano para lo sensible.'}
+];
+
+const GLOSS=[
+{es:'Valor predeterminado de toda la organización',en:'Org-Wide Default (OWD)',d:'Nivel base de acceso a registros por objeto. Solo restringe.'},
+{es:'Jerarquía de funciones',en:'Role Hierarchy',d:'Abre acceso hacia arriba: el rol superior ve lo de los subordinados.'},
+{es:'Regla de compartición',en:'Sharing Rule',d:'Abre acceso a grupos/roles por propietario o criterio.'},
+{es:'Compartición manual',en:'Manual Sharing',d:'Compartir un registro concreto con un usuario o grupo.'},
+{es:'Perfil',en:'Profile',d:'Permisos base de objeto, campo, app y sistema. Uno por usuario.'},
+{es:'Conjunto de permisos',en:'Permission Set',d:'Permisos adicionales que se asignan a usuarios sin cambiar el perfil.'},
+{es:'Grupo de conjuntos de permisos',en:'Permission Set Group',d:'Agrupa permission sets; admite muting para retirar permisos.'},
+{es:'Seguridad a nivel de campo',en:'Field-Level Security (FLS)',d:'Visible / solo lectura por campo, en perfil o permission set.'},
+{es:'Diseño de página',en:'Page Layout',d:'Qué campos, listas y botones aparecen en el registro (clásico y base de Lightning).'},
+{es:'Página de registro Lightning',en:'Lightning Record Page',d:'Página construida en Lightning App Builder con componentes.'},
+{es:'Formularios dinámicos',en:'Dynamic Forms',d:'Campos y secciones como componentes con visibilidad condicional.'},
+{es:'Tipo de registro',en:'Record Type',d:'Variante de un objeto con picklists, layout y proceso propios.'},
+{es:'Relación principal-detalle',en:'Master-Detail Relationship',d:'Hijo dependiente: hereda seguridad, borrado en cascada, permite roll-ups.'},
+{es:'Relación de búsqueda',en:'Lookup Relationship',d:'Relación flexible, opcional, sin herencia.'},
+{es:'Objeto de unión',en:'Junction Object',d:'Objeto con dos master-detail para muchos a muchos.'},
+{es:'Campo de resumen',en:'Roll-Up Summary Field',d:'COUNT / SUM / MIN / MAX de registros hijos en master-detail.'},
+{es:'Campo de fórmula',en:'Formula Field',d:'Solo lectura, calculado, sin almacenamiento.'},
+{es:'Lista de selección dependiente',en:'Dependent Picklist',d:'Sus valores dependen de un campo controlador.'},
+{es:'Regla de validación',en:'Validation Rule',d:'Fórmula que, si es verdadera, bloquea el guardado con un mensaje.'},
+{es:'Regla de duplicados / de coincidencia',en:'Duplicate Rule / Matching Rule',d:'Matching define el criterio; Duplicate define la acción (bloquear o alertar).'},
+{es:'Asistente de importación de datos',en:'Data Import Wizard',d:'Web, hasta 50 000 registros, objetos estándar comunes y custom.'},
+{es:'Cargador de datos',en:'Data Loader',d:'Aplicación de escritorio, hasta 5 millones, todos los objetos, insert/update/upsert/delete/export.'},
+{es:'Exportación de datos',en:'Data Export',d:'Backup en CSV desde Setup, semanal o mensual según edición.'},
+{es:'Transferencia masiva',en:'Mass Transfer',d:'Cambiar el propietario de muchos registros de golpe.'},
+{es:'Tipo de informe',en:'Report Type',d:'Define objetos, relación (with / with or without) y campos disponibles.'},
+{es:'Informe de resumen / matricial / conjunto',en:'Summary / Matrix / Joined Report',d:'Agrupa por filas; filas y columnas; varios bloques.'},
+{es:'Campo de depósito',en:'Bucket Field',d:'Agrupa valores en rangos o categorías dentro del informe.'},
+{es:'Panel dinámico',en:'Dynamic Dashboard',d:'Se muestra con los datos del usuario que lo ve.'},
+{es:'Usuario de ejecución',en:'Running User',d:'Usuario cuyos permisos determinan los datos del dashboard.'},
+{es:'Flujo',en:'Flow',d:'Herramienta declarativa de automatización (Flow Builder).'},
+{es:'Flujo de pantalla',en:'Screen Flow',d:'Flujo con interacción de usuario.'},
+{es:'Flujo activado por registro',en:'Record-Triggered Flow',d:'Se dispara al crear/editar/borrar; before-save o after-save.'},
+{es:'Flujo programado',en:'Schedule-Triggered Flow',d:'Se ejecuta a una hora sobre un lote de registros.'},
+{es:'Flujo autoiniciado',en:'Autolaunched Flow',d:'Sin pantallas; lo llama otro flujo, Apex, botón o proceso.'},
+{es:'Orquestación de flujos',en:'Flow Orchestration',d:'Coordina múltiples pasos y personas.'},
+{es:'Proceso de aprobación',en:'Approval Process',d:'Pasos de aprobación con criterios, aprobadores y acciones.'},
+{es:'Regla de asignación',en:'Assignment Rule',d:'Asigna leads o casos a usuario o cola según criterios.'},
+{es:'Regla de respuesta automática',en:'Auto-Response Rule',d:'Email automático al crear lead/caso desde web o email.'},
+{es:'Regla de escalado',en:'Escalation Rule',d:'Escala casos por tiempo, con horario laboral.'},
+{es:'Cola',en:'Queue',d:'Propietario colectivo de registros hasta que alguien los toma.'},
+{es:'Horario laboral',en:'Business Hours',d:'Define horas hábiles para escalado, milestones y SLAs.'},
+{es:'Derechos y hitos',en:'Entitlements & Milestones',d:'Niveles de servicio y tiempos que hay que cumplir.'},
+{es:'Canal omnicanal',en:'Omni-Channel',d:'Enrutamiento de trabajo a agentes según disponibilidad.'},
+{es:'Conocimiento',en:'Knowledge',d:'Base de artículos con versiones y categorías.'},
+{es:'Candidato / Prospecto',en:'Lead',d:'Posible cliente aún no calificado.'},
+{es:'Conversión de candidato',en:'Lead Conversion',d:'Crea Account, Contact y opcionalmente Opportunity.'},
+{es:'Oportunidad',en:'Opportunity',d:'Venta en curso con etapa, importe, fecha de cierre.'},
+{es:'Ruta',en:'Path',d:'Guía visual de etapas con campos clave y consejos.'},
+{es:'Campaña / Miembro de campaña',en:'Campaign / Campaign Member',d:'Acción de marketing y leads/contactos vinculados a ella.'},
+{es:'Lista de precios',en:'Price Book',d:'Conjunto de precios de productos; estándar y personalizados.'},
+{es:'Previsión',en:'Forecast',d:'Proyección de ventas por jerarquía o territorio.'},
+{es:'Gestión de territorios',en:'Territory Management',d:'Asignación de cuentas a territorios por reglas.'},
+{es:'Tarea / Evento',en:'Task / Event',d:'Actividad sin hora / con hora de inicio y fin.'},
+{es:'Grupo de Chatter',en:'Chatter Group',d:'Público, privado, no listado o con clientes.'},
+{es:'Paquete gestionado / no gestionado',en:'Managed / Unmanaged Package',d:'Bloqueado y actualizable / editable sin upgrades.'},
+{es:'Registro de auditoría de configuración',en:'Setup Audit Trail',d:'Historial de 180 días de cambios en Setup.'},
+{es:'Historial de inicio de sesión',en:'Login History',d:'Registros de login de los últimos 6 meses.'},
+{es:'Rangos de IP de confianza',en:'Trusted IP Ranges',d:'A nivel de org, evitan la verificación de identidad; no bloquean.'},
+{es:'Horas de inicio de sesión',en:'Login Hours',d:'En el perfil; fuera de horario no hay acceso.'},
+{es:'Congelar usuario',en:'Freeze User',d:'Bloquea el login sin liberar licencia.'},
+{es:'Desactivar usuario',en:'Deactivate User',d:'Libera licencia; los usuarios nunca se borran.'},
+{es:'Licencia de funciones',en:'Feature License',d:'Añade capacidades (Knowledge, Marketing, Service Cloud) a un usuario.'},
+{es:'Acción rápida / global',en:'Quick Action / Global Action',d:'Crear o actualizar registros desde un registro / desde cualquier sitio.'},
+{es:'Vista de lista',en:'List View',d:'Lista filtrada de registros, compartible con grupos.'},
+{es:'Generador de esquemas',en:'Schema Builder',d:'Vista gráfica del modelo de datos con creación de campos.'},
+{es:'Agente (Agentforce)',en:'Agent',d:'IA autónoma que razona y ejecuta acciones dentro de topics.'},
+{es:'Tema (Agentforce)',en:'Topic',d:'Área de trabajo del agente con instrucciones y acciones.'},
+{es:'Acción de agente',en:'Agent Action',d:'Flow, Apex, prompt template o API que el agente puede ejecutar.'},
+{es:'Generador de agentes / de prompts',en:'Agent Builder / Prompt Builder',d:'Donde se configuran agentes y plantillas de prompt.'},
+{es:'Capa de confianza de Einstein',en:'Einstein Trust Layer',d:'Enmascarado de PII, sin retención de datos, auditoría y detección de toxicidad.'},
+{es:'Vista previa de conversación',en:'Conversation Preview',d:'Prueba del agente en Agent Builder mostrando su razonamiento.'},
+{es:'Usuario del agente',en:'Agent User',d:'Usuario con cuyos permisos actúa el agente.'}
+];
+
+/* b: bank, d: domain, q: question, o: options, c: correct indexes, e: explanation */
+const QUESTIONS=[
+/* ===== BANCO A ===== */
+{b:'A',d:'data',q:'Un administrador debe importar 120 000 registros de Contact desde un CSV. ¿Qué herramienta debe usar?',o:['Data Import Wizard','Data Loader','Mass Transfer Records','Schema Builder'],c:[1],e:'Import Wizard tiene un límite de 50 000 registros. Data Loader admite hasta 5 millones.'},
+{b:'A',d:'data',q:'Los comerciales piden un informe que muestre todas las cuentas, tengan o no oportunidades. ¿Qué debe crear el administrador?',o:['Un joined report con dos bloques','Un custom report type con Accounts «with or without» Opportunities','Un informe matricial de Opportunities','Un informe de Accounts con filtro cruzado «with» Opportunities'],c:[1],e:'«With or without» es un outer join: aparecen cuentas sin oportunidades. «With» exige que exista el hijo.'},
+{b:'A',d:'data',q:'¿Qué dos afirmaciones sobre las reglas de duplicados son correctas? (Elige 2)',o:['Pueden bloquear el guardado o solo mostrar una alerta','Se basan en una matching rule','Se aplican automáticamente en Data Loader sin configurar nada','Solo funcionan con objetos estándar'],c:[0,1],e:'Duplicate rules usan matching rules y pueden alertar o bloquear. Funcionan con objetos custom y en Data Loader solo si se activa la opción.'},
+{b:'A',d:'data',q:'Un gerente regional quiere que cada gerente vea el mismo dashboard pero con sus propios datos. ¿Qué debe configurar el administrador?',o:['Un dashboard por gerente','Un dashboard dinámico con running user «el usuario que lo ve»','Compartir la carpeta con todos los gerentes','Un informe con filtro «My Team»'],c:[1],e:'El dashboard dinámico muestra datos según los permisos de quien lo abre. Ojo con el límite por edición.'},
+{b:'A',d:'data',q:'¿Qué formato de informe permite agrupar por filas y columnas a la vez?',o:['Tabular','Summary','Matrix','Joined'],c:[2],e:'Matrix agrupa en dos ejes. Summary solo agrupa filas; Joined une bloques.'},
+{b:'A',d:'data',q:'El equipo quiere agrupar oportunidades en «Pequeña», «Media» y «Grande» según el importe, sin crear campos nuevos. ¿Qué debe usar?',o:['Campo de fórmula','Bucket field en el informe','Record type','Campo de resumen'],c:[1],e:'Los bucket fields crean categorías dentro del informe sin tocar el modelo de datos.'},
+{b:'A',d:'data',q:'¿Qué dos cosas puede hacer Data Loader y NO Data Import Wizard? (Elige 2)',o:['Borrar registros','Importar Leads','Exportar registros','Detectar duplicados de Account'],c:[0,2],e:'Data Loader permite delete/hard delete y export. Import Wizard sí importa leads y detecta duplicados.'},
+{b:'A',d:'data',q:'Un usuario ve el informe pero le faltan registros que su compañero sí ve. ¿Cuál es la causa más probable?',o:['El informe está en una carpeta privada','El modelo de compartición: el usuario no tiene acceso a esos registros','El tipo de informe está desactivado','Le falta el permiso «Run Reports»'],c:[1],e:'Los informes respetan el acceso a registros del usuario que los ejecuta.'},
+{b:'A',d:'data',q:'¿Cuál es el máximo de bloques en un joined report?',o:['2','3','5','10'],c:[2],e:'Un joined report admite hasta 5 bloques con tipos de informe que compartan un campo común.'},
+{b:'A',d:'data',q:'¿Qué herramienta de Setup permite programar una copia de seguridad de todos los datos en CSV?',o:['Data Loader','Data Export','Mass Transfer','Bulk API'],c:[1],e:'Data Export permite exportación semanal (Enterprise+) o mensual, con archivos ZIP de CSV.'},
+{b:'A',d:'config',q:'Cinco usuarios de un perfil con 200 personas necesitan el permiso «Export Reports». ¿Cuál es la mejor solución?',o:['Añadir el permiso al perfil','Crear un perfil nuevo para esos 5','Crear un permission set y asignarlo a los 5','Darles el perfil System Administrator'],c:[2],e:'Permission sets extienden permisos a usuarios concretos sin multiplicar perfiles.'},
+{b:'A',d:'config',q:'Un empleado deja la empresa. ¿Qué debe hacer el administrador con su usuario?',o:['Borrarlo','Desactivarlo','Cambiarle la contraseña','Quitarle el perfil'],c:[1],e:'Los usuarios no se pueden borrar. Desactivar libera la licencia y conserva el historial.'},
+{b:'A',d:'config',q:'El OWD de Opportunity es Private. Los gerentes deben ver las oportunidades de su equipo. ¿Qué se necesita?',o:['Sharing rule por criterio','Role Hierarchy con «Grant Access Using Hierarchies»','Manual sharing de cada registro','Cambiar OWD a Public Read Only'],c:[1],e:'La jerarquía de roles abre el acceso hacia arriba automáticamente cuando Grant Access Using Hierarchies está activo (siempre en objetos estándar).'},
+{b:'A',d:'config',q:'¿Qué dos afirmaciones sobre Org-Wide Defaults son correctas? (Elige 2)',o:['Pueden hacer los registros más accesibles que el perfil','Son el nivel más restrictivo del modelo de acceso a registros','Se definen por objeto','Se asignan por usuario'],c:[1,2],e:'OWD es la línea base por objeto; solo restringe. El acceso se abre después con jerarquía, sharing rules, etc.'},
+{b:'A',d:'config',q:'La empresa quiere que nadie inicie sesión desde fuera de la red de la oficina. ¿Dónde se configura?',o:['Trusted IP Ranges en Network Access','Login IP Ranges en el perfil','Session Settings','Login Hours'],c:[1],e:'Login IP Ranges en el perfil bloquean el acceso. Trusted IP Ranges solo evitan la verificación de identidad.'},
+{b:'A',d:'config',q:'¿Durante cuánto tiempo guarda Setup Audit Trail los cambios de configuración?',o:['30 días','90 días','180 días','1 año'],c:[2],e:'Setup Audit Trail conserva 180 días. Login History conserva 6 meses.'},
+{b:'A',d:'config',q:'Un usuario tiene un permiso por un permission set group, pero no debe tenerlo. ¿Cuál es la forma más limpia de quitárselo?',o:['Quitarle el grupo entero','Editar el permission set original','Añadir un muting permission set al grupo','Cambiar su perfil'],c:[2],e:'El muting permission set anula permisos concretos dentro del grupo sin modificar los sets.'},
+{b:'A',d:'config',q:'¿Qué ocurre cuando termina el horario de Login Hours de un usuario que está conectado?',o:['Nada hasta que cierre sesión','Se le expulsa de la sesión','Pasa a modo solo lectura','Recibe un aviso de 15 minutos'],c:[1],e:'Al finalizar las Login Hours, la sesión se termina y no puede volver a entrar hasta el siguiente periodo.'},
+{b:'A',d:'config',q:'¿Qué dos afirmaciones sobre «Freeze» de un usuario son correctas? (Elige 2)',o:['Impide el inicio de sesión','Libera la licencia','No libera la licencia','Borra el usuario'],c:[0,2],e:'Freeze bloquea el login mientras se resuelven dependencias; la licencia sigue ocupada hasta desactivar.'},
+{b:'A',d:'auto',q:'Al crear una Opportunity se debe rellenar un campo del propio registro con un valor calculado. ¿Cuál es la opción más eficiente?',o:['Record-triggered flow before-save','Record-triggered flow after-save','Screen flow','Approval process'],c:[0],e:'Before-save actualiza el mismo registro sin DML adicional; es la opción más rápida.'},
+{b:'A',d:'auto',q:'Cuando una Opportunity pasa a Closed Won hay que crear una Task para Onboarding. ¿Qué debe usar el administrador?',o:['Workflow Rule','Process Builder','Record-triggered flow after-save','Validation rule'],c:[2],e:'Crear otro registro exige after-save. Workflow y Process Builder ya no se soportan.'},
+{b:'A',d:'auto',q:'Los descuentos superiores al 25 % deben ser aprobados por el director comercial, y el registro debe quedar bloqueado mientras tanto. ¿Qué se necesita?',o:['Validation rule','Approval process','Escalation rule','Screen flow'],c:[1],e:'El approval process gestiona aprobadores, bloqueo del registro y acciones de aprobación/rechazo.'},
+{b:'A',d:'auto',q:'¿Qué dos elementos requiere un approval process? (Elige 2)',o:['Un aprobador asignado','Criterios de entrada o pasos','Un flujo de pantalla','Una regla de escalado'],c:[0,1],e:'Un proceso define quién aprueba y qué registros entran. Puede tener acciones adicionales, pero no requiere flujos ni escalado.'},
+{b:'A',d:'auto',q:'¿Qué tipo de flujo puede mostrar pantallas al usuario?',o:['Autolaunched','Record-triggered','Screen flow','Schedule-triggered'],c:[2],e:'Solo el screen flow tiene elementos de pantalla.'},
+{b:'A',d:'auto',q:'En el orden de ejecución, ¿qué ocurre primero al guardar un registro?',o:['After-save flows','Reglas de validación','Before-save flows','Assignment rules'],c:[2],e:'Before-save flows corren antes que las reglas de validación; after-save y assignment rules van después del guardado.'},
+{b:'A',d:'auto',q:'Cada noche hay que marcar como «Vencido» los contratos cuya fecha de fin ya pasó. ¿Qué tipo de flujo conviene?',o:['Screen flow','Schedule-triggered flow','Record-triggered flow','Autolaunched desde un botón'],c:[1],e:'El schedule-triggered flow corre a una hora fija sobre los registros que cumplen un filtro.'},
+{b:'A',d:'auto',q:'¿Qué herramienta de automatización de Case reasigna casos que no se han resuelto en un plazo?',o:['Case assignment rule','Auto-response rule','Escalation rule','Support process'],c:[2],e:'Las escalation rules actúan por tiempo (con business hours) y pueden reasignar y notificar.'},
+{b:'A',d:'object',q:'La empresa quiere ver en Account la suma de los importes de todas sus oportunidades cerradas ganadas. ¿Qué debe crear?',o:['Campo de fórmula cross-object','Roll-up summary field en Account','Campo de fórmula en Opportunity','Bucket field'],c:[1],e:'Account–Opportunity es master-detail a efectos de roll-up; SUM con filtro Stage = Closed Won.'},
+{b:'A',d:'object',q:'Un Student puede matricularse en muchos Courses y un Course tiene muchos Students. ¿Qué modelo se necesita?',o:['Lookup de Student a Course','Master-detail de Course a Student','Un junction object Enrollment con dos master-detail','Un campo multi-select'],c:[2],e:'Muchos a muchos = objeto de unión con dos master-detail.'},
+{b:'A',d:'object',q:'¿Qué dos características son propias de master-detail y no de lookup? (Elige 2)',o:['Borrado en cascada','Es opcional en el hijo','Permite roll-up summary','Hasta 40 por objeto'],c:[0,2],e:'Master-detail: cascada, herencia de seguridad, roll-ups, máximo 2. Lookup: opcional, hasta 40.'},
+{b:'A',d:'object',q:'Ventas y Soporte necesitan valores distintos en el picklist «Tipo» de Account y layouts diferentes. ¿Qué debe crear?',o:['Dos objetos custom','Record types con layouts asignados por perfil','Dos campos picklist','Un permission set'],c:[1],e:'Record type controla valores de picklist, layout y proceso por perfil.'},
+{b:'A',d:'object',q:'Un componente de la página de Opportunity debe verse solo cuando Stage = «Negotiation». ¿Dónde se configura?',o:['Page Layout','Component Visibility en Lightning App Builder','Record Type','Validation rule'],c:[1],e:'Las reglas de visibilidad de componentes usan valores del registro, perfil o dispositivo.'},
+{b:'A',d:'object',q:'Un administrador intenta borrar un campo pero Salesforce lo impide. ¿Cuál es la causa más probable?',o:['El campo es de tipo texto','El campo está referenciado por un roll-up summary o una fórmula','El campo tiene datos','No está en ningún layout'],c:[1],e:'Hay que quitar la referencia en roll-ups, fórmulas o report types custom antes de borrar.'},
+{b:'A',d:'object',q:'¿Qué tipo de campo puede ser controlador de un picklist dependiente? (Elige 2)',o:['Picklist','Checkbox','Texto','Fecha'],c:[0,1],e:'El controlador es picklist o checkbox; el dependiente, picklist o multi-select picklist.'},
+{b:'A',d:'sales',q:'Al convertir un lead, ¿qué registros se crean por defecto? (Elige 3)',o:['Account','Contact','Opportunity (opcional)','Case'],c:[0,1,2],e:'Conversión = Account + Contact + Opportunity opcional. Los campos custom necesitan Lead Field Mapping.'},
+{b:'A',d:'sales',q:'Los leads del formulario web deben asignarse al comercial según el país. ¿Qué dos funciones se necesitan? (Elige 2)',o:['Web-to-Lead','Lead Assignment Rule','Escalation rule','Approval process'],c:[0,1],e:'Web-to-Lead crea el lead; la assignment rule lo dirige por criterio a usuario o cola.'},
+{b:'A',d:'sales',q:'Un comercial quiere una guía visual de las etapas con campos clave y consejos en cada una. ¿Qué debe activar el administrador?',o:['Forecasting','Sales Path','Campaign Influence','Territory Management'],c:[1],e:'Path muestra etapas, campos clave y guía de éxito por etapa.'},
+{b:'A',d:'sales',q:'Marketing quiere saber qué evento originó cada oportunidad. ¿Qué debe usar?',o:['Lead Source y Primary Campaign Source','Opportunity Stage','Price Book','Account Type'],c:[0],e:'Primary Campaign Source atribuye la oportunidad a una campaña; Campaign Influence permite varias.'},
+{b:'A',d:'sales',q:'¿Qué controla la probabilidad y la Forecast Category de una oportunidad por defecto?',o:['El propietario','La Stage','El Price Book','El record type'],c:[1],e:'Cada valor de Stage tiene probabilidad y forecast category asociadas, editables por el admin.'},
+{b:'A',d:'service',q:'Los casos que llegan por email deben recibir una respuesta automática de acuse. ¿Qué debe configurar el administrador?',o:['Case assignment rule','Case auto-response rule','Escalation rule','Macro'],c:[1],e:'Las auto-response rules envían un email al crear casos vía Web-to-Case o Email-to-Case.'},
+{b:'A',d:'service',q:'Los casos de facturación deben ir a un grupo de agentes y cualquiera de ellos poder tomarlos. ¿Qué se necesita? (Elige 2)',o:['Una Queue','Una Case Assignment Rule','Un Chatter group','Un permission set'],c:[0,1],e:'La cola es propietaria hasta que un agente acepta; la assignment rule envía casos a la cola.'},
+{b:'A',d:'service',q:'La empresa quiere crear casos desde soporte@empresa.com sin instalar software. ¿Qué opción es correcta?',o:['Email-to-Case con agente','On-Demand Email-to-Case','Web-to-Case','Omni-Channel'],c:[1],e:'On-Demand Email-to-Case no requiere instalar el agente.'},
+{b:'A',d:'service',q:'Soporte técnico y Devoluciones necesitan valores de Status diferentes en Case. ¿Qué se necesita? (Elige 2)',o:['Dos support processes','Dos record types','Dos queues','Dos escalation rules'],c:[0,1],e:'El support process define los Status; se asigna mediante el record type.'},
+{b:'A',d:'service',q:'Los clientes premium tienen SLA de primera respuesta de 1 hora. ¿Qué función lo controla?',o:['Escalation rules','Entitlements y Milestones','Auto-response rules','Case Teams'],c:[1],e:'Entitlements definen el nivel de servicio; milestones miden los tiempos.'},
+{b:'A',d:'prod',q:'Un comercial quiere un recordatorio para llamar a un cliente mañana, sin hora concreta. ¿Qué debe crear?',o:['Event','Task','Case','Campaign'],c:[1],e:'Task tiene fecha límite sin hora; Event tiene inicio y fin.'},
+{b:'A',d:'prod',q:'¿Qué dos afirmaciones sobre paquetes gestionados son correctas? (Elige 2)',o:['El código es editable en la org que lo instala','El proveedor puede publicar actualizaciones','El código está protegido','Solo los administradores de Salesforce pueden publicarlos'],c:[1,2],e:'Managed: protegido y actualizable. Unmanaged: editable, sin upgrades.'},
+{b:'A',d:'prod',q:'La empresa quiere colaborar en Chatter con un cliente externo sin exponer el resto de la org. ¿Qué debe crear?',o:['Grupo público','Grupo privado con clientes (customers)','Grupo no listado','Experience Cloud site'],c:[1],e:'Los grupos con clientes permiten usuarios externos que solo ven ese grupo.'},
+{b:'A',d:'prod',q:'Los usuarios móviles necesitan una versión simplificada de la página de Account. ¿Cuál es la mejor opción?',o:['Crear un objeto separado','Lightning Record Page con visibilidad por form factor o página asignada a teléfono','Quitar campos del layout','Usar Salesforce Classic'],c:[1],e:'App Builder permite páginas distintas por dispositivo y reglas por form factor.'},
+{b:'A',d:'agent',q:'Un agente de Agentforce responde que no puede acceder a los datos de un campo. ¿Qué debe revisar primero el administrador?',o:['Las instrucciones del topic','Los permisos (object y FLS) del Agent User','El modelo LLM elegido','El nombre del agente'],c:[1],e:'El agente respeta CRUD/FLS del usuario con el que se ejecuta. Los prompts no otorgan acceso.'},
+{b:'A',d:'agent',q:'¿Dónde puede el administrador probar cómo responde el agente antes de activarlo?',o:['Setup Audit Trail','Conversation Preview en Agent Builder','Data Loader','Prompt Builder'],c:[1],e:'Conversation Preview muestra el razonamiento y qué topic/action se eligen.'},
+{b:'A',d:'agent',q:'¿Qué dos componentes estructuran un agente en Agent Builder? (Elige 2)',o:['Topics','Actions','Page layouts','Record types'],c:[0,1],e:'Topics definen alcance e instrucciones; actions son lo que el agente puede ejecutar (flows, Apex, prompts, APIs).'},
+{b:'A',d:'agent',q:'La empresa teme que datos personales lleguen al proveedor del LLM. ¿Qué función lo mitiga?',o:['Sharing rules','Einstein Trust Layer (enmascarado y zero data retention)','Validation rules','Login IP Ranges'],c:[1],e:'El Trust Layer enmascara PII, no retiene datos en el LLM y audita.'},
+{b:'A',d:'agent',q:'¿Cuál de estos casos es el más adecuado para un agente de Agentforce?',o:['Aprobar despidos','Responder preguntas frecuentes de clientes y crear casos','Modificar el OWD','Decidir precios estratégicos'],c:[1],e:'Tareas repetitivas, basadas en datos de la org y de bajo riesgo. Lo sensible sigue con humanos.'},
+
+/* ===== BANCO B ===== */
+{b:'B',d:'data',q:'Un administrador debe importar Opportunities desde un CSV. ¿Qué herramienta debe usar?',o:['Data Import Wizard','Data Loader','Mass Transfer','Schema Builder'],c:[1],e:'Import Wizard no soporta Opportunities ni Cases.'},
+{b:'B',d:'data',q:'¿Qué operación de Data Loader inserta registros nuevos y actualiza existentes en una sola pasada?',o:['Insert','Update','Upsert','Export All'],c:[2],e:'Upsert usa un campo Id o External ID para decidir si inserta o actualiza.'},
+{b:'B',d:'data',q:'¿Cuál es el límite de registros de Data Import Wizard?',o:['5 000','50 000','500 000','5 000 000'],c:[1],e:'50 000 registros por importación. Data Loader: 5 millones.'},
+{b:'B',d:'data',q:'Un administrador crea una matching rule con un campo de fórmula pero no le deja. ¿Por qué?',o:['Las fórmulas no pueden usarse en matching rules','Faltan permisos','El objeto es custom','La regla ya existe'],c:[0],e:'Los campos de fórmula no se admiten como criterio de coincidencia.'},
+{b:'B',d:'data',q:'Un informe de Accounts «with» Contacts no muestra las cuentas sin contactos. ¿Qué debe cambiar el administrador?',o:['Añadir un filtro','Crear un report type «with or without» Contacts','Usar un informe matricial','Cambiar la carpeta'],c:[1],e:'«With» es inner join. Para incluir padres sin hijos, «with or without».'},
+{b:'B',d:'data',q:'¿Qué dos acciones puede hacer un usuario con un dashboard sin editarlo? (Elige 2)',o:['Suscribirse para recibirlo por email','Cambiar el running user','Aplicar filtros del dashboard','Añadir componentes'],c:[0,2],e:'Suscripción y filtros son de uso; running user y componentes requieren editar.'},
+{b:'B',d:'data',q:'Un informe de resumen debe mostrar el total por región pero no los registros individuales. ¿Qué debe activar?',o:['Ocultar detalles (Hide Details)','Bucket field','Filtro cruzado','Fórmula de resumen'],c:[0],e:'Hide Details deja solo las agrupaciones y totales.'},
+{b:'B',d:'data',q:'¿Con qué frecuencia máxima permite Data Export exportar en Enterprise Edition?',o:['Diaria','Semanal','Mensual','Trimestral'],c:[1],e:'Semanal en Enterprise, Performance y Unlimited; mensual en las demás.'},
+{b:'B',d:'data',q:'Los usuarios no encuentran una carpeta de informes. ¿Qué dos configuraciones lo explican? (Elige 2)',o:['La carpeta no está compartida con su rol/grupo','El informe es matricial','Les falta acceso «View» a la carpeta','No tienen licencia de Chatter'],c:[0,2],e:'Las carpetas se comparten con usuarios, roles o grupos con niveles Viewer/Editor/Manager.'},
+{b:'B',d:'data',q:'Una validation rule debe evitar que Close Date sea anterior a hoy en nuevas oportunidades. ¿Qué fórmula bloquea el guardado?',o:['CloseDate < TODAY()','CloseDate > TODAY()','ISBLANK(CloseDate)','CloseDate = TODAY()'],c:[0],e:'La regla bloquea cuando la fórmula es verdadera: fecha de cierre menor que hoy.'},
+{b:'B',d:'config',q:'¿Cuál de estas afirmaciones sobre el username es correcta?',o:['Debe ser único dentro de la org','Debe ser único en toda Salesforce','Debe coincidir con el email','Puede repetirse si son orgs distintas'],c:[1],e:'El username es único globalmente, aunque no sea un email real.'},
+{b:'B',d:'config',q:'Un usuario debe poder ver los registros de un compañero de otro departamento, pero solo ese registro. ¿Qué opción es la adecuada?',o:['Sharing rule','Manual sharing','Cambiar OWD','Role hierarchy'],c:[1],e:'Manual sharing comparte un registro concreto; lo hace el propietario o alguien por encima en la jerarquía.'},
+{b:'B',d:'config',q:'¿Qué tres elementos forman parte del modelo de acceso a registros? (Elige 3)',o:['Org-Wide Defaults','Role Hierarchy','Sharing Rules','Page Layouts'],c:[0,1,2],e:'Los layouts afectan a la presentación, no al acceso.'},
+{b:'B',d:'config',q:'Al desactivar un usuario, ¿qué ocurre con sus registros?',o:['Se borran','Se transfieren automáticamente al administrador','Siguen siendo suyos hasta que se transfieran','Pasan a una cola'],c:[2],e:'Conviene usar Mass Transfer antes o después de desactivar.'},
+{b:'B',d:'config',q:'Un administrador necesita que los usuarios de un perfil vean un objeto pero no puedan borrar registros. ¿Dónde se configura?',o:['OWD','Permisos de objeto en el perfil (sin Delete)','Sharing rule','Layout'],c:[1],e:'Los permisos CRUD por objeto viven en perfil y permission sets.'},
+{b:'B',d:'config',q:'¿Qué dos cosas define un permission set group? (Elige 2)',o:['Un conjunto de permission sets','Permisos silenciados con un muting set','El OWD','El role hierarchy'],c:[0,1],e:'El grupo combina sets y permite mute; no toca el modelo de registros.'},
+{b:'B',d:'config',q:'Los usuarios reciben una verificación de identidad cada vez que entran desde la oficina. ¿Cómo evitarlo sin bloquear otros accesos?',o:['Añadir la IP de la oficina a Trusted IP Ranges (Network Access)','Añadir Login IP Ranges al perfil','Desactivar MFA','Cambiar Session Settings'],c:[0],e:'Trusted IP Ranges evitan la verificación sin bloquear accesos externos.'},
+{b:'B',d:'config',q:'¿Dónde se configura el año fiscal de la empresa?',o:['Company Information (Company Settings)','User Settings','Session Settings','Business Hours'],c:[0],e:'Fiscal Year, divisas y valores por defecto están en Company Settings.'},
+{b:'B',d:'config',q:'Un usuario necesita permisos de Knowledge que no incluye su licencia base. ¿Qué debe asignar el administrador?',o:['Un feature license','Un nuevo perfil','Un rol','Una queue'],c:[0],e:'Las feature licenses añaden capacidades (Knowledge, Service Cloud, Marketing) a un usuario.'},
+{b:'B',d:'auto',q:'Al editar un Contact hay que actualizar un campo de su Account. ¿Qué tipo de flujo se necesita?',o:['Before-save','After-save','Screen flow','Schedule-triggered'],c:[1],e:'Tocar otro registro requiere after-save; before-save solo modifica el propio registro.'},
+{b:'B',d:'auto',q:'¿Qué dos afirmaciones sobre Workflow Rules y Process Builder son correctas? (Elige 2)',o:['Ya no reciben soporte','Son la opción recomendada para nuevas automatizaciones','Deben migrarse a Flow','Solo funcionan en Lightning'],c:[0,2],e:'Fin de soporte el 31 de diciembre de 2025; Salesforce ofrece herramientas de migración a Flow.'},
+{b:'B',d:'auto',q:'Un flujo debe lanzarse desde un botón en el registro sin pantallas. ¿Qué combinación es correcta?',o:['Screen flow + quick action','Autolaunched flow + quick action/botón','Schedule-triggered flow','Approval process'],c:[1],e:'Autolaunched no tiene pantallas y puede invocarse desde botones, acciones u otros flujos.'},
+{b:'B',d:'auto',q:'En un approval process, ¿qué ocurre con el registro mientras está pendiente de aprobación?',o:['Se borra','Queda bloqueado para edición (salvo admins o quien se configure)','Cambia de propietario','Se duplica'],c:[1],e:'El bloqueo evita cambios durante la aprobación; se puede permitir edición a admins o al aprobador.'},
+{b:'B',d:'auto',q:'Un proceso pasa por tres personas: verificar, aprobar y publicar. ¿Qué herramienta es la más adecuada?',o:['Screen flow','Flow Orchestration','Validation rule','Assignment rule'],c:[1],e:'Orchestration coordina etapas y pasos asignados a personas o colas.'},
+{b:'B',d:'auto',q:'Una lead assignment rule tiene tres entradas que coinciden con el lead. ¿Cuántas se ejecutan?',o:['Las tres','Solo la primera que coincide','La última','Ninguna'],c:[1],e:'Las reglas evalúan entradas en orden y se detienen en la primera coincidencia.'},
+{b:'B',d:'auto',q:'¿Qué usuario ejecuta un flujo programado o disparado por plataforma que no tiene usuario de contexto?',o:['El último usuario que editó','El Default Automation User (o Automated Process)','El administrador principal','El propietario del registro'],c:[1],e:'El default automation user da un contexto de permisos consistente a las automatizaciones.'},
+{b:'B',d:'object',q:'¿Cuántas relaciones master-detail puede tener un objeto custom como máximo?',o:['1','2','5','40'],c:[1],e:'Máximo 2 master-detail (necesarias para un junction object) y hasta 40 lookups.'},
+{b:'B',d:'object',q:'Al borrar un campo, ¿durante cuánto tiempo puede restaurarse?',o:['7 días','15 días','30 días','No se puede'],c:[1],e:'Los campos borrados van a la papelera durante 15 días.'},
+{b:'B',d:'object',q:'Un objeto custom «Project» debe existir aunque se borre la Account relacionada. ¿Qué relación conviene?',o:['Master-detail','Lookup','Junction','Hierarchical'],c:[1],e:'Lookup no borra en cascada; puede configurarse para impedir borrar el padre o dejar el campo en blanco.'},
+{b:'B',d:'object',q:'¿Qué dos cosas controla un page layout? (Elige 2)',o:['Qué campos aparecen y en qué orden','Related lists y botones','Si el usuario puede ver el campo en informes','El OWD'],c:[0,1],e:'La visibilidad real la da FLS; el layout organiza campos, listas y botones.'},
+{b:'B',d:'object',q:'Un campo de fórmula en Contact debe mostrar la industria de su Account. ¿Qué tipo de fórmula es?',o:['Roll-up','Cross-object formula','Bucket','Validation'],c:[1],e:'Las fórmulas cross-object leen campos del padre a través de lookup/master-detail.'},
+{b:'B',d:'object',q:'¿Qué herramienta muestra gráficamente objetos y relaciones y permite crear campos desde ahí?',o:['Object Manager','Schema Builder','Lightning App Builder','Setup Audit Trail'],c:[1],e:'Schema Builder es la vista gráfica del modelo de datos con edición básica.'},
+{b:'B',d:'object',q:'¿Qué tres cosas puede controlar un record type? (Elige 3)',o:['Valores de picklist disponibles','Page layout por perfil','Business process (Sales/Support)','El OWD del objeto'],c:[0,1,2],e:'El record type no afecta al acceso a registros.'},
+{b:'B',d:'object',q:'Los usuarios quieren que la sección «Datos fiscales» solo se muestre cuando Type = «Cliente». ¿Qué función lo permite?',o:['Dynamic Forms con visibilidad condicional','Record type','Validation rule','Sharing rule'],c:[0],e:'Dynamic Forms permite reglas de visibilidad por campo y sección en la Lightning Record Page.'},
+{b:'B',d:'sales',q:'Los campos custom del Lead no pasan a la Opportunity al convertir. ¿Qué debe configurar el administrador?',o:['Un flujo','Lead Field Mapping en Setup','Un record type','Un roll-up'],c:[1],e:'Los campos estándar se mapean solos; los custom necesitan Lead Field Mapping.'},
+{b:'B',d:'sales',q:'La empresa vende el mismo producto a precios distintos según el segmento. ¿Qué debe crear?',o:['Varios productos','Price books personalizados','Record types de Opportunity','Campaign members'],c:[1],e:'Un producto puede vivir en varios price books con distinto precio.'},
+{b:'B',d:'sales',q:'¿Qué dos afirmaciones sobre Campaign Members son correctas? (Elige 2)',o:['Pueden ser leads o contactos','Tienen un estado (Sent, Responded…)','Solo pueden ser cuentas','Se crean al convertir un lead'],c:[0,1],e:'Los miembros vinculan leads/contactos a la campaña con estados configurables.'},
+{b:'B',d:'sales',q:'¿En qué se basa Collaborative Forecasting por defecto?',o:['Territorios','Jerarquía de roles','Perfiles','Queues'],c:[1],e:'Por defecto usa la jerarquía de roles; con Territory Management puede basarse en territorios.'},
+{b:'B',d:'sales',q:'¿Qué función usa datos históricos de la org para puntuar la probabilidad de cierre de una oportunidad?',o:['Sales Path','Einstein Opportunity Scoring','Lead Assignment Rules','Campaign Influence'],c:[1],e:'Einstein Opportunity Scoring aprende de las oportunidades pasadas de la org.'},
+{b:'B',d:'service',q:'¿Qué diferencia principal hay entre una queue y un public group?',o:['Ninguna','Una queue puede ser propietaria de registros; un public group no','Un public group puede tener casos','Una queue solo admite usuarios internos'],c:[1],e:'Las colas son propietarias de leads, casos y objetos custom; los grupos se usan para compartir.'},
+{b:'B',d:'service',q:'Un caso creado manualmente por un agente no recibe la auto-response. ¿Por qué?',o:['Falta el permiso','Las auto-response rules solo aplican a Web-to-Case y Email-to-Case','El caso no tiene contacto','La regla está inactiva'],c:[1],e:'Auto-response rules se disparan solo con casos entrantes por web o email.'},
+{b:'B',d:'service',q:'¿Qué dos funciones enrutan casos a agentes? (Elige 2)',o:['Case Assignment Rules','Omni-Channel','Knowledge','Macros'],c:[0,1],e:'Assignment rules por criterio; Omni-Channel por disponibilidad y capacidad.'},
+{b:'B',d:'service',q:'Las escalation rules deben contar solo horas laborables. ¿Qué debe configurarse?',o:['Login Hours','Business Hours','Session Settings','Fiscal Year'],c:[1],e:'Business Hours definen el tiempo hábil para escalado y milestones.'},
+{b:'B',d:'service',q:'Los agentes repiten los mismos pasos en muchos casos (actualizar estado, enviar email). ¿Qué les ahorra tiempo?',o:['Macros','Record types','Sharing rules','Roll-ups'],c:[0],e:'Las macros ejecutan una secuencia de acciones en Case Feed.'},
+{b:'B',d:'prod',q:'¿Qué dos afirmaciones sobre Events son correctas? (Elige 2)',o:['Tienen fecha y hora de inicio y fin','Aparecen en el calendario','No tienen relación con registros','Son lo mismo que Tasks'],c:[0,1],e:'Event = cita en calendario; Task = pendiente con fecha límite.'},
+{b:'B',d:'prod',q:'Un administrador instala un paquete y descubre que puede editar su código. ¿Qué tipo de paquete es?',o:['Managed','Unmanaged','Locked','Certified'],c:[1],e:'Unmanaged expone el código y no recibe actualizaciones del proveedor.'},
+{b:'B',d:'prod',q:'¿Qué tipo de grupo de Chatter no aparece en búsquedas ni listados?',o:['Público','Privado','No listado (unlisted)','De clientes'],c:[2],e:'Los grupos unlisted solo son visibles para sus miembros e invitados.'},
+{b:'B',d:'prod',q:'¿Dónde se configura el menú de navegación de la app móvil de Salesforce?',o:['Salesforce Navigation / Mobile App settings en Setup','Page Layout','Sharing Settings','Data Loader'],c:[0],e:'La navegación móvil y el branding se configuran en los ajustes de la app móvil.'},
+{b:'B',d:'prod',q:'¿Qué marketplace ofrece agentes, acciones y prompts listos para Agentforce?',o:['AppExchange','AgentExchange','Trailhead','Salesforce Help'],c:[1],e:'AgentExchange es el marketplace específico de componentes de Agentforce.'},
+{b:'B',d:'agent',q:'¿Qué define el alcance y las instrucciones de lo que un agente puede hacer?',o:['Action','Topic','Prompt Builder','Record type'],c:[1],e:'Cada topic agrupa instrucciones y las actions disponibles para ese ámbito.'},
+{b:'B',d:'agent',q:'El equipo quiere que el agente ejecute un proceso de negocio existente. ¿Cuál es la forma declarativa de exponerlo como acción?',o:['Escribir Apex','Crear una Agent Action a partir de un Flow (autolaunched)','Crear un record type','Añadir un sharing rule'],c:[1],e:'Los flujos autolaunched pueden convertirse en acciones del agente sin código.'},
+{b:'B',d:'agent',q:'¿Qué dos funciones aporta el Einstein Trust Layer? (Elige 2)',o:['Enmascarado de datos sensibles','Zero data retention con el LLM','Creación de roles','Backup de datos'],c:[0,1],e:'También ofrece auditoría y detección de toxicidad.'},
+{b:'B',d:'agent',q:'¿Con qué permisos actúa un agente de Agentforce cuando responde a un cliente en el sitio web?',o:['Permisos de System Administrator','Los del Agent User configurado para el agente','Sin restricciones','Los del cliente'],c:[1],e:'El agente hereda CRUD y FLS del Agent User; si faltan permisos, no verá los datos.'},
+{b:'B',d:'agent',q:'¿Qué herramienta se usa para diseñar y versionar las plantillas de prompt que usa un agente?',o:['Prompt Builder','Data Loader','Schema Builder','Lightning App Builder'],c:[0],e:'Prompt Builder crea prompt templates con campos combinados y datos de la org.'}
+];
+
+</script>
+<script>
+/* ---------- tabs ---------- */
+document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>{
+  document.querySelectorAll('.tab').forEach(x=>x.setAttribute('aria-selected',x===t));
+  document.querySelectorAll('main > section').forEach(s=>s.hidden = s.id!==t.dataset.t);
+  window.scrollTo({top:0});
+}));
+document.getElementById('simulador').hidden = true;
+
+/* ---------- guide ---------- */
+const domBox=document.getElementById('domains');
+DOMAINS.forEach(d=>{
+  const el=document.createElement('div');el.className='dom';
+  el.innerHTML=`<button aria-expanded="false"><span class="pct">${d.pct}%</span><span><span class="name">${d.es}</span><span class="en">${d.en}</span></span><span class="chev">▾</span></button>
+  <div class="bar"><i style="width:${d.pct/17*100}%"></i></div>
+  <div class="body">
+    <h3>Qué evalúa (objetivos oficiales)</h3><ul>${d.obj.map(o=>`<li>${o}</li>`).join('')}</ul>
+    <h3>Lo que tienes que dominar</h3><ul>${d.key.map(o=>`<li>${o}</li>`).join('')}</ul>
+    <div class="tip"><b>Consejo:</b> ${d.tip}</div>
+  </div>`;
+  el.querySelector('button').addEventListener('click',()=>{el.toggleAttribute('open');el.querySelector('button').setAttribute('aria-expanded',el.hasAttribute('open'));});
+  domBox.appendChild(el);
+});
+
+/* ---------- piensa en ---------- */
+const pf=document.getElementById('pfilters'), pl=document.getElementById('piensaList');
+let pFilter='all';
+const cats=['all',...new Set(PIENSA.map(p=>p.d))];
+cats.forEach(c=>{const b=document.createElement('button');b.className='chip';b.textContent=c==='all'?'Todos':DOMAINS.find(x=>x.id===c).short;b.setAttribute('aria-pressed',c==='all');b.addEventListener('click',()=>{pFilter=c;pf.querySelectorAll('.chip').forEach(x=>x.setAttribute('aria-pressed',x===b));renderPiensa();});pf.appendChild(b);});
+function renderPiensa(){
+  pl.innerHTML='';
+  PIENSA.filter(p=>pFilter==='all'||p.d===pFilter).forEach(p=>{
+    const el=document.createElement('div');el.className='acc';
+    el.innerHTML=`<button aria-expanded="false"><span class="q"><em>Si la pregunta dice…</em>${p.q}</span><span class="chev">▾</span></button><div class="a"><strong>Piensa en: ${p.a}</strong><div class="why">${p.w}</div></div>`;
+    el.querySelector('button').addEventListener('click',()=>el.toggleAttribute('open'));
+    pl.appendChild(el);
+  });
+}
+renderPiensa();
+
+/* ---------- glossary ---------- */
+const gl=document.getElementById('glist'), gs=document.getElementById('gsearch');
+function renderGl(){
+  const q=gs.value.trim().toLowerCase();gl.innerHTML='';
+  GLOSS.filter(g=>!q||g.es.toLowerCase().includes(q)||g.en.toLowerCase().includes(q)||g.d.toLowerCase().includes(q))
+    .sort((a,b)=>a.en.localeCompare(b.en))
+    .forEach(g=>{const el=document.createElement('div');el.className='gl';el.innerHTML=`<div class="t"><span class="es">${g.es}</span><span class="enw">${g.en}</span></div><div class="d">${g.d}</div>`;gl.appendChild(el);});
+  if(!gl.children.length) gl.innerHTML='<p class="lead">Sin resultados. Prueba con el término en inglés.</p>';
+}
+gs.addEventListener('input',renderGl);renderGl();
+
+/* ---------- simulator ---------- */
+const S={bank:'A',num:20,mode:'study',dom:'all',qs:[],i:0,sel:new Set(),answers:[],t0:0,tick:null};
+function seg(id,key){document.getElementById(id).addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;S[key]=isNaN(b.dataset.v)?b.dataset.v:+b.dataset.v;document.querySelectorAll('#'+id+' button').forEach(x=>x.setAttribute('aria-pressed',x===b));updateInfo();});}
+seg('bankSeg','bank');seg('numSeg','num');seg('modeSeg','mode');
+const domSeg=document.getElementById('domSeg');
+[{id:'all',short:'Todos'},...DOMAINS].forEach(d=>{const b=document.createElement('button');b.dataset.v=d.id;b.textContent=d.short;b.setAttribute('aria-pressed',d.id==='all');domSeg.appendChild(b);});
+seg('domSeg','dom');
+function pool(){return QUESTIONS.filter(q=>(S.bank==='AB'||q.b===S.bank)&&(S.dom==='all'||q.d===S.dom));}
+function updateInfo(){const n=pool().length;document.getElementById('bankInfo').textContent=`${n} preguntas disponibles con esta selección. Total en la app: ${QUESTIONS.length}.`;}
+updateInfo();
+
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function pick(){
+  const p=pool();
+  if(S.dom!=='all') return shuffle(p.slice()).slice(0,S.num);
+  // weighted by domain pct
+  const byD={};p.forEach(q=>(byD[q.d]=byD[q.d]||[]).push(q));
+  Object.values(byD).forEach(shuffle);
+  const out=[];const tot=DOMAINS.reduce((s,d)=>s+d.pct,0);
+  DOMAINS.forEach(d=>{const n=Math.round(S.num*d.pct/tot);out.push(...(byD[d.id]||[]).splice(0,n));});
+  const rest=shuffle(Object.values(byD).flat());
+  while(out.length<S.num&&rest.length)out.push(rest.pop());
+  return shuffle(out).slice(0,S.num);
+}
+const $=id=>document.getElementById(id);
+$('startBtn').addEventListener('click',()=>{
+  S.qs=pick();if(!S.qs.length)return;S.i=0;S.answers=[];S.t0=Date.now();
+  $('simSetup').hidden=true;$('simResult').hidden=true;$('simRun').hidden=false;
+  clearInterval(S.tick);S.tick=setInterval(()=>{const s=Math.floor((Date.now()-S.t0)/1000);$('pTimer').textContent=`${String(Math.floor(s/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`;},1000);
+  showQ();
+});
+$('quitBtn').addEventListener('click',()=>{clearInterval(S.tick);$('simRun').hidden=true;$('simSetup').hidden=false;});
+$('againBtn').addEventListener('click',()=>{$('simResult').hidden=true;$('simSetup').hidden=false;window.scrollTo({top:0});});
+
+function showQ(){
+  const q=S.qs[S.i];S.sel=new Set();S.checked=false;
+  $('pCount').textContent=`Pregunta ${S.i+1} de ${S.qs.length}`;
+  $('pFill').style.width=(S.i/S.qs.length*100)+'%';
+  $('qDom').textContent=DOMAINS.find(d=>d.id===q.d).short;
+  $('qType').textContent=q.c.length>1?`Elige ${q.c.length} respuestas`:'Elige 1 respuesta';
+  $('qText').textContent=q.q;$('expl').innerHTML='';
+  const box=$('choices');box.innerHTML='';
+  q.o.forEach((o,i)=>{const b=document.createElement('button');b.className='choice';b.setAttribute('aria-pressed','false');b.innerHTML=`<span class="k">${'ABCDE'[i]}</span><span>${o}</span>`;
+    b.addEventListener('click',()=>{if(S.checked)return;if(q.c.length===1)S.sel=new Set([i]);else S.sel.has(i)?S.sel.delete(i):S.sel.add(i);
+      box.querySelectorAll('.choice').forEach((x,j)=>x.setAttribute('aria-pressed',S.sel.has(j)));$('nextBtn').disabled=S.sel.size!==q.c.length;});
+    box.appendChild(b);});
+  $('nextBtn').textContent=S.mode==='study'?'Comprobar':(S.i===S.qs.length-1?'Terminar':'Siguiente');$('nextBtn').disabled=true;
+  window.scrollTo({top:$('simRun').offsetTop-70,behavior:'smooth'});
+}
+$('nextBtn').addEventListener('click',()=>{
+  const q=S.qs[S.i];
+  if(!S.checked){
+    const ok=q.c.length===S.sel.size&&q.c.every(c=>S.sel.has(c));
+    S.answers.push({q,sel:[...S.sel],ok});
+    if(S.mode==='study'){
+      S.checked=true;
+      $('choices').querySelectorAll('.choice').forEach((b,i)=>{b.disabled=true;if(q.c.includes(i))b.classList.add('correct');else if(S.sel.has(i))b.classList.add('wrong');});
+      $('expl').innerHTML=`<div class="expl ${ok?'ok':'bad'}"><b>${ok?'Correcto':'Incorrecto'}</b>${q.e}</div>`;
+      $('nextBtn').textContent=S.i===S.qs.length-1?'Ver resultado':'Siguiente';return;
+    }
+  }
+  S.i++;if(S.i<S.qs.length)showQ();else finish();
+});
+function finish(){
+  clearInterval(S.tick);$('simRun').hidden=true;$('simResult').hidden=false;
+  const n=S.answers.length,k=S.answers.filter(a=>a.ok).length,pct=Math.round(k/n*100);
+  $('rPct').textContent=pct+' %';$('rSub').textContent=`${k} de ${n} correctas · ${$('pTimer').textContent}`;
+  $('rPass').innerHTML=`<span class="pass ${pct>=68?'y':'n'}">${pct>=68?'Aprobarías (≥ 68 %)':'Aún por debajo del 68 %'}</span>`;
+  const bd=$('rByDom');bd.innerHTML='';
+  DOMAINS.forEach(d=>{const as=S.answers.filter(a=>a.q.d===d.id);if(!as.length)return;const ok=as.filter(a=>a.ok).length;const p=Math.round(ok/as.length*100);
+    bd.innerHTML+=`<div class="row"><div><div style="font-weight:600">${d.short}</div><div class="bar"><i style="width:${p}%"></i></div></div><div class="n">${ok}/${as.length}</div></div>`;});
+  const rv=$('rReview');rv.innerHTML='<h3 style="font-size:15px;color:var(--navy)">Repaso</h3>';
+  S.answers.forEach((a,i)=>{rv.innerHTML+=`<div class="r"><b>${i+1}. ${a.q.q}</b><span class="${a.ok?'ok':'bad'}">${a.ok?'✓':'✗'}</span> Correcta: ${a.q.c.map(c=>'ABCDE'[c]).join(', ')} · Tu respuesta: ${a.sel.map(c=>'ABCDE'[c]).join(', ')||'—'}<div style="color:var(--ink2);margin-top:4px">${a.q.e}</div></div>`;});
+  window.scrollTo({top:0});
+}
+</script>
+</body>
+</html>
